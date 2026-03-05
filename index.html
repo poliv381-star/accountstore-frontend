@@ -216,22 +216,15 @@ body::after {
 
 /* ── SEARCH ── */
 .search-row {
-  padding: 0 18px 14px; position:relative; display:flex; align-items:center;
-}
-
-.search-ico {
-  position:absolute; left:30px; top:50%;
-  transform:translateY(-50%);
-  width:16px; height:16px; stroke:var(--dim);
-  pointer-events: none;
+  padding: 0 18px 14px;
 }
 
 .search {
-  width:100%; padding:12px 14px 12px 42px;
+  width:100%; padding:13px 16px;
   background:var(--s1); border:1px solid var(--border);
   border-radius:12px; color:var(--text);
   font-family:'Manrope',sans-serif; font-size:14px;
-  transition:.2s; outline:none; line-height:1.4;
+  transition:.2s; outline:none;
 }
 
 .search:focus { border-color: rgba(232,200,74,.4); background:var(--s2); }
@@ -311,7 +304,7 @@ body::after {
 .b-rare { background:rgba(0,207,232,.15); color:var(--cyan);  border:1px solid rgba(0,207,232,.3); }
 
 .pc-stock {
-  position:absolute; top:9px; right:9px;
+  position:absolute; bottom:9px; right:9px;
   font-size:9px; font-weight:700;
   background:rgba(0,0,0,.6); color:var(--green);
   border:1px solid rgba(0,224,128,.25);
@@ -643,13 +636,16 @@ body::after {
 
 /* WISHLIST HEART BUTTON */
 .wish-btn {
-  position:absolute; top:8px; right:8px; z-index:4;
-  width:30px; height:30px; border-radius:50%;
-  background:rgba(0,0,0,.5); border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  font-size:15px; transition:.15s;
+  position:absolute; bottom:8px; left:8px; z-index:4;
+  width:28px; height:28px; border-radius:8px;
+  background:rgba(10,10,15,.75); border:1px solid rgba(255,255,255,.1);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:.15s; backdrop-filter:blur(4px);
 }
 .wish-btn:active { transform:scale(.88); }
+.wish-btn svg { width:14px; height:14px; transition:.15s; }
+.wish-btn.wished svg { stroke:#ff4d6a; fill:#ff4d6a; }
+.wish-btn:not(.wished) svg { stroke:rgba(255,255,255,.5); fill:none; }
 
 .empty {
   padding:60px 20px; text-align:center;
@@ -1030,10 +1026,7 @@ body::after {
   </div>
 
   <div class="search-row">
-    <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-    </svg>
-    <input class="search" type="text" id="searchInput" placeholder="Поиск..." oninput="onSearch(this.value)">
+    <input class="search" type="text" id="searchInput" placeholder="🔍  Поиск товаров..." oninput="onSearch(this.value)">
   </div>
 
   <div class="cats" id="catsRow">
@@ -1175,8 +1168,11 @@ body::after {
         </svg>
         Добавить в корзину
       </button>
-      <button class="add-btn" id="wishSheetBtn" onclick="toggleWishFromSheet()" style="margin-top:10px;background:transparent;border:1px solid var(--border2);color:var(--text)">
-        🤍 В избранное
+      <button class="add-btn" id="wishSheetBtn" onclick="toggleWishFromSheet()" style="margin-top:10px;background:transparent;border:1px solid var(--border2);color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" id="wishSheetIco">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span id="wishSheetTxt">В избранное</span>
       </button>
     </div>
     <div style="height:8px"></div>
@@ -1399,7 +1395,11 @@ function renderGrid() {
           ${imgOrPh(p.image_url, p.cat_emoji)}
           ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : ''}
           <div class="pc-stock ${sCls}">${sLabel}</div>
-          <button class="wish-btn" onclick="event.stopPropagation();toggleWish(${p.id})" id="wb-${p.id}">${isWished(p.id)?'❤️':'🤍'}</button>
+          <button class="wish-btn ${isWished(p.id)?'wished':''}" onclick="event.stopPropagation();toggleWish(${p.id})" id="wb-${p.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
         </div>
         <div class="pc-body">
           <div class="pc-name">${p.name}</div>
@@ -1531,8 +1531,7 @@ function openProduct(id) {
   haptic('medium');
 
   // Update wishlist button
-  const wb = document.getElementById('wishSheetBtn');
-  if (wb) wb.textContent = isWished(p.id) ? '❤️ В избранном' : '🤍 В избранное';
+  updateWishSheetBtn(p.id);
 }
 
 function slideTo(idx) {
@@ -1614,8 +1613,7 @@ function toggleWish(id) {
   saveWish();
   // update heart button in grid
   const btn = document.getElementById(`wb-${id}`);
-  if (btn) btn.textContent = isWished(id) ? '❤️' : '🤍';
-  // update wish tab count
+  if (btn) btn.classList.toggle('wished', isWished(id));
   syncWishCount();
   if (document.getElementById('wishContent').style.display !== 'none') renderWish();
 }
@@ -1623,8 +1621,20 @@ function toggleWish(id) {
 function toggleWishFromSheet() {
   if (!curProduct) return;
   toggleWish(curProduct.id);
-  const btn = document.getElementById('wishSheetBtn');
-  if (btn) btn.textContent = isWished(curProduct.id) ? '❤️ В избранном' : '🤍 В избранное';
+  updateWishSheetBtn(curProduct.id);
+}
+
+function updateWishSheetBtn(id) {
+  const ico = document.getElementById('wishSheetIco');
+  const txt = document.getElementById('wishSheetTxt');
+  if (!ico || !txt) return;
+  if (isWished(id)) {
+    ico.style.stroke = '#ff4d6a'; ico.style.fill = '#ff4d6a';
+    txt.textContent = 'В избранном';
+  } else {
+    ico.style.stroke = 'currentColor'; ico.style.fill = 'none';
+    txt.textContent = 'В избранное';
+  }
 }
 
 function syncWishCount() {
