@@ -428,6 +428,26 @@ body::after {
   z-index: 3;
   display: none;
 }
+
+/* Кнопка "развернуть фото" */
+.expand-btn {
+  position: absolute;
+  bottom: 46px; right: 10px;
+  z-index: 4;
+  background: rgba(0,0,0,.6);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 8px;
+  color: #fff;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 9px;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  font-family: 'Manrope', sans-serif;
+  transition: background .15s;
+}
+.expand-btn svg { width:12px; height:12px; stroke:#fff; flex-shrink:0; }
+.expand-btn:active { background: rgba(255,255,255,.2); }
 .carousel-nav {
   position: absolute;
   top: 50%; transform: translateY(-50%);
@@ -1474,6 +1494,10 @@ function openProduct(id) {
             <img src="${imgs[0]}" alt="${p.name}" onclick="openLb(0)" onerror="this.style.display='none'">
           </div>
         </div>
+        <button class="expand-btn" onclick="openLb(0)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          Полное фото
+        </button>
       </div>`;
   } else {
     wrap.innerHTML = `
@@ -1487,6 +1511,10 @@ function openProduct(id) {
         <button class="carousel-nav prev" onclick="slideTo(carouselIdx-1)">‹</button>
         <button class="carousel-nav next" onclick="slideTo(carouselIdx+1)">›</button>
         <div class="carousel-counter" id="cCounter" style="display:block">${1}/${imgs.length}</div>
+        <button class="expand-btn" onclick="openLb(carouselIdx)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          Полное фото
+        </button>
         <div class="carousel-dots" id="cDots">
           ${imgs.map((_,i) => `<div class="carousel-dot ${i===0?'on':''}" onclick="slideTo(${i})"></div>`).join('')}
         </div>
