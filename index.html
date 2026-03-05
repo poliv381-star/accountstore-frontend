@@ -216,21 +216,22 @@ body::after {
 
 /* ── SEARCH ── */
 .search-row {
-  padding: 0 18px 14px; position:relative;
+  padding: 0 18px 14px; position:relative; display:flex; align-items:center;
 }
 
 .search-ico {
   position:absolute; left:30px; top:50%;
   transform:translateY(-50%);
   width:16px; height:16px; stroke:var(--dim);
+  pointer-events: none;
 }
 
 .search {
-  width:100%; padding:11px 14px 11px 42px;
+  width:100%; padding:12px 14px 12px 42px;
   background:var(--s1); border:1px solid var(--border);
   border-radius:12px; color:var(--text);
   font-family:'Manrope',sans-serif; font-size:14px;
-  transition:.2s; outline:none;
+  transition:.2s; outline:none; line-height:1.4;
 }
 
 .search:focus { border-color: rgba(232,200,74,.4); background:var(--s2); }
@@ -381,23 +382,126 @@ body::after {
 .pd-img-wrap {
   margin: 16px -20px 0;
   position:relative; overflow:hidden;
+  background: var(--s2);
 }
+
+/* CAROUSEL */
+.carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.carousel-track {
+  display: flex;
+  transition: transform 0.35s cubic-bezier(.25,.46,.45,.94);
+  will-change: transform;
+}
+.carousel-slide {
+  min-width: 100%;
+  position: relative;
+}
+.carousel-slide img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+}
+.carousel-dots {
+  position: absolute;
+  bottom: 10px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 5px;
+  z-index: 3;
+}
+.carousel-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  transition: all .2s;
+}
+.carousel-dot.on {
+  background: var(--gold);
+  width: 16px;
+  border-radius: 3px;
+}
+.carousel-counter {
+  position: absolute;
+  top: 10px; right: 12px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  z-index: 3;
+  display: none;
+}
+.carousel-nav {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,.45);
+  border: none; color: #fff;
+  font-size: 18px; cursor: pointer;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 3; opacity: 0; transition: opacity .2s;
+}
+.carousel:hover .carousel-nav { opacity: 1; }
+.carousel-nav.prev { left: 8px; }
+.carousel-nav.next { right: 8px; }
 
 .pd-img {
-  width:100%; max-height:220px; object-fit:cover; display:block;
+  width:100%; height:280px; object-fit:cover; display:block;
 }
-
 .pd-img-placeholder {
-  width:100%; height:180px;
+  width:100%; height:220px;
   display:flex; align-items:center; justify-content:center;
   font-size:72px; background:var(--s2);
 }
 
 /* Gradient over image */
 .pd-img-wrap::after {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(to bottom, transparent 40%, var(--s1) 100%);
+  content:''; position:absolute; bottom:0; left:0; right:0; height:80px;
+  background:linear-gradient(to bottom, transparent, var(--s1));
+  pointer-events: none;
+  z-index: 2;
 }
+
+/* FULLSCREEN LIGHTBOX */
+.img-lb {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.95);
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.img-lb.open { display: flex; }
+.img-lb-img {
+  max-width: 100vw; max-height: 85vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.img-lb-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; color: #fff;
+  font-size: 28px; cursor: pointer; line-height: 1;
+  z-index: 2;
+}
+.img-lb-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.15); border: none; color: #fff;
+  font-size: 22px; cursor: pointer;
+  padding: 12px 14px; border-radius: 50%;
+}
+.img-lb-nav.prev { left: 12px; }
+.img-lb-nav.next { right: 12px; }
+.img-lb-dots {
+  display: flex; gap: 6px; margin-top: 14px;
+}
+.img-lb-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.3);
+}
+.img-lb-dot.on { background: var(--gold); }
 
 .pd-meta {
   position:relative; z-index:1;
@@ -496,6 +600,56 @@ body::after {
   padding:20px 18px 16px;
   font-size:22px; font-weight:900; letter-spacing:-.4px;
 }
+
+/* CART TABS */
+.cart-tabs {
+  display:flex; margin:0 18px 16px; gap:8px;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:12px; padding:4px;
+}
+.cart-tab {
+  flex:1; padding:9px; text-align:center;
+  font-size:13px; font-weight:700; border-radius:9px;
+  cursor:pointer; transition:.2s; color:var(--sub);
+}
+.cart-tab.on { background:var(--s3); color:var(--text); }
+
+/* WISHLIST */
+.wi {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:16px; overflow:hidden; display:flex; align-items:stretch;
+}
+.wi-img {
+  width:72px; flex-shrink:0; object-fit:cover; display:block;
+}
+.wi-img-ph {
+  width:72px; flex-shrink:0; background:var(--s2);
+  display:flex; align-items:center; justify-content:center; font-size:28px;
+}
+.wi-body { flex:1; padding:12px; min-width:0; display:flex; flex-direction:column; justify-content:space-between; }
+.wi-name { font-size:12px; font-weight:800; margin-bottom:3px; line-height:1.3; }
+.wi-foot { display:flex; align-items:center; justify-content:space-between; margin-top:8px; gap:8px; }
+.wi-price { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--gold); }
+.wi-status { font-size:10px; font-weight:700; padding:3px 7px; border-radius:6px; }
+.wi-status.in { color:var(--green); background:rgba(0,224,128,.1); }
+.wi-status.out { color:var(--red); background:rgba(255,77,90,.1); }
+.wi-btn {
+  padding:6px 12px; border-radius:8px; font-size:11px; font-weight:800;
+  border:none; cursor:pointer; transition:.15s; font-family:'Manrope',sans-serif;
+}
+.wi-btn.buy { background:var(--gold); color:#000; }
+.wi-btn.buy:active { transform:scale(.95); }
+.wi-btn.del { background:var(--s2); color:var(--sub); border:1px solid var(--border); }
+
+/* WISHLIST HEART BUTTON */
+.wish-btn {
+  position:absolute; top:8px; right:8px; z-index:4;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(0,0,0,.5); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; transition:.15s;
+}
+.wish-btn:active { transform:scale(.88); }
 
 .empty {
   padding:60px 20px; text-align:center;
@@ -747,10 +901,20 @@ body::after {
   font-size:28px; font-weight:900; color:#000;
   margin:0 auto 12px;
   box-shadow:0 0 30px rgba(232,200,74,.35);
+  overflow:hidden; flex-shrink:0;
+}
+.ava img {
+  width:100%; height:100%; object-fit:cover; border-radius:50%;
+}
+.ava.no-photo {
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  box-shadow: none;
 }
 
 .p-name { font-size:20px; font-weight:900; margin-bottom:4px; letter-spacing:-.3px; }
 .p-at   { font-size:12px; color:var(--sub); font-family:'JetBrains Mono',monospace; }
+.p-id   { font-size:11px; color:var(--dim); font-family:'JetBrains Mono',monospace; margin-top:3px; }
 
 .stats-g {
   display:grid; grid-template-columns:1fr 1fr 1fr;
@@ -840,13 +1004,12 @@ body::after {
     <div class="logo-text">Account<em>Store</em></div>
   </div>
   <div class="hdr-right">
-    <div class="ico-btn" onclick="goCart()">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 01-8 0"/>
+    <div class="ico-btn" onclick="openNotifs()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
       </svg>
-      <div class="n-badge" id="cartBadge"></div>
+      <div class="n-badge" id="notifBadge"></div>
     </div>
   </div>
 </header>
@@ -885,7 +1048,12 @@ body::after {
 <!-- CART -->
 <div class="pg" id="pg-cart">
   <div class="pg-head">Корзина</div>
+  <div class="cart-tabs">
+    <div class="cart-tab on" id="tab-cart" onclick="switchCartTab('cart')">🛒 Корзина <span id="cartTabCount"></span></div>
+    <div class="cart-tab" id="tab-wish" onclick="switchCartTab('wish')">❤️ Избранное <span id="wishTabCount"></span></div>
+  </div>
   <div id="cartContent"></div>
+  <div id="wishContent" style="display:none"></div>
 </div>
 
 <!-- ORDERS -->
@@ -897,9 +1065,10 @@ body::after {
 <!-- PROFILE -->
 <div class="pg" id="pg-profile">
   <div class="prof-hero">
-    <div class="ava" id="avaEl">?</div>
+    <div class="ava" id="avaEl"></div>
     <div class="p-name" id="pName">—</div>
-    <div class="p-at"   id="pAt">@—</div>
+    <div class="p-at"   id="pAt"></div>
+    <div class="p-id"   id="pId"></div>
   </div>
 
   <div class="stats-g">
@@ -953,12 +1122,13 @@ body::after {
     </svg>
     <span>Каталог</span>
   </div>
-  <div class="nt" id="nt-cart" onclick="switchPage('cart',this)">
+  <div class="nt" id="nt-cart" onclick="switchPage('cart',this)" style="position:relative">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
       <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
       <line x1="3" y1="6" x2="21" y2="6"/>
       <path d="M16 10a4 4 0 01-8 0"/>
     </svg>
+    <div class="n-badge" id="navCartBadge" style="top:-6px;right:6px"></div>
     <span>Корзина</span>
   </div>
   <div class="nt" id="nt-orders" onclick="switchPage('orders',this)">
@@ -1005,8 +1175,37 @@ body::after {
         </svg>
         Добавить в корзину
       </button>
+      <button class="add-btn" id="wishSheetBtn" onclick="toggleWishFromSheet()" style="margin-top:10px;background:transparent;border:1px solid var(--border2);color:var(--text)">
+        🤍 В избранное
+      </button>
     </div>
     <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="img-lb" id="imgLb">
+  <button class="img-lb-close" onclick="closeLb()">×</button>
+  <button class="img-lb-nav prev" onclick="lbNav(-1)">‹</button>
+  <img class="img-lb-img" id="imgLbImg" src="">
+  <button class="img-lb-nav next" onclick="lbNav(1)">›</button>
+  <div class="img-lb-dots" id="imgLbDots"></div>
+</div>
+
+<!-- ══ NOTIFICATIONS SHEET ══════════════════ -->
+<div class="overlay" id="notifOverlay" onclick="closeOverlayByBg(event,'notifOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 20px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:18px">🔔 Уведомления</div>
+      <div id="notifList">
+        <div style="text-align:center;padding:40px 0;color:var(--sub)">
+          <div style="font-size:36px;margin-bottom:10px">🔕</div>
+          <div style="font-size:14px">Уведомлений пока нет</div>
+          <div style="font-size:12px;margin-top:6px;color:var(--dim)">Здесь будут новости и акции</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1068,9 +1267,18 @@ const INIT_DATA = tg?.initData || '';
 
 if (TG_USER) {
   const name = [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || 'Покупатель';
-  document.getElementById('avaEl').textContent = name.charAt(0).toUpperCase();
+  const avaEl = document.getElementById('avaEl');
+
+  if (TG_USER.photo_url) {
+    avaEl.innerHTML = `<img src="${TG_USER.photo_url}" alt="${name}" onerror="this.parentElement.innerHTML='${name.charAt(0).toUpperCase()}';this.parentElement.classList.remove('no-photo')">`;
+  } else {
+    avaEl.classList.add('no-photo');
+    avaEl.textContent = name.charAt(0).toUpperCase();
+  }
+
   document.getElementById('pName').textContent = name;
-  document.getElementById('pAt').textContent   = TG_USER.username ? '@' + TG_USER.username : `ID: ${TG_USER.id}`;
+  document.getElementById('pAt').textContent   = TG_USER.username ? '@' + TG_USER.username : '';
+  document.getElementById('pId').textContent   = `ID: ${TG_USER.id}`;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1191,6 +1399,7 @@ function renderGrid() {
           ${imgOrPh(p.image_url, p.cat_emoji)}
           ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : ''}
           <div class="pc-stock ${sCls}">${sLabel}</div>
+          <button class="wish-btn" onclick="event.stopPropagation();toggleWish(${p.id})" id="wb-${p.id}">${isWished(p.id)?'❤️':'🤍'}</button>
         </div>
         <div class="pc-body">
           <div class="pc-name">${p.name}</div>
@@ -1237,22 +1446,63 @@ function onSearch(v) {
 // ══════════════════════════════════════════════════════════
 // PRODUCT SHEET
 // ══════════════════════════════════════════════════════════
+let carouselImgs = [], carouselIdx = 0, lbImgs = [], lbIdx = 0;
+let touchStartX = 0, touchStartY = 0;
+
 function openProduct(id) {
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
   curProduct = p;
   curQty = 1;
 
-  // Image
+  // Build images array
+  let imgs = [];
+  if (Array.isArray(p.images) && p.images.length) imgs = p.images;
+  else if (p.image_url) imgs = [p.image_url];
+
+  carouselImgs = imgs;
+  carouselIdx = 0;
+
   const wrap = document.getElementById('pdImgWrap');
-  if (p.image_url) {
-    wrap.innerHTML = `<img class="pd-img" src="${p.image_url}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div class=pd-img-placeholder>${p.cat_emoji||'📦'}</div>'">`;
-  } else {
+  if (imgs.length === 0) {
     wrap.innerHTML = `<div class="pd-img-placeholder">${p.cat_emoji || '📦'}</div>`;
+  } else if (imgs.length === 1) {
+    wrap.innerHTML = `
+      <div class="carousel">
+        <div class="carousel-track" id="cTrack">
+          <div class="carousel-slide">
+            <img src="${imgs[0]}" alt="${p.name}" onclick="openLb(0)" onerror="this.style.display='none'">
+          </div>
+        </div>
+      </div>`;
+  } else {
+    wrap.innerHTML = `
+      <div class="carousel" id="carousel">
+        <div class="carousel-track" id="cTrack">
+          ${imgs.map((url, i) => `
+            <div class="carousel-slide">
+              <img src="${url}" alt="${p.name} ${i+1}" onclick="openLb(${i})" onerror="this.parentElement.style.display='none'">
+            </div>`).join('')}
+        </div>
+        <button class="carousel-nav prev" onclick="slideTo(carouselIdx-1)">‹</button>
+        <button class="carousel-nav next" onclick="slideTo(carouselIdx+1)">›</button>
+        <div class="carousel-counter" id="cCounter" style="display:block">${1}/${imgs.length}</div>
+        <div class="carousel-dots" id="cDots">
+          ${imgs.map((_,i) => `<div class="carousel-dot ${i===0?'on':''}" onclick="slideTo(${i})"></div>`).join('')}
+        </div>
+      </div>`;
+    // Touch swipe
+    const car = document.getElementById('carousel');
+    car.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
+    car.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) slideTo(carouselIdx + (dx < 0 ? 1 : -1));
+    }, { passive: true });
   }
 
   // Meta
-  document.getElementById('pdCat').innerHTML = `<span>${p.cat_emoji}</span> ${p.cat_name}`;
+  document.getElementById('pdCat').innerHTML = `<span>${p.cat_emoji||''}</span> ${p.cat_name||''}`;
   document.getElementById('pdName').textContent  = p.name;
   document.getElementById('pdPrice').textContent = `$${Number(p.price).toFixed(2)}`;
   document.getElementById('pdDesc').textContent  = p.description || '';
@@ -1267,14 +1517,10 @@ function openProduct(id) {
   const specs = Array.isArray(p.specs) ? p.specs : (typeof p.specs === 'string' ? JSON.parse(p.specs || '[]') : []);
   const specsEl = document.getElementById('pdSpecs');
   const specTitle = document.getElementById('pdSpecsTitle');
-
   if (specs.length) {
     specTitle.style.display = 'block';
     specsEl.innerHTML = specs.map(s =>
-      `<div class="spec">
-         <div class="spec-label">${s.label}</div>
-         <div class="spec-value">${s.value}</div>
-       </div>`
+      `<div class="spec"><div class="spec-label">${s.label}</div><div class="spec-value">${s.value}</div></div>`
     ).join('');
   } else {
     specTitle.style.display = 'none';
@@ -1283,22 +1529,156 @@ function openProduct(id) {
 
   openOverlay('pdOverlay');
   haptic('medium');
+
+  // Update wishlist button
+  const wb = document.getElementById('wishSheetBtn');
+  if (wb) wb.textContent = isWished(p.id) ? '❤️ В избранном' : '🤍 В избранное';
 }
 
+function slideTo(idx) {
+  if (!carouselImgs.length) return;
+  carouselIdx = (idx + carouselImgs.length) % carouselImgs.length;
+  const track = document.getElementById('cTrack');
+  if (track) track.style.transform = `translateX(-${carouselIdx * 100}%)`;
+  const dots = document.querySelectorAll('.carousel-dot');
+  dots.forEach((d, i) => d.classList.toggle('on', i === carouselIdx));
+  const counter = document.getElementById('cCounter');
+  if (counter) counter.textContent = `${carouselIdx + 1}/${carouselImgs.length}`;
+  haptic('light');
+}
+
+// LIGHTBOX
+function openLb(idx) {
+  lbImgs = carouselImgs; lbIdx = idx;
+  document.getElementById('imgLbImg').src = lbImgs[idx];
+  const dots = document.getElementById('imgLbDots');
+  dots.innerHTML = lbImgs.map((_,i) => `<div class="img-lb-dot ${i===idx?'on':''}"></div>`).join('');
+  document.getElementById('imgLb').classList.add('open');
+}
+function closeLb() { document.getElementById('imgLb').classList.remove('open'); }
+function lbNav(d) {
+  lbIdx = (lbIdx + d + lbImgs.length) % lbImgs.length;
+  document.getElementById('imgLbImg').src = lbImgs[lbIdx];
+  document.querySelectorAll('.img-lb-dot').forEach((el,i) => el.classList.toggle('on', i===lbIdx));
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('imgLb').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+  if (e.key === 'Escape') closeLb();
+});
+
 function chQty(d) {
-  curQty = Math.max(1, Math.min(curProduct?.stock || 99, curQty + d));
+  const maxQty = curProduct?.stock || 99;
+  curQty = Math.max(1, Math.min(maxQty, curQty + d));
   document.getElementById('pdQtyVal').textContent = curQty;
+  if (curQty >= maxQty && d > 0) toast(`⚠️ Максимум ${maxQty} шт`);
   haptic('light');
 }
 
 function addFromSheet() {
+  if (!curProduct || !curProduct.stock || curProduct.stock <= 0) {
+    toast('❌ Нет в наличии'); return;
+  }
   closeOverlay('pdOverlay');
   addToCart(curProduct, curQty);
 }
 
 function quickAdd(id) {
   const p = allProducts.find(x => x.id === id);
-  if (p) addToCart(p, 1);
+  if (!p) return;
+  if (!p.stock || p.stock <= 0) { toast('❌ Нет в наличии'); haptic('error'); return; }
+  addToCart(p, 1);
+}
+
+// ══════════════════════════════════════════════════════════
+// WISHLIST
+// ══════════════════════════════════════════════════════════
+let wishlist = JSON.parse(sessionStorage.getItem('as_wish') || '[]');
+
+function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)); }
+function isWished(id) { return wishlist.some(x => x.id === id); }
+
+function toggleWish(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!p) return;
+  const idx = wishlist.findIndex(x => x.id === id);
+  if (idx >= 0) {
+    wishlist.splice(idx, 1);
+    toast('Убрано из избранного');
+  } else {
+    wishlist.push({ id: p.id, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, stock: p.stock });
+    toast('❤️ Добавлено в избранное');
+    haptic('light');
+  }
+  saveWish();
+  // update heart button in grid
+  const btn = document.getElementById(`wb-${id}`);
+  if (btn) btn.textContent = isWished(id) ? '❤️' : '🤍';
+  // update wish tab count
+  syncWishCount();
+  if (document.getElementById('wishContent').style.display !== 'none') renderWish();
+}
+
+function toggleWishFromSheet() {
+  if (!curProduct) return;
+  toggleWish(curProduct.id);
+  const btn = document.getElementById('wishSheetBtn');
+  if (btn) btn.textContent = isWished(curProduct.id) ? '❤️ В избранном' : '🤍 В избранное';
+}
+
+function syncWishCount() {
+  const el = document.getElementById('wishTabCount');
+  if (el) el.textContent = wishlist.length ? `(${wishlist.length})` : '';
+}
+
+function switchCartTab(tab) {
+  document.getElementById('tab-cart').classList.toggle('on', tab === 'cart');
+  document.getElementById('tab-wish').classList.toggle('on', tab === 'wish');
+  document.getElementById('cartContent').style.display = tab === 'cart' ? '' : 'none';
+  document.getElementById('wishContent').style.display = tab === 'wish' ? '' : 'none';
+  if (tab === 'wish') renderWish();
+  if (tab === 'cart') renderCart();
+}
+
+function renderWish() {
+  const el = document.getElementById('wishContent');
+  syncWishCount();
+  if (!wishlist.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">🤍</div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары сердечком ❤️</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
+    const inStock = item.stock > 0;
+    return `<div class="wi">
+      ${item.image_url
+        ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||'📦'}</div>'">`
+        : `<div class="wi-img-ph">${item.cat_emoji||'📦'}</div>`}
+      <div class="wi-body">
+        <div>
+          <div class="wi-name">${item.name}</div>
+          <div class="wi-price">$${item.price.toFixed(2)}</div>
+        </div>
+        <div class="wi-foot">
+          <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
+          <div style="display:flex;gap:6px">
+            ${inStock ? `<button class="wi-btn buy" onclick="addWishToCart(${item.id})">В корзину</button>` : ''}
+            <button class="wi-btn del" onclick="toggleWish(${item.id})">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function addWishToCart(id) {
+  const p = allProducts.find(x => x.id === id) || wishlist.find(x => x.id === id);
+  if (!p) return;
+  // refresh stock from allProducts
+  const fresh = allProducts.find(x => x.id === id);
+  if (!fresh || fresh.stock <= 0) { toast('❌ Нет в наличии'); return; }
+  addToCart(fresh, 1);
+  switchCartTab('cart');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1308,15 +1688,32 @@ function saveCart() { sessionStorage.setItem('as_cart', JSON.stringify(cart)); }
 
 function syncBadge() {
   const n = cart.reduce((s, i) => s + i.qty, 0);
-  const b = document.getElementById('cartBadge');
-  if (n > 0) { b.textContent = n > 99 ? '99+' : n; b.classList.add('on'); }
-  else b.classList.remove('on');
+  const nb = document.getElementById('navCartBadge');
+  if (nb) {
+    if (n > 0) { nb.textContent = n > 99 ? '99+' : n; nb.classList.add('on'); }
+    else nb.classList.remove('on');
+  }
+  const tc = document.getElementById('cartTabCount');
+  if (tc) tc.textContent = n > 0 ? `(${n})` : '';
+}
+
+function openNotifs() {
+  openOverlay('notifOverlay');
+  haptic('light');
 }
 
 function addToCart(p, qty) {
+  // Block if out of stock
+  if (!p.stock || p.stock <= 0) { toast('❌ Нет в наличии'); haptic('error'); return; }
   const i = cart.findIndex(x => x.id === p.id);
-  if (i >= 0) cart[i].qty += qty;
-  else cart.push({ id: p.id, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, qty });
+  const maxQty = p.stock;
+  if (i >= 0) {
+    const newQty = cart[i].qty + qty;
+    if (newQty > maxQty) { toast(`⚠️ Максимум ${maxQty} шт`); cart[i].qty = maxQty; }
+    else cart[i].qty = newQty;
+  } else {
+    cart.push({ id: p.id, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, qty: Math.min(qty, maxQty), stock: p.stock });
+  }
   saveCart();
   syncBadge();
   toast(`✅ ${p.name}`);
@@ -1326,7 +1723,8 @@ function addToCart(p, qty) {
 function setQty(id, d) {
   const i = cart.findIndex(x => x.id === id);
   if (i < 0) return;
-  cart[i].qty = Math.max(0, cart[i].qty + d);
+  const maxQty = cart[i].stock || 99;
+  cart[i].qty = Math.max(0, Math.min(maxQty, cart[i].qty + d));
   if (cart[i].qty === 0) cart.splice(i, 1);
   saveCart(); syncBadge(); renderCart();
   haptic('light');
@@ -1514,7 +1912,11 @@ function switchPage(name, el) {
   document.getElementById('pg-' + name).classList.add('on');
   const nav = el || document.getElementById('nt-' + name);
   if (nav) nav.classList.add('on');
-  if (name === 'cart')    renderCart();
+  if (name === 'cart') {
+    // Reset to cart tab
+    switchCartTab('cart');
+    syncWishCount();
+  }
   if (name === 'orders')  loadOrders();
   if (name === 'profile') loadProfile();
 }
