@@ -976,6 +976,95 @@ body::after {
 .m-txt { font-size:14px; font-weight:700; flex:1; }
 .m-arr { color:var(--dim); font-size:18px; }
 
+/* BALANCE CARD */
+.balance-card {
+  margin: 14px 18px 0;
+  background: linear-gradient(135deg, rgba(232,200,74,.15), rgba(255,140,66,.08));
+  border: 1px solid rgba(232,200,74,.25);
+  border-radius: 18px; padding: 18px 20px;
+}
+.balance-label {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+}
+.balance-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px; font-weight: 700; color: var(--text);
+  margin-bottom: 14px;
+}
+.balance-amount span { font-size: 18px; color: var(--sub); margin-right: 2px; }
+.balance-actions { display: flex; gap: 8px; }
+.bal-btn {
+  flex: 1; padding: 10px;
+  border-radius: 11px; border: none;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px; font-weight: 800;
+  cursor: pointer; transition: .15s;
+}
+.bal-btn.topup {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: #000;
+}
+.bal-btn.history {
+  background: var(--s2); border: 1px solid var(--border2);
+  color: var(--text);
+}
+.bal-btn:active { transform: scale(.96); }
+
+/* BALANCE TX LIST */
+.tx-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.tx-item:last-child { border-bottom: none; }
+.tx-ico {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.tx-ico.in  { background: rgba(0,224,128,.1); }
+.tx-ico.out { background: rgba(255,77,90,.1); }
+.tx-info { flex: 1; min-width: 0; }
+.tx-desc { font-size: 13px; font-weight: 700; }
+.tx-date { font-size: 11px; color: var(--sub); margin-top: 2px; }
+.tx-amt { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.tx-amt.in  { color: var(--green); }
+.tx-amt.out { color: var(--red); }
+
+/* TOPUP INPUT */
+.topup-amounts { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+.ta-chip {
+  padding: 8px 16px; border-radius: 10px;
+  background: var(--s2); border: 1px solid var(--border2);
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: .15s;
+}
+.ta-chip.on { background: rgba(232,200,74,.15); border-color: var(--gold); color: var(--gold); }
+.ta-chip:active { transform: scale(.95); }
+.topup-input {
+  width: 100%; padding: 13px 16px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700;
+  outline: none; transition: .2s; margin-bottom: 4px;
+}
+.topup-input:focus { border-color: rgba(232,200,74,.4); }
+
+/* ABOUT */
+.about-card {
+  margin: 8px 18px;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px;
+}
+.about-logo { font-size: 32px; margin-bottom: 8px; }
+.about-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
+.about-text { font-size: 13px; color: var(--sub); line-height: 1.65; }
+.about-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.about-chip {
+  padding: 5px 12px; border-radius: 20px;
+  background: rgba(232,200,74,.08); border: 1px solid rgba(232,200,74,.2);
+  font-size: 11px; font-weight: 700; color: var(--gold);
+}
+
 /* ══════════════════════════════════════════
    UTILS
 ══════════════════════════════════════════ */
@@ -1092,6 +1181,16 @@ body::after {
     <div class="stat-b"><div class="st-v" id="st2">—</div><div class="st-l">Потрачено</div></div>
   </div>
 
+  <!-- БАЛАНС -->
+  <div class="balance-card">
+    <div class="balance-label">💳 Баланс аккаунта</div>
+    <div class="balance-amount"><span>$</span><span id="balanceAmt">0.00</span></div>
+    <div class="balance-actions">
+      <button class="bal-btn topup" onclick="openOverlay('topupOverlay')">+ Пополнить</button>
+      <button class="bal-btn history" onclick="openTxHistory()">История</button>
+    </div>
+  </div>
+
   <div class="menu-l">
     <div class="mrow" onclick="switchPage('orders')">
       <div class="m-ico">
@@ -1114,14 +1213,15 @@ body::after {
       <div class="m-txt">Поддержка</div>
       <div class="m-arr">›</div>
     </div>
-    <div class="mrow">
+    <div class="mrow" onclick="openOverlay('aboutOverlay')">
       <div class="m-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/>
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
-      <div class="m-txt">Уведомления</div>
+      <div class="m-txt">О нас</div>
       <div class="m-arr">›</div>
     </div>
   </div>
@@ -1222,6 +1322,73 @@ body::after {
           <div style="font-size:14px">Уведомлений пока нет</div>
           <div style="font-size:12px;margin-top:6px;color:var(--dim)">Здесь будут новости и акции</div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOPUP SHEET ════════════════════════════ -->
+<div class="overlay" id="topupOverlay" onclick="closeOverlayByBg(event,'topupOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">💳 Пополнение баланса</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Выберите сумму или введите свою</div>
+      <div class="topup-amounts">
+        <div class="ta-chip" onclick="setTopupAmt(5)">$5</div>
+        <div class="ta-chip" onclick="setTopupAmt(10)">$10</div>
+        <div class="ta-chip" onclick="setTopupAmt(25)">$25</div>
+        <div class="ta-chip" onclick="setTopupAmt(50)">$50</div>
+        <div class="ta-chip" onclick="setTopupAmt(100)">$100</div>
+      </div>
+      <input class="topup-input" id="topupInput" type="number" min="1" max="10000" placeholder="0.00" oninput="clearTopupChips()">
+      <div style="font-size:11px;color:var(--dim);margin-bottom:16px">Минимум $1 · Оплата через CryptoBot</div>
+      <button class="pay-btn-main" onclick="doTopup()" id="topupBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        Пополнить через CryptoBot
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TX HISTORY SHEET ═══════════════════════ -->
+<div class="overlay" id="txOverlay" onclick="closeOverlayByBg(event,'txOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 История транзакций</div>
+      <div id="txList"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ABOUT SHEET ════════════════════════════ -->
+<div class="overlay" id="aboutOverlay" onclick="closeOverlayByBg(event,'aboutOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 32px">
+      <div class="about-card" style="margin:0 0 0 0;border:none;padding:0 0 16px;background:transparent">
+        <div class="about-logo">⚡</div>
+        <div class="about-title">AccountStore</div>
+        <div class="about-text">
+          Мы — надёжный магазин цифровых аккаунтов с мгновенной доставкой прямо в Telegram.<br><br>
+          Все аккаунты проверены вручную. Оплата через CryptoBot — безопасно и анонимно. Работаем 24/7.
+        </div>
+        <div class="about-chips">
+          <div class="about-chip">⚡ Мгновенная доставка</div>
+          <div class="about-chip">🔒 Безопасно</div>
+          <div class="about-chip">💎 Гарантия качества</div>
+          <div class="about-chip">🌍 Работаем 24/7</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border);margin:16px 0"></div>
+      <div style="font-size:13px;color:var(--sub);line-height:1.7">
+        <div style="margin-bottom:8px">📦 <b style="color:var(--text)">Гарантия</b> — если аккаунт не работает, заменим или вернём деньги</div>
+        <div style="margin-bottom:8px">💳 <b style="color:var(--text)">Оплата</b> — TON, USDT, BTC, ETH через CryptoBot</div>
+        <div>🆘 <b style="color:var(--text)">Поддержка</b> — пишите нам, ответим быстро</div>
       </div>
     </div>
   </div>
@@ -1941,6 +2108,79 @@ async function loadProfile() {
     document.getElementById('st1').textContent = stats.total_accounts || 0;
     document.getElementById('st2').textContent = `$${Math.round(stats.total_spent || 0)}`;
   } catch {}
+  loadBalance();
+}
+
+async function loadBalance() {
+  try {
+    const { balance } = await api('/api/balance');
+    document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+  } catch {}
+}
+
+// ── TOPUP ─────────────────────────────────────────────────
+function setTopupAmt(n) {
+  document.getElementById('topupInput').value = n;
+  document.querySelectorAll('.ta-chip').forEach(c => c.classList.remove('on'));
+  event.target.classList.add('on');
+}
+function clearTopupChips() {
+  document.querySelectorAll('.ta-chip').forEach(c => c.classList.remove('on'));
+}
+
+async function doTopup() {
+  const amount = Number(document.getElementById('topupInput').value);
+  if (!amount || amount < 1) { toast('⚠️ Введите сумму от $1'); return; }
+  const btn = document.getElementById('topupBtn');
+  btn.disabled = true; btn.textContent = 'Создаём инвойс...';
+  try {
+    const { pay_url, mini_app_url } = await api('/api/balance/topup', {
+      method: 'POST', body: JSON.stringify({ amount })
+    });
+    closeOverlay('topupOverlay');
+    if (tg && mini_app_url) {
+      tg.openInvoice(mini_app_url, status => {
+        if (status === 'paid') { toast('✅ Баланс пополнен!'); loadBalance(); }
+      });
+    } else if (pay_url) {
+      tg ? tg.openLink(pay_url) : window.open(pay_url, '_blank');
+    }
+  } catch (e) {
+    toast(`❌ ${e.message}`);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Пополнить через CryptoBot';
+  }
+}
+
+// ── TX HISTORY ────────────────────────────────────────────
+async function openTxHistory() {
+  openOverlay('txOverlay');
+  const el = document.getElementById('txList');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { balance, transactions } = await api('/api/balance');
+    document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+    if (!transactions.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><div class="empty-ttl">Нет транзакций</div><div class="empty-sub">История пополнений и списаний появится здесь</div></div>';
+      return;
+    }
+    el.innerHTML = transactions.map(tx => {
+      const isIn = tx.type === 'topup' || tx.type === 'refund';
+      const icon = tx.type === 'topup' ? '⬆️' : tx.type === 'refund' ? '↩️' : '⬇️';
+      const desc = tx.description || (tx.type === 'topup' ? 'Пополнение' : tx.type === 'refund' ? 'Возврат' : 'Списание');
+      const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `<div class="tx-item">
+        <div class="tx-ico ${isIn?'in':'out'}">${icon}</div>
+        <div class="tx-info">
+          <div class="tx-desc">${desc}</div>
+          <div class="tx-date">${date}</div>
+        </div>
+        <div class="tx-amt ${isIn?'in':'out'}">${isIn?'+':'-'}$${Number(tx.amount).toFixed(2)}</div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico">❌</div><div class="empty-ttl">Ошибка загрузки</div></div>`;
+  }
 }
 
 // ══════════════════════════════════════════════════════════
