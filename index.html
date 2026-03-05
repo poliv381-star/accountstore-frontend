@@ -280,8 +280,9 @@ body::after {
 /* Thumbnail */
 .pc-img {
   width:100%; aspect-ratio:3/2;
-  object-fit:cover; display:block;
-  background: var(--s2);
+  object-fit: contain;
+  display:block;
+  background: #000;
   transition: .3s;
 }
 
@@ -393,11 +394,12 @@ body::after {
 .carousel-slide {
   min-width: 100%;
   position: relative;
+  background: #000;
 }
 .carousel-slide img {
   width: 100%;
-  height: 280px;
-  object-fit: cover;
+  height: 300px;
+  object-fit: contain;
   display: block;
   cursor: zoom-in;
 }
