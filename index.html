@@ -1009,6 +1009,10 @@ body::after {
   background: var(--s2); border: 1px solid var(--border2);
   color: var(--text);
 }
+.bal-btn.withdraw {
+  background: var(--s2); border: 1px solid rgba(232,200,74,.3);
+  color: var(--gold);
+}
 .bal-btn:active { transform: scale(.96); }
 
 /* BALANCE TX LIST */
@@ -1276,6 +1280,7 @@ body::after {
     <div class="balance-amount"><span>$</span><span id="balanceAmt">0.00</span></div>
     <div class="balance-actions">
       <button class="bal-btn topup" onclick="openOverlay('topupOverlay')">+ Пополнить</button>
+      <button class="bal-btn withdraw" onclick="openOverlay('withdrawOverlay')">↑ Вывести</button>
       <button class="bal-btn history" onclick="openTxHistory()">История</button>
     </div>
   </div>
@@ -1451,6 +1456,23 @@ body::after {
 </div>
 
 <!-- ══ TOPUP SHEET ════════════════════════════ -->
+<div class="overlay" id="withdrawOverlay" onclick="closeOverlayByBg(event,'withdrawOverlay')">
+  <div class="overlay-box" onclick="e=>e.stopPropagation()">
+    <div class="ov-title">↑ Вывод средств</div>
+    <p style="color:var(--text2);font-size:13px;margin:0 0 14px">Средства придут в USDT на ваш CryptoBot</p>
+    <div class="topup-amounts">
+      <button class="chip" onclick="setWithdrawAmount(5)">$5</button>
+      <button class="chip" onclick="setWithdrawAmount(10)">$10</button>
+      <button class="chip" onclick="setWithdrawAmount(25)">$25</button>
+      <button class="chip" onclick="setWithdrawAmount(50)">$50</button>
+    </div>
+    <input class="topup-input" id="withdrawInput" type="number" min="1" placeholder="Сумма в USD" oninput="clearWithdrawChips()">
+    <button class="pay-btn-main" onclick="doWithdraw()" id="withdrawBtn">
+      Вывести через CryptoBot
+    </button>
+  </div>
+</div>
+
 <div class="overlay" id="topupOverlay" onclick="closeOverlayByBg(event,'topupOverlay')">
   <div class="sheet">
     <div class="sh-handle"></div>
@@ -2394,7 +2416,34 @@ function clearTopupChips() {
   document.querySelectorAll('.ta-chip').forEach(c => c.classList.remove('on'));
 }
 
-async function doTopup() {
+function setWithdrawAmount(n) {
+    document.getElementById('withdrawInput').value = n;
+    document.querySelectorAll('#withdrawOverlay .chip').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+  function clearWithdrawChips() {
+    document.querySelectorAll('#withdrawOverlay .chip').forEach(c => c.classList.remove('active'));
+  }
+  async function doWithdraw() {
+    const amount = Number(document.getElementById('withdrawInput').value);
+    if (!amount || amount < 1) { toast('⚠️ Введите сумму от $1'); return; }
+    const btn = document.getElementById('withdrawBtn');
+    btn.disabled = true; btn.textContent = 'Выводим...';
+    try {
+      const { balance } = await api('/api/withdraw', {
+        method: 'POST', body: JSON.stringify({ amount })
+      });
+      closeOverlay('withdrawOverlay');
+      toast('✅ Вывод выполнен! Проверьте CryptoBot');
+      haptic('success');
+      document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+    } catch (e) {
+      toast('❌ ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Вывести через CryptoBot';
+    }
+  }
+  async function doTopup() {
   const amount = Number(document.getElementById('topupInput').value);
   if (!amount || amount < 1) { toast('⚠️ Введите сумму от $1'); return; }
   const btn = document.getElementById('topupBtn');
@@ -2404,12 +2453,15 @@ async function doTopup() {
       method: 'POST', body: JSON.stringify({ amount })
     });
     closeOverlay('topupOverlay');
-    // CryptoBot ссылки открываем через openLink, не openInvoice
-    const invoiceUrl = bot_invoice_url || mini_app_url || pay_url;
-    if (invoiceUrl) {
-      tg ? tg.openLink(invoiceUrl) : window.open(invoiceUrl, '_blank');
-      toast('💳 После оплаты баланс обновится автоматически');
-      setTimeout(() => loadBalance(), 5000);
+    const invoiceUrl = mini_app_url || bot_invoice_url;
+    if (tg && invoiceUrl) {
+      tg.openInvoice(invoiceUrl, status => {
+        if (status === 'paid') { toast('✅ Баланс пополнен!'); loadBalance(); }
+      });
+    } else if (bot_invoice_url) {
+      tg ? tg.openLink(bot_invoice_url) : window.open(bot_invoice_url, '_blank');
+    } else if (pay_url) {
+      tg ? tg.openLink(pay_url) : window.open(pay_url, '_blank');
     }
   } catch (e) {
     toast(`❌ ${e.message}`);
