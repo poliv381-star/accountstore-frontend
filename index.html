@@ -1321,22 +1321,27 @@ body::after {
 <!-- P2P ДОСКА -->
 <div class="pg" id="pg-p2p">
   <div class="pg-head" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px">
-    Доска
-    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Продать</button>
+    Продать
+    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Новое объявление</button>
   </div>
-  <div class="p2p-tabs">
-    <div class="p2p-tab on" onclick="p2pFilter('all',this)">🌐 Все</div>
-    <div class="p2p-tab" onclick="p2pFilter('accounts',this)">👤 Аккаунты</div>
-    <div class="p2p-tab" onclick="p2pFilter('games',this)">🎮 Игры</div>
-    <div class="p2p-tab" onclick="p2pFilter('software',this)">💻 Софт</div>
-    <div class="p2p-tab" onclick="p2pFilter('other',this)">📦 Другое</div>
+  <div style="padding:20px 18px 0;text-align:center;color:var(--sub);font-size:13px;line-height:1.6">
+    Разместите объявление — оно появится в общем каталоге для всех пользователей.
   </div>
-  <div style="padding:10px 18px 2px;display:flex;gap:16px">
-    <span onclick="openMyDeals()" style="font-size:12px;font-weight:700;color:var(--sub);cursor:pointer">📋 Мои сделки</span>
-    <span onclick="openMyListings()" style="font-size:12px;font-weight:700;color:var(--sub);cursor:pointer">📌 Мои объявления</span>
-  </div>
-  <div id="p2pGrid" style="padding:10px 18px;display:flex;flex-direction:column;gap:10px">
-    <div class="spin-wrap"><div class="spin"></div></div>
+  <div style="padding:20px 18px;display:flex;flex-direction:column;gap:8px">
+    <div class="mrow" onclick="openMyListings()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <div class="m-txt">Мои объявления</div>
+      <div class="m-arr">›</div>
+    </div>
+    <div class="mrow" onclick="openMyDeals()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div class="m-txt">Мои сделки</div>
+      <div class="m-arr">›</div>
+    </div>
   </div>
   <div class="gap"></div>
 </div>
@@ -1360,11 +1365,9 @@ body::after {
   </div>
   <div class="nt" id="nt-p2p" onclick="switchPage('p2p',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+      <path d="M12 5v14M5 12h14"/>
     </svg>
-    <span>Доска</span>
+    <span>Продать</span>
   </div>
   <div class="nt" id="nt-orders" onclick="switchPage('orders',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1584,8 +1587,16 @@ body::after {
         <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="0.00">
       </div>
       <div class="form-group">
-        <label class="form-label">Фото (URL)</label>
-        <input class="form-input" id="lImage" placeholder="https://...">
+        <label class="form-label">Фото товара</label>
+        <div id="imgPreviewWrap" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:160px">
+          <img id="imgPreview" style="width:100%;height:160px;object-fit:contain;display:block">
+        </div>
+        <input type="file" id="lImageFile" accept="image/*" style="display:none" onchange="previewListingImg(this)">
+        <button type="button" onclick="document.getElementById('lImageFile').click()" id="imgPickBtn"
+          style="width:100%;padding:12px;background:var(--s1);border:1px dashed var(--border2);border-radius:12px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s">
+          📷 Выбрать фото с устройства
+        </button>
+        <input type="hidden" id="lImage">
       </div>
       <div class="form-group">
         <label class="form-label">Время работы (МСК)</label>
@@ -1722,24 +1733,51 @@ let searchQ      = '';
 (async () => {
   renderSkeleton();
   try {
-    const { catalog: cat } = await api('/api/catalog');
+    const [{ catalog: cat }, { listings }] = await Promise.all([
+      api('/api/catalog'),
+      api('/api/listings').catch(() => ({ listings: [] })),
+    ]);
     catalog    = cat;
-    allProducts = cat.flatMap(c => c.products.map(p => ({
+    // Товары из каталога (магазин)
+    const shopProducts = cat.flatMap(c => c.products.map(p => ({
       ...p,
       cat_name:  c.name,
       cat_emoji: c.emoji,
       cat_slug:  c.slug,
+      source: 'shop',
     })));
+    // Объявления пользователей — конвертируем в формат карточки
+    const p2pProducts = (listings || []).map(l => ({
+      id:         `l_${l.id}`,
+      name:       l.title,
+      description: l.description || '',
+      price:      l.price,
+      image_url:  l.image_url,
+      images:     l.image_url ? [l.image_url] : [],
+      cat_name:   l.category,
+      cat_emoji:  catEmoji(l.category),
+      cat_slug:   l.category,
+      stock:      1,
+      badge:      null,
+      specs:      [],
+      source:     'p2p',
+      listing:    l,  // оригинал для деталей
+    }));
+    allProducts = [...shopProducts, ...p2pProducts];
     buildCats();
     renderGrid();
   } catch (e) {
     document.getElementById('grid').innerHTML =
       `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)">
-        ❌ Ошибка загрузки каталога<br><small>${e.message}</small>
+        ❌ Ошибка загрузки<br><small>${e.message}</small>
        </div>`;
   }
   syncBadge();
 })();
+
+function catEmoji(cat) {
+  return { accounts:'👤', games:'🎮', software:'💻', other:'📦' }[cat] || '📦';
+}
 
 // ══════════════════════════════════════════════════════════
 // CATALOG
@@ -1798,13 +1836,14 @@ function renderGrid() {
 
   document.getElementById('grid').innerHTML = list.map(p => {
     const [sLabel, sCls] = stockLabel(p.stock);
+    const p2pBadge = p.source === 'p2p' ? `<div class="pc-badge" style="background:rgba(0,207,232,.2);color:#00cfe8;border:1px solid rgba(0,207,232,.4)">P2P</div>` : '';
     return `
-      <div class="pc" onclick="openProduct(${p.id})">
+      <div class="pc" onclick="openProduct('${p.id}')">
         <div style="position:relative">
           ${imgOrPh(p.image_url, p.cat_emoji)}
-          ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : ''}
+          ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : p2pBadge}
           <div class="pc-stock ${sCls}">${sLabel}</div>
-          <button class="wish-btn ${isWished(p.id)?'wished':''}" onclick="event.stopPropagation();toggleWish(${p.id})" id="wb-${p.id}">
+          <button class="wish-btn ${isWished(p.id)?'wished':''}" onclick="event.stopPropagation();toggleWish('${p.id}')" id="wb-${p.id}">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
@@ -1815,12 +1854,12 @@ function renderGrid() {
           <div class="pc-desc">${p.description || ''}</div>
           <div class="pc-foot">
             <div class="pc-price">$${Number(p.price).toFixed(2)}</div>
-            <div class="pc-add" onclick="event.stopPropagation();quickAdd(${p.id})">
+            ${p.source === 'p2p' ? '' : `<div class="pc-add" onclick="event.stopPropagation();quickAdd('${p.id}')">
               <svg viewBox="0 0 24 24" fill="none">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
-            </div>
+            </div>`}
           </div>
         </div>
       </div>`;
@@ -1861,6 +1900,13 @@ let touchStartX = 0, touchStartY = 0;
 function openProduct(id) {
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
+
+  // P2P объявление — показываем специальную шторку
+  if (p.source === 'p2p') {
+    openListing(p.listing.id, p.listing);
+    return;
+  }
+
   curProduct = p;
   curQty = 1;
 
@@ -2478,8 +2524,8 @@ function renderP2PGrid() {
   }).join('');
 }
 
-function openListing(id) {
-  curListing = p2pListings.find(l => l.id === id);
+function openListing(id, listingObj) {
+  curListing = listingObj || p2pListings.find(l => l.id === id);
   if (!curListing) return;
   const l = curListing;
   const rat = l.seller_rating;
@@ -2613,6 +2659,18 @@ async function changeListingStatus(id, status) {
   } catch(e) { toast(`❌ ${e.message}`); }
 }
 
+function previewListingImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('imgPreview').src = e.target.result;
+    document.getElementById('imgPreviewWrap').style.display = 'block';
+    document.getElementById('imgPickBtn').textContent = '📷 Изменить фото';
+  };
+  reader.readAsDataURL(file);
+}
+
 async function submitListing() {
   const title = document.getElementById('lTitle').value.trim();
   const price = Number(document.getElementById('lPrice').value);
@@ -2620,11 +2678,28 @@ async function submitListing() {
   const btn = document.getElementById('submitListingBtn');
   btn.disabled = true; btn.textContent = 'Публикуем...';
   try {
+    // Загружаем фото если выбрано
+    let image_url = null;
+    const fileInput = document.getElementById('lImageFile');
+    if (fileInput.files[0]) {
+      btn.textContent = 'Загружаем фото...';
+      const fd = new FormData();
+      fd.append('image', fileInput.files[0]);
+      const r = await fetch(API_BASE + '/api/upload', {
+        method: 'POST',
+        headers: { 'X-Init-Data': INIT_DATA },
+        body: fd,
+      });
+      const json = await r.json();
+      if (!r.ok) throw new Error(json.error || 'Ошибка загрузки фото');
+      image_url = json.url;
+    }
+    btn.textContent = 'Публикуем...';
     await api('/api/listings', { method:'POST', body: JSON.stringify({
       title, price,
       description: document.getElementById('lDesc').value.trim(),
       category:    document.getElementById('lCategory').value,
-      image_url:   document.getElementById('lImage').value.trim() || null,
+      image_url,
       avail_from:  document.getElementById('lFrom').value || null,
       avail_to:    document.getElementById('lTo').value   || null,
       delivery_minutes: Number(document.getElementById('lDelivery').value) || 60,
@@ -2632,8 +2707,21 @@ async function submitListing() {
     closeOverlay('createListingOverlay');
     toast('✅ Объявление опубликовано!');
     haptic('success');
-    loadP2P();
-    ['lTitle','lDesc','lPrice','lImage'].forEach(id => document.getElementById(id).value = '');
+    // Обновляем каталог чтобы показало новое объявление
+    const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
+    const p2pProducts = (listings || []).map(l => ({
+      id: `l_${l.id}`, name: l.title, description: l.description || '',
+      price: l.price, image_url: l.image_url, images: l.image_url ? [l.image_url] : [],
+      cat_name: l.category, cat_emoji: catEmoji(l.category), cat_slug: l.category,
+      stock: 1, badge: null, specs: [], source: 'p2p', listing: l,
+    }));
+    allProducts = [...allProducts.filter(p => p.source !== 'p2p'), ...p2pProducts];
+    renderGrid();
+    // Сбрасываем форму
+    ['lTitle','lDesc','lPrice'].forEach(id => document.getElementById(id).value = '');
+    fileInput.value = '';
+    document.getElementById('imgPreviewWrap').style.display = 'none';
+    document.getElementById('imgPickBtn').textContent = '📷 Выбрать фото с устройства';
   } catch(e) {
     toast(`❌ ${e.message}`);
   } finally {
