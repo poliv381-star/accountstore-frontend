@@ -2404,15 +2404,12 @@ async function doTopup() {
       method: 'POST', body: JSON.stringify({ amount })
     });
     closeOverlay('topupOverlay');
-    const invoiceUrl = mini_app_url || bot_invoice_url;
-    if (tg && invoiceUrl) {
-      tg.openInvoice(invoiceUrl, status => {
-        if (status === 'paid') { toast('✅ Баланс пополнен!'); loadBalance(); }
-      });
-    } else if (bot_invoice_url) {
-      tg ? tg.openLink(bot_invoice_url) : window.open(bot_invoice_url, '_blank');
-    } else if (pay_url) {
-      tg ? tg.openLink(pay_url) : window.open(pay_url, '_blank');
+    // CryptoBot ссылки открываем через openLink, не openInvoice
+    const invoiceUrl = bot_invoice_url || mini_app_url || pay_url;
+    if (invoiceUrl) {
+      tg ? tg.openLink(invoiceUrl) : window.open(invoiceUrl, '_blank');
+      toast('💳 После оплаты баланс обновится автоматически');
+      setTimeout(() => loadBalance(), 5000);
     }
   } catch (e) {
     toast(`❌ ${e.message}`);
