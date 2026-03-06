@@ -2434,7 +2434,7 @@ function setWithdrawAmount(n) {
         method: 'POST', body: JSON.stringify({ amount })
       });
       closeOverlay('withdrawOverlay');
-      toast('✅ Вывод выполнен! Проверьте CryptoBot');
+      toast('✅ Чек отправлен в бот! Откройте @CryptoBot');
       haptic('success');
       document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
     } catch (e) {
