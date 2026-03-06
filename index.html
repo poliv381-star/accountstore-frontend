@@ -1194,6 +1194,33 @@ body::after {
 /* spacer */
 .gap { height:20px; }
 
+/* ── TIMER CHIPS ── */
+.timer-chip {
+  padding: 9px 6px; text-align: center;
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 10px; font-size: 12px; font-weight: 700;
+  color: var(--sub); cursor: pointer; transition: .15s;
+}
+.timer-chip.on {
+  background: rgba(232,200,74,.12);
+  border-color: var(--gold); color: var(--gold);
+}
+.timer-chip:active { transform: scale(.95); }
+
+/* ── DISPUTE BUTTON ── */
+.deal-btn.dispute {
+  background: rgba(255,140,42,.1);
+  border: 1px solid rgba(255,140,42,.3);
+  color: var(--orange);
+}
+.deal-btn.dispute:active { background: rgba(255,140,42,.2); }
+
+/* ── DEAL STATUS COLORS ── */
+.deal-status.waiting_confirmation { background:rgba(0,207,232,.1); color:var(--cyan); border:1px solid rgba(0,207,232,.25); }
+.deal-status.dispute { background:rgba(255,140,42,.1); color:var(--orange); border:1px solid rgba(255,140,42,.3); }
+.deal-status.auto_completed { background:rgba(0,224,128,.1); color:var(--green); border:1px solid rgba(0,224,128,.25); }
+.deal-status.refunded { background:rgba(148,148,184,.1); color:var(--sub); border:1px solid var(--border); }
+
 /* ══════════════════════════════════════════
    КАРУСЕЛЬ В КАРТОЧКЕ
 ══════════════════════════════════════════ */
@@ -1746,6 +1773,19 @@ body::after {
         <label class="form-label">Срок выдачи после оплаты (минут)</label>
         <input class="form-input" id="lDelivery" type="number" min="1" max="1440" value="60">
       </div>
+      <div class="form-group">
+        <label class="form-label">⏳ Авто-завершение сделки</label>
+        <div style="font-size:11px;color:var(--sub);margin-bottom:8px;line-height:1.5">Если покупатель не нажал «Получил» и не открыл спор — деньги автоматически уйдут вам через выбранное время.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px" id="timerChips">
+          <div class="timer-chip" onclick="setTimer(15,this)">15 мин</div>
+          <div class="timer-chip" onclick="setTimer(30,this)">30 мин</div>
+          <div class="timer-chip on" onclick="setTimer(60,this)">1 час</div>
+          <div class="timer-chip" onclick="setTimer(180,this)">3 часа</div>
+          <div class="timer-chip" onclick="setTimer(720,this)">12 часов</div>
+          <div class="timer-chip" onclick="setTimer(1440,this)">24 часа</div>
+        </div>
+        <input type="hidden" id="lAutoConfirmMinutes" value="60">
+      </div>
       <button class="pay-btn-main" onclick="submitListing()" id="submitListingBtn">Опубликовать объявление</button>
     </div>
   </div>
@@ -1791,6 +1831,20 @@ body::after {
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ══ DISPUTE OVERLAY ══════════════════════ -->
+<div class="overlay" id="disputeOverlay" onclick="closeOverlayByBg(event,'disputeOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 28px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">⚠️ Открыть спор</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.55">Деньги останутся заморожены. Администратор рассмотрит спор и вынесет решение в течение 24 часов.</div>
+      <textarea class="form-input form-textarea" id="disputeReason" placeholder="Опишите проблему подробно: что не так, что обещал продавец, что получили..."></textarea>
+      <button class="pay-btn-main" onclick="submitDispute()" style="margin-top:12px" id="submitDisputeBtn">⚠️ Открыть спор</button>
+      <button onclick="closeOverlay('disputeOverlay')" style="width:100%;margin-top:10px;padding:13px;background:transparent;border:1px solid var(--border2);border-radius:13px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Отмена</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════════
@@ -2396,15 +2450,14 @@ function renderCart() {
       <div class="sum-r"><span>Скидка</span><span>$0.00</span></div>
       <div class="sum-r tot"><span>Итого</span><span class="v">$${sub.toFixed(2)}</span></div>
     </div>
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin:14px 18px 0;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:var(--sub)">Баланс</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="cartBalanceAmt">0.00</span></span>
+    </div>
     <button class="pay-btn-main" id="payBtn" onclick="checkout()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>
-      Оплатить через CryptoBot
+      ❄️ Заморозить и оплатить
     </button>
-    <div class="trust-row-cart">🔒 TON · USDT · BTC · ETH — безопасно и быстро</div>
+    <div class="trust-row-cart">🔒 Средства заморозятся на балансе площадки</div>
   `;
 }
 
@@ -2414,45 +2467,41 @@ function renderCart() {
 async function checkout() {
   if (!cart.length) return;
   const btn = document.getElementById('payBtn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Создаём заказ...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Замораживаем средства...'; }
   haptic('medium');
 
   try {
-    const { order_id, total, pay_url, mini_app_url, bot_invoice_url } = await api('/api/order', {
+    // Один запрос — создаём сделки для всех товаров из корзины
+    const { deals, total, balance } = await api('/api/deals/cart', {
       method: 'POST',
-      body: JSON.stringify({ items: cart.map(i => ({ product_id: i.id, quantity: i.qty })) }),
+      body: JSON.stringify({ items: cart.map(i => ({ listing_id: i.listing_id, quantity: i.qty })) }),
     });
-
-    curPayUrl  = pay_url;
-    curMiniUrl = mini_app_url || bot_invoice_url;
-
-    document.getElementById('payAmtEl').textContent = `$${Number(total).toFixed(2)}`;
-    openOverlay('payOverlay');
 
     cart = []; saveCart(); syncBadge(); renderCart();
 
+    // Обновляем баланс
+    document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+    const cba = document.getElementById('cartBalanceAmt');
+    if (cba) cba.textContent = Number(balance).toFixed(2);
+
+    toast(`❄️ Заморожено $${Number(total).toFixed(2)}! Продавцы уведомлены.`);
+    haptic('success');
+
+    // Переходим в сделки
+    setTimeout(() => {
+      switchPage('orders');
+      openMyDeals();
+    }, 800);
+
   } catch (e) {
     toast(`❌ ${e.message}`);
+    haptic('error');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Оплатить через CryptoBot'; }
+    if (btn) { btn.disabled = false; btn.textContent = '❄️ Заморозить и оплатить'; }
   }
 }
 
-function openCryptoBot() {
-  if (tg && curMiniUrl) {
-    tg.openInvoice(curMiniUrl, status => {
-      if (status === 'paid') {
-        closeOverlay('payOverlay');
-        toast('✅ Оплачено! Аккаунты придут в бот.');
-        switchPage('orders');
-      }
-    });
-  } else if (tg && curPayUrl) {
-    tg.openLink(curPayUrl);
-  } else if (curPayUrl) {
-    window.open(curPayUrl, '_blank');
-  }
-}
+function openCryptoBot() {} // legacy
 
 // ══════════════════════════════════════════════════════════
 // ORDERS
@@ -2532,8 +2581,12 @@ async function loadBalance() {
   try {
     const { balance } = await api('/api/balance');
     document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+    const cba = document.getElementById('cartBalanceAmt');
+    if (cba) cba.textContent = Number(balance).toFixed(2);
   } catch {}
 }
+
+function loadCartBalance() { loadBalance(); }
 
 // ── TOPUP ─────────────────────────────────────────────────
 function setTopupAmt(n) {
@@ -2635,7 +2688,7 @@ function switchPage(name, el) {
   document.getElementById('pg-' + name).classList.add('on');
   const nav = el || document.getElementById('nt-' + name);
   if (nav) nav.classList.add('on');
-  if (name === 'cart') { switchCartTab('cart'); syncWishCount(); }
+  if (name === 'cart') { switchCartTab('cart'); syncWishCount(); loadCartBalance(); }
   if (name === 'orders')  loadOrders();
   if (name === 'profile') loadProfile();
   if (name === 'p2p')     loadP2P();
@@ -2877,22 +2930,50 @@ async function openMyDeals() {
       el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Сделок нет</div></div>';
       return;
     }
-    const sMap = { frozen:'❄️ Заморожено', completed:'✅ Завершено', cancelled:'❌ Отменено' };
+    const sMap = {
+      frozen: '❄️ Заморожено',
+      waiting_confirmation: '📦 Ожидает подтверждения',
+      dispute: '⚠️ Спор',
+      completed: '✅ Завершено',
+      auto_completed: '✅ Авто-завершено',
+      cancelled: '❌ Отменено',
+      refunded: '↩️ Возврат'
+    };
     el.innerHTML = deals.map(d => {
       const isBuyer = d.my_role === 'buyer';
-      const canConfirm = isBuyer && d.status === 'frozen';
+      const isSeller = !isBuyer;
+      const canConfirm = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
+      const canDispute = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
+      const canMarkSent = isSeller && d.status === 'frozen';
+      const canCancel = d.status === 'frozen' && isBuyer;
+
+      // Таймер авто-завершения
+      let timerHtml = '';
+      if (d.status === 'waiting_confirmation' && d.auto_confirm_at) {
+        const left = Math.max(0, new Date(d.auto_confirm_at) - Date.now());
+        const h = Math.floor(left / 3600000);
+        const m = Math.floor((left % 3600000) / 60000);
+        timerHtml = `<div style="font-size:11px;color:var(--dim);margin-bottom:8px">⏳ Авто-завершение через: <b>${h}ч ${m}мин</b></div>`;
+      }
+
       return `<div class="deal-card">
-        <div class="deal-status ${d.status}">${sMap[d.status] || d.status}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="deal-status ${d.status}">${sMap[d.status] || d.status}</div>
+          <div style="font-size:11px;color:var(--dim)">#${d.id}</div>
+        </div>
         <div style="font-size:14px;font-weight:800;margin-bottom:4px">${d.title}</div>
-        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? '🛒 Покупка' : '📦 Продажа'} · $${Number(d.amount).toFixed(2)}</div>
-        ${d.status === 'frozen' ? `
-          <div style="background:rgba(0,207,232,.08);border:1px solid rgba(0,207,232,.2);border-radius:10px;padding:10px;font-size:12px;margin-bottom:4px">
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? '🛒 Покупка' : '📦 Продажа'} · <b style="color:var(--gold)">$${Number(d.amount).toFixed(2)}</b></div>
+        ${(d.status === 'frozen' || d.status === 'waiting_confirmation' || d.status === 'dispute') ? `
+          <div style="background:rgba(0,207,232,.08);border:1px solid rgba(0,207,232,.2);border-radius:10px;padding:10px;font-size:12px;margin-bottom:8px">
             ${isBuyer
-              ? `👤 Продавец: <b>@${d.other_username || d.other_name}</b>`
-              : `👤 Покупатель: <b>@${d.other_username || d.other_name}</b>`}
+              ? `👤 Продавец: <b>@${d.other_username || d.other_name || '—'}</b>`
+              : `👤 Покупатель: <b>@${d.other_username || d.other_name || '—'}</b>`}
           </div>` : ''}
-        ${canConfirm ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Товар получен — оставить отзыв</button>` : ''}
-        ${d.status === 'frozen' ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить сделку</button>` : ''}
+        ${timerHtml}
+        ${canMarkSent ? `<button class="deal-btn confirm" onclick="markItemSent(${d.id})">📦 Товар передан покупателю</button>` : ''}
+        ${canConfirm ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар — подтвердить</button>` : ''}
+        ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
+        ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить сделку</button>` : ''}
       </div>`;
     }).join('');
   } catch (e) {
@@ -2987,6 +3068,7 @@ async function submitListing() {
       avail_from:  document.getElementById('lFrom').value || null,
       avail_to:    document.getElementById('lTo').value   || null,
       delivery_minutes: Number(document.getElementById('lDelivery').value) || 60,
+      auto_confirm_minutes: Number(document.getElementById('lAutoConfirmMinutes').value) || 60,
     })});
     closeOverlay('createListingOverlay');
     toast('✅ Объявление опубликовано!');
@@ -3005,6 +3087,8 @@ async function submitListing() {
     // Сбрасываем форму
     ['lTitle','lDesc','lPrice'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('lQuantity').value = '1';
+    document.getElementById('lAutoConfirmMinutes').value = '60';
+    document.querySelectorAll('.timer-chip').forEach((c,i) => c.classList.toggle('on', i===2));
     fileInputs.forEach((fid, i) => {
       const inp = document.getElementById(fid);
       if (inp) inp.value = '';
@@ -3059,7 +3143,47 @@ async function cancelDeal(dealId) {
   } catch(e) { toast(`❌ ${e.message}`); }
 }
 
+async function markItemSent(dealId) {
+  try {
+    await api(`/api/deals/${dealId}/sent`, { method:'POST' });
+    toast('📦 Отмечено! Покупатель уведомлён.');
+    haptic('success');
+    openMyDeals();
+  } catch(e) { toast(`❌ ${e.message}`); }
+}
+
+let curDisputeDealId = null;
+function openDisputeDeal(dealId) {
+  curDisputeDealId = dealId;
+  openOverlay('disputeOverlay');
+}
+
+async function submitDispute() {
+  const reason = document.getElementById('disputeReason').value.trim();
+  if (!reason) { toast('⚠️ Опишите причину спора'); return; }
+  const btn = document.getElementById('submitDisputeBtn');
+  btn.disabled = true; btn.textContent = 'Отправляем...';
+  try {
+    await api(`/api/deals/${curDisputeDealId}/dispute`, { method:'POST', body: JSON.stringify({ reason }) });
+    closeOverlay('disputeOverlay');
+    toast('⚠️ Спор открыт! Администратор рассмотрит в течение 24ч.');
+    haptic('medium');
+    openMyDeals();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Открыть спор';
+  }
+}
+
 function goCart() { switchPage('cart', document.getElementById('nt-cart')); }
+
+function setTimer(minutes, el) {
+  document.getElementById('lAutoConfirmMinutes').value = minutes;
+  document.querySelectorAll('.timer-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  haptic('light');
+}
 
 // Карусель на карточке
 const pcIdxMap = {};
