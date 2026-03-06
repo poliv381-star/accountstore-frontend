@@ -2430,13 +2430,16 @@ function setWithdrawAmount(n) {
     const btn = document.getElementById('withdrawBtn');
     btn.disabled = true; btn.textContent = 'Выводим...';
     try {
-      const { balance } = await api('/api/withdraw', {
+      const { balance, check_url } = await api('/api/withdraw', {
         method: 'POST', body: JSON.stringify({ amount })
       });
       closeOverlay('withdrawOverlay');
-      toast('✅ Чек отправлен в бот! Откройте @CryptoBot');
+      toast('✅ Чек создан! Получите средства в CryptoBot');
       haptic('success');
       document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+      if (check_url) {
+        tg ? tg.openLink(check_url) : window.open(check_url, '_blank');
+      }
     } catch (e) {
       toast('❌ ' + e.message);
     } finally {
