@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AccountStore</title>
+<title>Unvito</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -1066,6 +1066,95 @@ body::after {
 }
 
 /* ══════════════════════════════════════════
+   P2P ДОСКА
+══════════════════════════════════════════ */
+.p2p-tabs {
+  display:flex; gap:8px; padding:12px 18px 0; overflow-x:auto; scrollbar-width:none;
+}
+.p2p-tab {
+  padding:7px 15px; border-radius:20px; font-size:12px; font-weight:700;
+  background:var(--s1); border:1px solid var(--border); color:var(--sub);
+  cursor:pointer; white-space:nowrap; transition:.15s; flex-shrink:0;
+}
+.p2p-tab.on { background:rgba(232,200,74,.12); border-color:var(--gold); color:var(--gold); }
+.listing-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:16px; overflow:hidden; cursor:pointer; transition:.15s;
+}
+.listing-card:active { transform:scale(.98); }
+.listing-img { width:100%; height:150px; object-fit:contain; background:#000; display:block; }
+.listing-img-ph {
+  width:100%; height:150px; background:var(--s2);
+  display:flex; align-items:center; justify-content:center; font-size:48px;
+}
+.listing-body { padding:11px 12px 13px; }
+.listing-title { font-size:14px; font-weight:800; margin-bottom:4px; line-height:1.3; }
+.listing-desc { font-size:11px; color:var(--sub); line-height:1.5; margin-bottom:10px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.listing-foot { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.listing-price { font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; color:var(--gold); }
+.listing-time { font-size:10px; color:var(--dim); }
+.seller-rating {
+  font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px;
+}
+.seller-rating.good { background:rgba(0,224,128,.12); color:var(--green); border:1px solid rgba(0,224,128,.25); }
+.seller-rating.bad  { background:rgba(255,77,90,.12);  color:var(--red);   border:1px solid rgba(255,77,90,.25); }
+.seller-rating.new  { background:rgba(148,148,184,.1); color:var(--sub);   border:1px solid var(--border); }
+.ld-seller-row {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 0; border-bottom:1px solid var(--border); margin-bottom:14px;
+}
+.ld-seller-ava {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--s2); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:900; color:var(--gold); flex-shrink:0;
+}
+.ld-seller-info { flex:1; }
+.ld-seller-name { font-size:13px; font-weight:800; }
+.ld-seller-sub  { font-size:11px; color:var(--sub); margin-top:2px; }
+.ld-ratings { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+.form-group { margin-bottom:13px; }
+.form-label { font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:6px; display:block; }
+.form-input {
+  width:100%; padding:12px 14px;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:12px; color:var(--text);
+  font-family:'Manrope',sans-serif; font-size:14px;
+  outline:none; transition:.2s; box-sizing:border-box;
+}
+.form-input:focus { border-color:rgba(232,200,74,.4); background:var(--s2); }
+.form-textarea { resize:none; height:80px; line-height:1.5; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.deal-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:13px; margin-bottom:10px;
+}
+.deal-status {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:800; padding:3px 9px; border-radius:6px; margin-bottom:10px;
+}
+.deal-status.frozen    { background:rgba(0,207,232,.1);  color:var(--cyan);  border:1px solid rgba(0,207,232,.25); }
+.deal-status.completed { background:rgba(0,224,128,.1);  color:var(--green); border:1px solid rgba(0,224,128,.25); }
+.deal-status.cancelled { background:rgba(255,77,90,.1);  color:var(--red);   border:1px solid rgba(255,77,90,.25); }
+.deal-btn {
+  width:100%; padding:11px; border-radius:11px; border:none;
+  font-family:'Manrope',sans-serif; font-size:13px; font-weight:800;
+  cursor:pointer; transition:.15s; margin-top:7px;
+}
+.deal-btn.confirm { background:linear-gradient(135deg,var(--gold),var(--orange)); color:#000; }
+.deal-btn.cancel  { background:var(--s2); border:1px solid var(--border2); color:var(--sub); }
+.deal-btn:active  { transform:scale(.97); }
+.agree-row {
+  display:flex; align-items:flex-start; gap:10px;
+  background:rgba(232,200,74,.06); border:1px solid rgba(232,200,74,.15);
+  border-radius:12px; padding:12px; margin:14px 0;
+}
+.agree-row input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:1px; accent-color:var(--gold); }
+.agree-row label { font-size:12px; color:var(--sub); line-height:1.55; cursor:pointer; }
+
+/* ══════════════════════════════════════════
    UTILS
 ══════════════════════════════════════════ */
 .spin-wrap { display:flex; justify-content:center; padding:50px; }
@@ -1108,7 +1197,7 @@ body::after {
 <header class="hdr">
   <div class="logo">
     <div class="logo-mark">⚡</div>
-    <div class="logo-text">Account<em>Store</em></div>
+    <div class="logo-text">Un<em>vito</em></div>
   </div>
   <div class="hdr-right">
     <div class="ico-btn" onclick="openNotifs()">
@@ -1127,7 +1216,7 @@ body::after {
 <div class="pg on" id="pg-catalog">
   <div class="hero">
     <div class="hero-eyebrow"><div class="live-dot"></div> В сети</div>
-    <div class="hero-title">Лучшие<br><span class="hl">аккаунты</span><br>по лучшим ценам</div>
+    <div class="hero-title">Всё, что нельзя<br><span class="hl">на Avito</span><br>— в Unvito!</div>
     <div class="hero-sub">Мгновенная доставка прямо в Telegram. Оплата криптой через CryptoBot.</div>
     <div class="trust-chips">
       <div class="chip">⚡ Мгновенно</div>
@@ -1229,8 +1318,31 @@ body::after {
 </div>
 
 <!-- ══ NAV ══════════════════════════════════ -->
+<!-- P2P ДОСКА -->
+<div class="pg" id="pg-p2p">
+  <div class="pg-head" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px">
+    Доска
+    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Продать</button>
+  </div>
+  <div class="p2p-tabs">
+    <div class="p2p-tab on" onclick="p2pFilter('all',this)">🌐 Все</div>
+    <div class="p2p-tab" onclick="p2pFilter('accounts',this)">👤 Аккаунты</div>
+    <div class="p2p-tab" onclick="p2pFilter('games',this)">🎮 Игры</div>
+    <div class="p2p-tab" onclick="p2pFilter('software',this)">💻 Софт</div>
+    <div class="p2p-tab" onclick="p2pFilter('other',this)">📦 Другое</div>
+  </div>
+  <div style="padding:10px 18px 2px;display:flex;gap:16px">
+    <span onclick="openMyDeals()" style="font-size:12px;font-weight:700;color:var(--sub);cursor:pointer">📋 Мои сделки</span>
+    <span onclick="openMyListings()" style="font-size:12px;font-weight:700;color:var(--sub);cursor:pointer">📌 Мои объявления</span>
+  </div>
+  <div id="p2pGrid" style="padding:10px 18px;display:flex;flex-direction:column;gap:10px">
+    <div class="spin-wrap"><div class="spin"></div></div>
+  </div>
+  <div class="gap"></div>
+</div>
+
 <nav class="nav">
-  <div class="nt on"  id="nt-catalog" onclick="switchPage('catalog',this)">
+  <div class="nt on" id="nt-catalog" onclick="switchPage('catalog',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
       <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
       <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
@@ -1245,6 +1357,14 @@ body::after {
     </svg>
     <div class="n-badge" id="navCartBadge" style="top:-6px;right:6px"></div>
     <span>Корзина</span>
+  </div>
+  <div class="nt" id="nt-p2p" onclick="switchPage('p2p',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+    </svg>
+    <span>Доска</span>
   </div>
   <div class="nt" id="nt-orders" onclick="switchPage('orders',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1372,7 +1492,7 @@ body::after {
     <div style="padding:0 20px 32px">
       <div class="about-card" style="margin:0 0 0 0;border:none;padding:0 0 16px;background:transparent">
         <div class="about-logo">⚡</div>
-        <div class="about-title">AccountStore</div>
+        <div class="about-title">Unvito</div>
         <div class="about-text">
           Мы — надёжный магазин цифровых аккаунтов с мгновенной доставкой прямо в Telegram.<br><br>
           Все аккаунты проверены вручную. Оплата через CryptoBot — безопасно и анонимно. Работаем 24/7.
@@ -1425,6 +1545,106 @@ body::after {
       <button class="cancel-pay-btn" onclick="closeOverlay('payOverlay')">Отмена</button>
     </div>
     <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- ══ LISTING DETAIL ════════════════════════ -->
+<div class="overlay" id="listingOverlay" onclick="closeOverlayByBg(event,'listingOverlay')">
+  <div class="sheet" style="max-height:90vh;overflow-y:auto">
+    <div class="sh-handle"></div>
+    <div id="listingDetail" style="padding:0 20px 24px"></div>
+  </div>
+</div>
+
+<!-- ══ CREATE LISTING ════════════════════════ -->
+<div class="overlay" id="createListingOverlay" onclick="closeOverlayByBg(event,'createListingOverlay')">
+  <div class="sheet" style="max-height:92vh;overflow-y:auto">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 28px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 Новое объявление</div>
+      <div class="form-group">
+        <label class="form-label">Название</label>
+        <input class="form-input" id="lTitle" placeholder="Например: Netflix Premium 1 мес">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Категория</label>
+        <select class="form-input" id="lCategory" style="appearance:none">
+          <option value="accounts">👤 Аккаунты</option>
+          <option value="games">🎮 Игры</option>
+          <option value="software">💻 Софт</option>
+          <option value="other">📦 Другое</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Описание</label>
+        <textarea class="form-input form-textarea" id="lDesc" placeholder="Опишите товар подробно..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Цена ($)</label>
+        <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Фото (URL)</label>
+        <input class="form-input" id="lImage" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Время работы (МСК)</label>
+        <div class="form-row">
+          <div>
+            <label class="form-label" style="margin-bottom:4px">С</label>
+            <input class="form-input" id="lFrom" type="time" value="09:00">
+          </div>
+          <div>
+            <label class="form-label" style="margin-bottom:4px">До</label>
+            <input class="form-input" id="lTo" type="time" value="23:00">
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Срок выдачи после оплаты (минут)</label>
+        <input class="form-input" id="lDelivery" type="number" min="1" max="1440" value="60">
+      </div>
+      <button class="pay-btn-main" onclick="submitListing()" id="submitListingBtn">Опубликовать объявление</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MY DEALS ══════════════════════════════ -->
+<div class="overlay" id="myDealsOverlay" onclick="closeOverlayByBg(event,'myDealsOverlay')">
+  <div class="sheet" style="max-height:90vh;overflow-y:auto">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 Мои сделки</div>
+      <div id="myDealsList"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MY LISTINGS ════════════════════════════ -->
+<div class="overlay" id="myListingsOverlay" onclick="closeOverlayByBg(event,'myListingsOverlay')">
+  <div class="sheet" style="max-height:90vh;overflow-y:auto">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📌 Мои объявления</div>
+      <div id="myListingsList"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REVIEW ════════════════════════════════ -->
+<div class="overlay" id="reviewOverlay" onclick="closeOverlayByBg(event,'reviewOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 28px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">⭐ Отзыв о продавце</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Подтвердите получение и оцените продавца</div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <button id="revGood" class="deal-btn confirm" style="flex:1" onclick="setReview(1)">👍 Хорошо</button>
+        <button id="revBad"  class="deal-btn cancel"  style="flex:1" onclick="setReview(-1)">👎 Плохо</button>
+      </div>
+      <textarea class="form-input form-textarea" id="reviewText" placeholder="Комментарий (необязательно)..."></textarea>
+      <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">✅ Подтвердить получение</button>
+    </div>
   </div>
 </div>
 
@@ -2192,13 +2412,272 @@ function switchPage(name, el) {
   document.getElementById('pg-' + name).classList.add('on');
   const nav = el || document.getElementById('nt-' + name);
   if (nav) nav.classList.add('on');
-  if (name === 'cart') {
-    // Reset to cart tab
-    switchCartTab('cart');
-    syncWishCount();
-  }
+  if (name === 'cart') { switchCartTab('cart'); syncWishCount(); }
   if (name === 'orders')  loadOrders();
   if (name === 'profile') loadProfile();
+  if (name === 'p2p')     loadP2P();
+}
+
+// ══════════════════════════════════════════════════════════
+// P2P ДОСКА
+// ══════════════════════════════════════════════════════════
+let p2pFilterCat = 'all';
+let p2pListings  = [];
+let curListing   = null;
+let curDealId    = null;
+let reviewScore  = 1;
+
+async function loadP2P() {
+  const el = document.getElementById('p2pGrid');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const params = new URLSearchParams();
+    if (p2pFilterCat !== 'all') params.set('category', p2pFilterCat);
+    const { listings } = await api('/api/listings?' + params);
+    p2pListings = listings;
+    renderP2PGrid();
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+  }
+}
+
+function p2pFilter(cat, el) {
+  p2pFilterCat = cat;
+  document.querySelectorAll('.p2p-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  loadP2P();
+}
+
+function renderP2PGrid() {
+  const el = document.getElementById('p2pGrid');
+  if (!p2pListings.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Будьте первым — нажмите «+ Продать»</div></div>';
+    return;
+  }
+  el.innerHTML = p2pListings.map(l => {
+    const rat = l.seller_rating;
+    const rCls = rat === null ? 'new' : Number(rat) >= 55 ? 'good' : 'bad';
+    const rTxt = rat === null ? 'Новый' : `${rat}% ★`;
+    const timeText = l.avail_from
+      ? `🕐 ${l.avail_from.slice(0,5)}–${l.avail_to.slice(0,5)} · ⏱ ${l.delivery_minutes} мин`
+      : `⏱ Выдача до ${l.delivery_minutes} мин`;
+    return `<div class="listing-card" onclick="openListing(${l.id})">
+      ${l.image_url
+        ? `<img class="listing-img" src="${l.image_url}" onerror="this.outerHTML='<div class=listing-img-ph>📦</div>'">`
+        : `<div class="listing-img-ph">📦</div>`}
+      <div class="listing-body">
+        <div class="listing-title">${l.title}</div>
+        <div class="listing-desc">${l.description || ''}</div>
+        <div class="listing-foot">
+          <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
+          <span class="seller-rating ${rCls}">${rTxt}</span>
+        </div>
+        <div class="listing-time">${timeText}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openListing(id) {
+  curListing = p2pListings.find(l => l.id === id);
+  if (!curListing) return;
+  const l = curListing;
+  const rat = l.seller_rating;
+  const rCls = rat === null ? 'new' : Number(rat) >= 55 ? 'good' : 'bad';
+  const timeText = l.avail_from
+    ? `С ${l.avail_from.slice(0,5)} до ${l.avail_to.slice(0,5)} МСК`
+    : 'Не указано';
+  const isMine = TG_USER && String(l.seller_id) === String(TG_USER.id);
+
+  document.getElementById('listingDetail').innerHTML = `
+    ${l.image_url ? `<img src="${l.image_url}" style="width:calc(100% + 40px);margin:0 -20px 16px;height:220px;object-fit:contain;background:#000;display:block">` : ''}
+    <div class="ld-seller-row">
+      <div class="ld-seller-ava">${(l.seller_name||'?').charAt(0).toUpperCase()}</div>
+      <div class="ld-seller-info">
+        <div class="ld-seller-name">Продавец скрыт</div>
+        <div class="ld-seller-sub">Контакты появятся после оплаты</div>
+        <div class="ld-ratings">
+          <span class="seller-rating ${rCls}">${rat !== null ? `${rat}% позит.` : 'Новый'}</span>
+          <span class="seller-rating new">${l.seller_deals_total || 0} сделок</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:19px;font-weight:900;margin-bottom:6px">${l.title}</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:12px">$${Number(l.price).toFixed(2)}</div>
+    <div style="font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:14px">${l.description || ''}</div>
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">📅 Условия выдачи</div>
+      <div style="font-size:13px;margin-bottom:4px">🕐 Доступен: <b>${timeText}</b></div>
+      <div style="font-size:13px">⏱ Выдаст в течение: <b>${l.delivery_minutes} минут</b> после оплаты</div>
+    </div>
+    ${isMine
+      ? `<div style="text-align:center;padding:12px;color:var(--sub);font-size:13px;background:var(--s2);border-radius:12px">Это ваше объявление</div>`
+      : `<div class="agree-row">
+          <input type="checkbox" id="agreeCheck">
+          <label for="agreeCheck">Я ознакомился с условиями выдачи и согласен на удержание средств на площадке до подтверждения получения товара.</label>
+        </div>
+        <button class="pay-btn-main" onclick="buyListing()" id="buyListingBtn" style="margin:0">
+          ❄️ Купить · заморозить $${Number(l.price).toFixed(2)}
+        </button>`}
+  `;
+  openOverlay('listingOverlay');
+  haptic('medium');
+}
+
+async function buyListing() {
+  if (!document.getElementById('agreeCheck')?.checked) {
+    toast('⚠️ Подтвердите согласие с условиями'); return;
+  }
+  const btn = document.getElementById('buyListingBtn');
+  btn.disabled = true; btn.textContent = 'Создаём сделку...';
+  try {
+    await api('/api/deals', { method:'POST', body: JSON.stringify({ listing_id: curListing.id }) });
+    closeOverlay('listingOverlay');
+    toast('✅ Средства заморожены! Свяжитесь с продавцом.');
+    haptic('success');
+    loadP2P();
+    setTimeout(() => openMyDeals(), 400);
+  } catch (e) {
+    toast(`❌ ${e.message}`);
+    btn.disabled = false;
+    btn.textContent = `❄️ Купить · заморозить $${Number(curListing.price).toFixed(2)}`;
+  }
+}
+
+async function openMyDeals() {
+  openOverlay('myDealsOverlay');
+  const el = document.getElementById('myDealsList');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { deals } = await api('/api/deals/my');
+    if (!deals.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Сделок нет</div></div>';
+      return;
+    }
+    const sMap = { frozen:'❄️ Заморожено', completed:'✅ Завершено', cancelled:'❌ Отменено' };
+    el.innerHTML = deals.map(d => {
+      const isBuyer = d.my_role === 'buyer';
+      const canConfirm = isBuyer && d.status === 'frozen';
+      return `<div class="deal-card">
+        <div class="deal-status ${d.status}">${sMap[d.status] || d.status}</div>
+        <div style="font-size:14px;font-weight:800;margin-bottom:4px">${d.title}</div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? '🛒 Покупка' : '📦 Продажа'} · $${Number(d.amount).toFixed(2)}</div>
+        ${d.status === 'frozen' ? `
+          <div style="background:rgba(0,207,232,.08);border:1px solid rgba(0,207,232,.2);border-radius:10px;padding:10px;font-size:12px;margin-bottom:4px">
+            ${isBuyer
+              ? `👤 Продавец: <b>@${d.other_username || d.other_name}</b>`
+              : `👤 Покупатель: <b>@${d.other_username || d.other_name}</b>`}
+          </div>` : ''}
+        ${canConfirm ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Товар получен — оставить отзыв</button>` : ''}
+        ${d.status === 'frozen' ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить сделку</button>` : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+  }
+}
+
+async function openMyListings() {
+  openOverlay('myListingsOverlay');
+  const el = document.getElementById('myListingsList');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { listings } = await api('/api/listings/my');
+    if (!listings.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico">📌</div><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Нажмите «+ Продать»</div></div>';
+      return;
+    }
+    const sMap = { active:'🟢 Активно', paused:'⏸ Пауза', sold:'✅ Продано', deleted:'🗑 Удалено' };
+    el.innerHTML = listings.map(l => `<div class="deal-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:14px;font-weight:800">${l.title}</div>
+        <div style="font-size:11px;color:var(--sub)">${sMap[l.status]}</div>
+      </div>
+      <div style="font-size:13px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:10px">$${Number(l.price).toFixed(2)}</div>
+      <div style="display:flex;gap:8px">
+        ${l.status === 'active' ? `<button class="deal-btn cancel" style="flex:1" onclick="changeListingStatus(${l.id},'paused')">⏸ Пауза</button>` : ''}
+        ${l.status === 'paused' ? `<button class="deal-btn confirm" style="flex:1" onclick="changeListingStatus(${l.id},'active')">▶️ Активировать</button>` : ''}
+        ${['active','paused'].includes(l.status) ? `<button class="deal-btn cancel" style="color:var(--red)" onclick="changeListingStatus(${l.id},'deleted')">🗑</button>` : ''}
+      </div>
+    </div>`).join('');
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+  }
+}
+
+async function changeListingStatus(id, status) {
+  try {
+    await api(`/api/listings/${id}/status`, { method:'PUT', body: JSON.stringify({ status }) });
+    openMyListings();
+    if (status !== 'paused') loadP2P();
+  } catch(e) { toast(`❌ ${e.message}`); }
+}
+
+async function submitListing() {
+  const title = document.getElementById('lTitle').value.trim();
+  const price = Number(document.getElementById('lPrice').value);
+  if (!title || !price) { toast('⚠️ Заполните название и цену'); return; }
+  const btn = document.getElementById('submitListingBtn');
+  btn.disabled = true; btn.textContent = 'Публикуем...';
+  try {
+    await api('/api/listings', { method:'POST', body: JSON.stringify({
+      title, price,
+      description: document.getElementById('lDesc').value.trim(),
+      category:    document.getElementById('lCategory').value,
+      image_url:   document.getElementById('lImage').value.trim() || null,
+      avail_from:  document.getElementById('lFrom').value || null,
+      avail_to:    document.getElementById('lTo').value   || null,
+      delivery_minutes: Number(document.getElementById('lDelivery').value) || 60,
+    })});
+    closeOverlay('createListingOverlay');
+    toast('✅ Объявление опубликовано!');
+    haptic('success');
+    loadP2P();
+    ['lTitle','lDesc','lPrice','lImage'].forEach(id => document.getElementById(id).value = '');
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Опубликовать объявление';
+  }
+}
+
+function openReview(dealId) {
+  curDealId = dealId; reviewScore = 1;
+  document.getElementById('reviewText').value = '';
+  document.getElementById('revGood').style.opacity = '1';
+  document.getElementById('revBad').style.opacity  = '.45';
+  openOverlay('reviewOverlay');
+}
+function setReview(score) {
+  reviewScore = score;
+  document.getElementById('revGood').style.opacity = score === 1  ? '1' : '.45';
+  document.getElementById('revBad').style.opacity  = score === -1 ? '1' : '.45';
+}
+async function submitReview() {
+  const btn = document.getElementById('submitReviewBtn');
+  btn.disabled = true; btn.textContent = 'Отправляем...';
+  try {
+    await api(`/api/deals/${curDealId}/confirm`, { method:'POST', body: JSON.stringify({
+      review_score: reviewScore,
+      review_text:  document.getElementById('reviewText').value.trim()
+    })});
+    closeOverlay('reviewOverlay');
+    toast('✅ Сделка завершена! Деньги переведены продавцу.');
+    haptic('success');
+    openMyDeals();
+    loadBalance();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+    btn.disabled = false; btn.textContent = '✅ Подтвердить получение';
+  }
+}
+async function cancelDeal(dealId) {
+  try {
+    await api(`/api/deals/${dealId}/cancel`, { method:'POST' });
+    toast('↩️ Сделка отменена, средства возвращены');
+    openMyDeals();
+    loadBalance();
+  } catch(e) { toast(`❌ ${e.message}`); }
 }
 
 function goCart() { switchPage('cart', document.getElementById('nt-cart')); }
