@@ -2430,16 +2430,13 @@ function setWithdrawAmount(n) {
     const btn = document.getElementById('withdrawBtn');
     btn.disabled = true; btn.textContent = 'Выводим...';
     try {
-      const { balance, check_url } = await api('/api/withdraw', {
+      const { balance } = await api('/api/withdraw', {
         method: 'POST', body: JSON.stringify({ amount })
       });
       closeOverlay('withdrawOverlay');
-      toast('✅ Чек создан! Получите средства в CryptoBot');
+      toast('✅ Чек отправлен в бот! Откройте @CryptoBot');
       haptic('success');
       document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
-      if (check_url) {
-        tg ? tg.openLink(check_url) : window.open(check_url, '_blank');
-      }
     } catch (e) {
       toast('❌ ' + e.message);
     } finally {
@@ -2456,15 +2453,11 @@ function setWithdrawAmount(n) {
       method: 'POST', body: JSON.stringify({ amount })
     });
     closeOverlay('topupOverlay');
-    const invoiceUrl = mini_app_url || bot_invoice_url;
-    if (tg && invoiceUrl) {
-      tg.openInvoice(invoiceUrl, status => {
-        if (status === 'paid') { toast('✅ Баланс пополнен!'); loadBalance(); }
-      });
-    } else if (bot_invoice_url) {
-      tg ? tg.openLink(bot_invoice_url) : window.open(bot_invoice_url, '_blank');
-    } else if (pay_url) {
-      tg ? tg.openLink(pay_url) : window.open(pay_url, '_blank');
+    const invoiceUrl = bot_invoice_url || mini_app_url || pay_url;
+    if (invoiceUrl) {
+      tg ? tg.openLink(invoiceUrl) : window.open(invoiceUrl, '_blank');
+      toast('💳 После оплаты баланс обновится автоматически');
+      setTimeout(() => loadBalance(), 5000);
     }
   } catch (e) {
     toast(`❌ ${e.message}`);
