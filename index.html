@@ -1193,6 +1193,89 @@ body::after {
 
 /* spacer */
 .gap { height:20px; }
+
+/* ══════════════════════════════════════════
+   КАРУСЕЛЬ В КАРТОЧКЕ
+══════════════════════════════════════════ */
+.pc-carousel {
+  position: relative; overflow: hidden;
+  width: 100%; aspect-ratio: 3/2;
+  background: #000; touch-action: pan-y;
+}
+.pc-carousel-track {
+  display: flex; height: 100%;
+  transition: transform 0.3s cubic-bezier(.25,.46,.45,.94);
+}
+.pc-carousel-slide {
+  min-width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.pc-carousel-slide img {
+  width: 100%; height: 100%; object-fit: contain;
+}
+.pc-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,.5); border: none; color: #fff;
+  font-size: 16px; width: 26px; height: 26px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 3; opacity: 0; transition: opacity .2s;
+}
+.pc-carousel:hover .pc-nav { opacity: 1; }
+.pc-nav.prev { left: 5px; }
+.pc-nav.next { right: 5px; }
+.pc-dots {
+  position: absolute; bottom: 6px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 4px; z-index: 3;
+}
+.pc-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(255,255,255,.35); transition: all .2s;
+}
+.pc-dot.on { background: var(--gold); width: 12px; border-radius: 3px; }
+
+/* ══════════════════════════════════════════
+   КАРУСЕЛЬ В ЛИСТИНГЕ (детальный вид)
+══════════════════════════════════════════ */
+.ld-carousel {
+  position: relative; overflow: hidden;
+  width: calc(100% + 40px); margin: 0 -20px 0;
+  background: #000; touch-action: pan-y;
+}
+.ld-carousel-track {
+  display: flex;
+  transition: transform 0.35s cubic-bezier(.25,.46,.45,.94);
+}
+.ld-carousel-slide {
+  min-width: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.ld-carousel-slide img {
+  width: 100%; height: 260px; object-fit: contain; display: block;
+}
+.ld-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,.45); border: none; color: #fff;
+  font-size: 20px; width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 3;
+}
+.ld-nav.prev { left: 8px; }
+.ld-nav.next { right: 8px; }
+.ld-counter {
+  position: absolute; top: 10px; right: 12px;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px; z-index: 3;
+}
+.ld-dots {
+  position: absolute; bottom: 10px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 5px; z-index: 3;
+}
+.ld-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(255,255,255,.35); transition: all .2s;
+}
+.ld-dot.on { background: var(--gold); width: 16px; border-radius: 3px; }
 </style>
 </head>
 <body>
@@ -1220,12 +1303,12 @@ body::after {
 <div class="pg on" id="pg-catalog">
   <div class="hero">
     <div class="hero-eyebrow"><div class="live-dot"></div> В сети</div>
-    <div class="hero-title">Всё, что нельзя<br><span class="hl">на Avito</span><br>— в Unvito!</div>
-    <div class="hero-sub">Мгновенная доставка прямо в Telegram. Оплата криптой через CryptoBot.</div>
+    <div class="hero-title">Доска объявлений<br><span class="hl">без границ</span><br>и цензуры</div>
+    <div class="hero-sub">Доска объявлений с оплатой криптой. Быстро, анонимно, без посредников.</div>
     <div class="trust-chips">
-      <div class="chip">⚡ Мгновенно</div>
-      <div class="chip">🔒 Безопасно</div>
-      <div class="chip">💎 Гарантия</div>
+      <div class="chip">⚡ Быстро</div>
+      <div class="chip">🔒 Анонимно</div>
+      <div class="chip">💎 Эскроу</div>
     </div>
   </div>
 
@@ -1237,7 +1320,7 @@ body::after {
     <div class="cat on" onclick="filterCat('all',this)">🌐 Все</div>
   </div>
 
-  <div class="sec-label" id="gridLabel">Все товары</div>
+  <div class="sec-label" id="gridLabel">Все объявления</div>
   <div class="grid" id="grid"></div>
   <div class="gap"></div>
 </div>
@@ -1270,8 +1353,8 @@ body::after {
 
   <div class="stats-g">
     <div class="stat-b"><div class="st-v" id="st0">—</div><div class="st-l">Заказов</div></div>
-    <div class="stat-b"><div class="st-v" id="st1">—</div><div class="st-l">Аккаунтов</div></div>
-    <div class="stat-b"><div class="st-v" id="st2">—</div><div class="st-l">Потрачено</div></div>
+    <div class="stat-b"><div class="st-v" id="st1">—</div><div class="st-l">Объявлений</div></div>
+    <div class="stat-b"><div class="st-v" id="st2">—</div><div class="st-l">Сделок</div></div>
   </div>
 
   <!-- БАЛАНС -->
@@ -1326,11 +1409,11 @@ body::after {
 <!-- P2P ДОСКА -->
 <div class="pg" id="pg-p2p">
   <div class="pg-head" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px">
-    Продать
-    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Новое объявление</button>
+    Мои объявления
+    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Новое</button>
   </div>
-  <div style="padding:20px 18px 0;text-align:center;color:var(--sub);font-size:13px;line-height:1.6">
-    Разместите объявление — оно появится в общем каталоге для всех пользователей.
+  <div style="padding:12px 18px 0;text-align:center;color:var(--sub);font-size:13px;line-height:1.6">
+    Ваши объявления видны всем пользователям в каталоге.
   </div>
   <div style="padding:20px 18px;display:flex;flex-direction:column;gap:8px">
     <div class="mrow" onclick="openMyListings()">
@@ -1372,7 +1455,7 @@ body::after {
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
       <path d="M12 5v14M5 12h14"/>
     </svg>
-    <span>Продать</span>
+    <span>Добавить</span>
   </div>
   <div class="nt" id="nt-orders" onclick="switchPage('orders',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1587,6 +1670,7 @@ body::after {
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
       <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 Новое объявление</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:16px;line-height:1.55">Объявление появится в общей ленте. Покупатель выберет количество и добавит в корзину или купит через эскроу.</div>
       <div class="form-group">
         <label class="form-label">Название</label>
         <input class="form-input" id="lTitle" placeholder="Например: Netflix Premium 1 мес">
@@ -1609,16 +1693,41 @@ body::after {
         <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="0.00">
       </div>
       <div class="form-group">
-        <label class="form-label">Фото товара</label>
-        <div id="imgPreviewWrap" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:160px">
-          <img id="imgPreview" style="width:100%;height:160px;object-fit:contain;display:block">
+        <label class="form-label">Количество товара</label>
+        <input class="form-input" id="lQuantity" type="number" min="1" max="9999" value="1" placeholder="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Фото (до 3 штук)</label>
+        <div style="margin-bottom:8px">
+          <div id="lImgPreview0" style="display:none;margin-bottom:6px;border-radius:10px;overflow:hidden;background:#000;height:120px">
+            <img id="lImgThumb0" style="width:100%;height:120px;object-fit:contain;display:block">
+          </div>
+          <input type="file" id="lImageFile0" accept="image/*" style="display:none" onchange="prevImg(this,0)">
+          <button type="button" onclick="document.getElementById('lImageFile0').click()" id="lImgBtn0"
+            style="width:100%;padding:10px;background:var(--s1);border:1px dashed var(--border2);border-radius:10px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+            📷 Фото 1 (главное)
+          </button>
         </div>
-        <input type="file" id="lImageFile" accept="image/*" style="display:none" onchange="previewListingImg(this)">
-        <button type="button" onclick="document.getElementById('lImageFile').click()" id="imgPickBtn"
-          style="width:100%;padding:12px;background:var(--s1);border:1px dashed var(--border2);border-radius:12px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:.2s">
-          📷 Выбрать фото с устройства
-        </button>
-        <input type="hidden" id="lImage">
+        <div style="margin-bottom:8px">
+          <div id="lImgPreview1" style="display:none;margin-bottom:6px;border-radius:10px;overflow:hidden;background:#000;height:120px">
+            <img id="lImgThumb1" style="width:100%;height:120px;object-fit:contain;display:block">
+          </div>
+          <input type="file" id="lImageFile1" accept="image/*" style="display:none" onchange="prevImg(this,1)">
+          <button type="button" onclick="document.getElementById('lImageFile1').click()" id="lImgBtn1"
+            style="width:100%;padding:10px;background:var(--s1);border:1px dashed var(--border2);border-radius:10px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+            📷 Фото 2
+          </button>
+        </div>
+        <div style="margin-bottom:8px">
+          <div id="lImgPreview2" style="display:none;margin-bottom:6px;border-radius:10px;overflow:hidden;background:#000;height:120px">
+            <img id="lImgThumb2" style="width:100%;height:120px;object-fit:contain;display:block">
+          </div>
+          <input type="file" id="lImageFile2" accept="image/*" style="display:none" onchange="prevImg(this,2)">
+          <button type="button" onclick="document.getElementById('lImageFile2').click()" id="lImgBtn2"
+            style="width:100%;padding:10px;background:var(--s1);border:1px dashed var(--border2);border-radius:10px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+            📷 Фото 3
+          </button>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">Время работы (МСК)</label>
@@ -1739,7 +1848,6 @@ async function api(path, opts = {}) {
 // ══════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════
-let catalog      = [];
 let allProducts  = [];
 let cart         = JSON.parse(sessionStorage.getItem('as_cart') || '[]');
 let curProduct   = null;
@@ -1755,37 +1863,24 @@ let searchQ      = '';
 (async () => {
   renderSkeleton();
   try {
-    const [{ catalog: cat }, { listings }] = await Promise.all([
-      api('/api/catalog'),
-      api('/api/listings').catch(() => ({ listings: [] })),
-    ]);
-    catalog    = cat;
-    // Товары из каталога (магазин)
-    const shopProducts = cat.flatMap(c => c.products.map(p => ({
-      ...p,
-      cat_name:  c.name,
-      cat_emoji: c.emoji,
-      cat_slug:  c.slug,
-      source: 'shop',
-    })));
-    // Объявления пользователей — конвертируем в формат карточки
-    const p2pProducts = (listings || []).map(l => ({
-      id:         `l_${l.id}`,
-      name:       l.title,
+    const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
+    allProducts = (listings || []).map(l => ({
+      id:          `l_${l.id}`,
+      listing_id:  l.id,
+      name:        l.title,
       description: l.description || '',
-      price:      l.price,
-      image_url:  l.image_url,
-      images:     l.image_url ? [l.image_url] : [],
-      cat_name:   l.category,
-      cat_emoji:  catEmoji(l.category),
-      cat_slug:   l.category,
-      stock:      1,
-      badge:      null,
-      specs:      [],
-      source:     'p2p',
-      listing:    l,  // оригинал для деталей
+      price:       l.price,
+      image_url:   l.image_url,
+      images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
+      cat_name:    l.category,
+      cat_emoji:   catEmoji(l.category),
+      cat_slug:    l.category,
+      stock:       l.quantity || 1,
+      badge:       null,
+      specs:       [],
+      source:      'listing',
+      listing:     l,
     }));
-    allProducts = [...shopProducts, ...p2pProducts];
     buildCats();
     renderGrid();
   } catch (e) {
@@ -1806,8 +1901,13 @@ function catEmoji(cat) {
 // ══════════════════════════════════════════════════════════
 function buildCats() {
   const row = document.getElementById('catsRow');
+  const cats = [...new Set(allProducts.map(p => p.cat_slug))];
   row.innerHTML = `<div class="cat on" onclick="filterCat('all',this)">🌐 Все</div>` +
-    catalog.map(c => `<div class="cat" onclick="filterCat('${c.slug}',this)">${c.emoji} ${c.name}</div>`).join('');
+    cats.map(slug => `<div class="cat" onclick="filterCat('${slug}',this)">${catEmoji(slug)} ${catName(slug)}</div>`).join('');
+}
+
+function catName(cat) {
+  return { accounts:'Аккаунты', games:'Игры', software:'Софт', other:'Другое' }[cat] || cat;
 }
 
 function getVisible() {
@@ -1847,23 +1947,37 @@ function renderGrid() {
     const c = catalog.find(x => x.slug === filterSlug);
     label.textContent = c ? `${c.emoji} ${c.name}` : 'Товары';
   } else {
-    label.textContent = `Все товары`;
+    label.textContent = `Все объявления`;
   }
 
   if (!list.length) {
     document.getElementById('grid').innerHTML =
-      `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)">Ничего не найдено</div>`;
+      `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)"><div style="font-size:48px;margin-bottom:12px">📭</div>Объявлений нет.<br>Будьте первым — нажмите «+»</div>`;
     return;
   }
 
   document.getElementById('grid').innerHTML = list.map(p => {
     const [sLabel, sCls] = stockLabel(p.stock);
-    const p2pBadge = p.source === 'p2p' ? `<div class="pc-badge" style="background:rgba(0,207,232,.2);color:#00cfe8;border:1px solid rgba(0,207,232,.4)">P2P</div>` : '';
+    // Карусель из первых 3 фото на карточке
+    const imgs = p.images && p.images.length ? p.images.slice(0,3) : (p.image_url ? [p.image_url] : []);
+    const imgHtml = imgs.length
+      ? `<div class="pc-carousel" id="pcc-${p.id}">
+           <div class="pc-carousel-track" id="pcct-${p.id}" style="transform:translateX(0)">
+             ${imgs.map(url => `<div class="pc-carousel-slide"><img src="${url}" alt="" onerror="this.style.display='none'"></div>`).join('')}
+           </div>
+           ${imgs.length > 1 ? `
+             <button class="pc-nav prev" onclick="event.stopPropagation();pcSlide('${p.id}',-1)">‹</button>
+             <button class="pc-nav next" onclick="event.stopPropagation();pcSlide('${p.id}',1)">›</button>
+             <div class="pc-dots">${imgs.map((_,i)=>`<div class="pc-dot${i===0?' on':''}"></div>`).join('')}</div>
+           ` : ''}
+         </div>`
+      : `<div class="pc-img-placeholder">${p.cat_emoji || '📦'}</div>`;
+
     return `
       <div class="pc" onclick="openProduct('${p.id}')">
         <div style="position:relative">
-          ${imgOrPh(p.image_url, p.cat_emoji)}
-          ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : p2pBadge}
+          ${imgHtml}
+          ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : ''}
           <div class="pc-stock ${sCls}">${sLabel}</div>
           <button class="wish-btn ${isWished(p.id)?'wished':''}" onclick="event.stopPropagation();toggleWish('${p.id}')" id="wb-${p.id}">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">
@@ -1876,16 +1990,32 @@ function renderGrid() {
           <div class="pc-desc">${p.description || ''}</div>
           <div class="pc-foot">
             <div class="pc-price">$${Number(p.price).toFixed(2)}</div>
-            ${p.source === 'p2p' ? '' : `<div class="pc-add" onclick="event.stopPropagation();quickAdd('${p.id}')">
+            <div class="pc-add" onclick="event.stopPropagation();quickAdd('${p.id}')">
               <svg viewBox="0 0 24 24" fill="none">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
-            </div>`}
+            </div>
           </div>
         </div>
       </div>`;
   }).join('');
+
+  // Touch swipe для каруселей на карточках
+  setTimeout(() => {
+    list.forEach(p => {
+      if (!p.images || p.images.length <= 1) return;
+      let sx = 0, sy = 0;
+      const car = document.getElementById('pcc-' + p.id);
+      if (!car) return;
+      car.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+      car.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - sx;
+        const dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 35) pcSlide(p.id, dx < 0 ? 1 : -1);
+      }, { passive: true });
+    });
+  }, 100);
 }
 
 function renderSkeleton() {
@@ -1923,11 +2053,9 @@ function openProduct(id) {
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
 
-  // P2P объявление — показываем специальную шторку
-  if (p.source === 'p2p') {
-    openListing(p.listing.id, p.listing);
-    return;
-  }
+  // Все карточки — объявления, открываем детальный вид
+  openListing(p.listing_id, p.listing);
+  return;
 
   curProduct = p;
   curQty = 1;
@@ -2073,6 +2201,7 @@ function quickAdd(id) {
   if (!p) return;
   if (!p.stock || p.stock <= 0) { toast('❌ Нет в наличии'); haptic('error'); return; }
   addToCart(p, 1);
+  haptic('success');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2393,8 +2522,8 @@ async function loadProfile() {
   try {
     const { stats } = await api('/api/profile');
     document.getElementById('st0').textContent = stats.total_orders   || 0;
-    document.getElementById('st1').textContent = stats.total_accounts || 0;
-    document.getElementById('st2').textContent = `$${Math.round(stats.total_spent || 0)}`;
+    document.getElementById('st1').textContent = stats.total_listings || stats.total_accounts || 0;
+    document.getElementById('st2').textContent = stats.total_deals || stats.total_orders || 0;
   } catch {}
   loadBalance();
 }
@@ -2583,8 +2712,26 @@ function openListing(id, listingObj) {
     : 'Не указано';
   const isMine = TG_USER && String(l.seller_id) === String(TG_USER.id);
 
+  // Карусель фото
+  const limgs = l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []);
+  let lCarouselIdx = 0;
+  const carouselHtml = limgs.length
+    ? `<div class="ld-carousel" id="ldCarousel">
+         <div class="ld-carousel-track" id="ldTrack">
+           ${limgs.map(url => `<div class="ld-carousel-slide"><img src="${url}" alt="" onerror="this.style.display='none'"></div>`).join('')}
+         </div>
+         ${limgs.length > 1 ? `
+           <button class="ld-nav prev" onclick="ldSlide(-1)">‹</button>
+           <button class="ld-nav next" onclick="ldSlide(1)">›</button>
+           <div class="ld-counter" id="ldCounter">1/${limgs.length}</div>
+           <div class="ld-dots" id="ldDots">${limgs.map((_,i)=>`<div class="ld-dot${i===0?' on':''}"></div>`).join('')}</div>
+         ` : ''}
+       </div>`
+    : '';
+
   document.getElementById('listingDetail').innerHTML = `
-    ${l.image_url ? `<img src="${l.image_url}" style="width:calc(100% + 40px);margin:0 -20px 16px;height:220px;object-fit:contain;background:#000;display:block">` : ''}
+    ${carouselHtml}
+    <div style="padding:${carouselHtml ? '14px' : '0'} 0 0">
     <div class="ld-seller-row">
       <div class="ld-seller-ava">${(l.seller_name||'?').charAt(0).toUpperCase()}</div>
       <div class="ld-seller-info">
@@ -2602,18 +2749,100 @@ function openListing(id, listingObj) {
     <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px">
       <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">📅 Условия выдачи</div>
       <div style="font-size:13px;margin-bottom:4px">🕐 Доступен: <b>${timeText}</b></div>
-      <div style="font-size:13px">⏱ Выдаст в течение: <b>${l.delivery_minutes} минут</b> после оплаты</div>
+      <div style="font-size:13px;margin-bottom:4px">⏱ Выдаст в течение: <b>${l.delivery_minutes} минут</b> после оплаты</div>
+      <div style="font-size:13px">📦 В наличии: <b>${l.quantity || 1} шт</b></div>
     </div>
     ${isMine
       ? `<div style="text-align:center;padding:12px;color:var(--sub);font-size:13px;background:var(--s2);border-radius:12px">Это ваше объявление</div>`
-      : `<div class="agree-row">
-          <input type="checkbox" id="agreeCheck">
-          <label for="agreeCheck">Я ознакомился с условиями выдачи и согласен на удержание средств на площадке до подтверждения получения товара.</label>
+      : `<div class="qty-row" style="margin-bottom:14px">
+          <div class="q-btn" onclick="ldChQty(-1)">−</div>
+          <div class="q-val" id="ldQtyVal">1</div>
+          <div class="q-btn" onclick="ldChQty(1)">+</div>
         </div>
-        <button class="pay-btn-main" onclick="buyListing()" id="buyListingBtn" style="margin:0">
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <button class="add-btn" onclick="addListingToCart()" style="flex:1">
+            🛒 В корзину
+          </button>
+          <button class="add-btn" id="ldWishBtn" onclick="toggleWishListing()" style="flex:0 0 52px;background:transparent;border:1px solid var(--border2);color:var(--text)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" id="ldWishIco">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="agree-row">
+          <input type="checkbox" id="agreeCheck">
+          <label for="agreeCheck">Согласен с условиями: средства заморозятся до подтверждения получения товара.</label>
+        </div>
+        <button class="pay-btn-main" onclick="buyListing()" id="buyListingBtn" style="margin:10px 0 0">
           ❄️ Купить · заморозить $${Number(l.price).toFixed(2)}
         </button>`}
+    </div>
   `;
+
+  // Carousel touch events
+  if (limgs.length > 1) {
+    let ldTouchX = 0, ldTouchY = 0;
+    window._ldCarouselImgs = limgs;
+    window._ldCarouselIdx = 0;
+    window.ldSlide = function(d) {
+      window._ldCarouselIdx = (window._ldCarouselIdx + d + limgs.length) % limgs.length;
+      const t = document.getElementById('ldTrack');
+      if (t) t.style.transform = `translateX(-${window._ldCarouselIdx * 100}%)`;
+      const dots = document.querySelectorAll('.ld-dot');
+      dots.forEach((dot, i) => dot.classList.toggle('on', i === window._ldCarouselIdx));
+      const counter = document.getElementById('ldCounter');
+      if (counter) counter.textContent = `${window._ldCarouselIdx + 1}/${limgs.length}`;
+    };
+    const car = document.getElementById('ldCarousel');
+    if (car) {
+      car.addEventListener('touchstart', e => { ldTouchX = e.touches[0].clientX; ldTouchY = e.touches[0].clientY; }, { passive: true });
+      car.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - ldTouchX;
+        const dy = e.changedTouches[0].clientY - ldTouchY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) window.ldSlide(dx < 0 ? 1 : -1);
+      }, { passive: true });
+    }
+  } else {
+    window.ldSlide = function() {};
+  }
+
+  // Qty for listing
+  window._ldQty = 1;
+  window._ldMaxQty = l.quantity || 1;
+  window.ldChQty = function(d) {
+    window._ldQty = Math.max(1, Math.min(window._ldMaxQty, window._ldQty + d));
+    const el = document.getElementById('ldQtyVal');
+    if (el) el.textContent = window._ldQty;
+    if (window._ldQty >= window._ldMaxQty && d > 0) toast('⚠️ Максимум ' + window._ldMaxQty + ' шт');
+    haptic('light');
+  };
+
+  // Wishlist state in listing sheet
+  window.toggleWishListing = function() {
+    const pid = 'l_' + l.id;
+    const p = allProducts.find(x => x.id === pid);
+    if (p) toggleWish(pid);
+    const ico = document.getElementById('ldWishIco');
+    if (ico) {
+      if (isWished(pid)) { ico.style.stroke = '#ff4d6a'; ico.style.fill = '#ff4d6a'; }
+      else { ico.style.stroke = 'currentColor'; ico.style.fill = 'none'; }
+    }
+  };
+  // Init wish state
+  setTimeout(() => {
+    const pid = 'l_' + l.id;
+    const ico = document.getElementById('ldWishIco');
+    if (ico && isWished(pid)) { ico.style.stroke = '#ff4d6a'; ico.style.fill = '#ff4d6a'; }
+  }, 50);
+
+  // Add to cart from listing
+  window.addListingToCart = function() {
+    const pid = 'l_' + l.id;
+    const p = allProducts.find(x => x.id === pid);
+    if (!p) return;
+    addToCart(p, window._ldQty || 1);
+    closeOverlay('listingOverlay');
+  };
   openOverlay('listingOverlay');
   haptic('medium');
 }
@@ -2707,14 +2936,18 @@ async function changeListingStatus(id, status) {
   } catch(e) { toast(`❌ ${e.message}`); }
 }
 
-function previewListingImg(input) {
+function previewListingImg(input) {} // legacy
+function prevImg(input, idx) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    document.getElementById('imgPreview').src = e.target.result;
-    document.getElementById('imgPreviewWrap').style.display = 'block';
-    document.getElementById('imgPickBtn').textContent = '📷 Изменить фото';
+    const thumb = document.getElementById('lImgThumb' + idx);
+    const wrap  = document.getElementById('lImgPreview' + idx);
+    const btn   = document.getElementById('lImgBtn' + idx);
+    if (thumb) thumb.src = e.target.result;
+    if (wrap)  wrap.style.display = 'block';
+    if (btn)   btn.textContent = idx === 0 ? '📷 Изменить (главное)' : '📷 Изменить фото ' + (idx+1);
   };
   reader.readAsDataURL(file);
 }
@@ -2722,32 +2955,35 @@ function previewListingImg(input) {
 async function submitListing() {
   const title = document.getElementById('lTitle').value.trim();
   const price = Number(document.getElementById('lPrice').value);
+  const quantity = Number(document.getElementById('lQuantity').value) || 1;
   if (!title || !price) { toast('⚠️ Заполните название и цену'); return; }
   const btn = document.getElementById('submitListingBtn');
   btn.disabled = true; btn.textContent = 'Публикуем...';
   try {
-    // Загружаем фото если выбрано
-    let image_url = null;
-    const fileInput = document.getElementById('lImageFile');
-    if (fileInput.files[0]) {
-      btn.textContent = 'Загружаем фото...';
-      const fd = new FormData();
-      fd.append('image', fileInput.files[0]);
-      const r = await fetch(API_BASE + '/api/upload', {
-        method: 'POST',
-        headers: { 'X-Init-Data': INIT_DATA },
-        body: fd,
-      });
-      const json = await r.json();
-      if (!r.ok) throw new Error(json.error || 'Ошибка загрузки фото');
-      image_url = json.url;
+    // Загружаем до 3 фото
+    const imageUrls = [];
+    const fileInputs = ['lImageFile0', 'lImageFile1', 'lImageFile2'];
+    for (let i = 0; i < fileInputs.length; i++) {
+      const inp = document.getElementById(fileInputs[i]);
+      if (inp && inp.files[0]) {
+        btn.textContent = `Загружаем фото ${i+1}...`;
+        const fd = new FormData();
+        fd.append('image', inp.files[0]);
+        const r = await fetch(API_BASE + '/api/upload', {
+          method: 'POST', headers: { 'X-Init-Data': INIT_DATA }, body: fd,
+        });
+        const json = await r.json();
+        if (!r.ok) throw new Error(json.error || 'Ошибка загрузки фото');
+        imageUrls.push(json.url);
+      }
     }
     btn.textContent = 'Публикуем...';
     await api('/api/listings', { method:'POST', body: JSON.stringify({
-      title, price,
+      title, price, quantity,
       description: document.getElementById('lDesc').value.trim(),
       category:    document.getElementById('lCategory').value,
-      image_url,
+      image_url:   imageUrls[0] || null,
+      images:      imageUrls,
       avail_from:  document.getElementById('lFrom').value || null,
       avail_to:    document.getElementById('lTo').value   || null,
       delivery_minutes: Number(document.getElementById('lDelivery').value) || 60,
@@ -2755,21 +2991,28 @@ async function submitListing() {
     closeOverlay('createListingOverlay');
     toast('✅ Объявление опубликовано!');
     haptic('success');
-    // Обновляем каталог чтобы показало новое объявление
+    // Обновляем каталог
     const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
-    const p2pProducts = (listings || []).map(l => ({
-      id: `l_${l.id}`, name: l.title, description: l.description || '',
-      price: l.price, image_url: l.image_url, images: l.image_url ? [l.image_url] : [],
+    allProducts = (listings || []).map(l => ({
+      id: `l_${l.id}`, listing_id: l.id, name: l.title, description: l.description || '',
+      price: l.price, image_url: l.image_url,
+      images: l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
       cat_name: l.category, cat_emoji: catEmoji(l.category), cat_slug: l.category,
-      stock: 1, badge: null, specs: [], source: 'p2p', listing: l,
+      stock: l.quantity || 1, badge: null, specs: [], source: 'listing', listing: l,
     }));
-    allProducts = [...allProducts.filter(p => p.source !== 'p2p'), ...p2pProducts];
+    buildCats();
     renderGrid();
     // Сбрасываем форму
     ['lTitle','lDesc','lPrice'].forEach(id => document.getElementById(id).value = '');
-    fileInput.value = '';
-    document.getElementById('imgPreviewWrap').style.display = 'none';
-    document.getElementById('imgPickBtn').textContent = '📷 Выбрать фото с устройства';
+    document.getElementById('lQuantity').value = '1';
+    fileInputs.forEach((fid, i) => {
+      const inp = document.getElementById(fid);
+      if (inp) inp.value = '';
+      const prev = document.getElementById('lImgPreview' + i);
+      if (prev) prev.style.display = 'none';
+      const btn2 = document.getElementById('lImgBtn' + i);
+      if (btn2) btn2.textContent = i === 0 ? '📷 Фото 1 (главное)' : `📷 Фото ${i+1}`;
+    });
   } catch(e) {
     toast(`❌ ${e.message}`);
   } finally {
@@ -2817,6 +3060,23 @@ async function cancelDeal(dealId) {
 }
 
 function goCart() { switchPage('cart', document.getElementById('nt-cart')); }
+
+// Карусель на карточке
+const pcIdxMap = {};
+function pcSlide(pid, d) {
+  const p = allProducts.find(x => x.id === pid);
+  if (!p || !p.images || p.images.length <= 1) return;
+  if (!pcIdxMap[pid]) pcIdxMap[pid] = 0;
+  pcIdxMap[pid] = (pcIdxMap[pid] + d + p.images.length) % p.images.length;
+  const track = document.getElementById('pcct-' + pid);
+  if (track) track.style.transform = `translateX(-${pcIdxMap[pid] * 100}%)`;
+  const card = document.getElementById('pcc-' + pid);
+  if (card) {
+    const dots = card.querySelectorAll('.pc-dot');
+    dots.forEach((dot, i) => dot.classList.toggle('on', i === pcIdxMap[pid]));
+  }
+  haptic('light');
+}
 
 // ══════════════════════════════════════════════════════════
 // OVERLAYS
