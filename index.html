@@ -769,6 +769,53 @@ body::after {
   gap:6px; font-size:11px; color:var(--dim);
 }
 
+/* ── CART ITEM CHECKBOX ─────────────────── */
+.ci-check-wrap {
+  display:flex; align-items:center; justify-content:center;
+  width:44px; flex-shrink:0;
+}
+.ci-check {
+  width:22px; height:22px;
+  border-radius:7px;
+  border:2px solid var(--border2);
+  background:var(--s2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:.18s;
+  flex-shrink:0;
+}
+.ci-check.checked {
+  background:var(--gold);
+  border-color:var(--gold);
+}
+.ci-check svg { opacity:0; transition:.15s; }
+.ci-check.checked svg { opacity:1; }
+.ci.selected {
+  border-color: rgba(232,200,74,.5);
+  background: rgba(232,200,74,.04);
+}
+
+/* ── CART PAY CONFIRM SHEET ─────────────── */
+.cart-confirm-sheet {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--s1);
+  border-top:1px solid var(--border);
+  border-radius:20px 20px 0 0;
+  padding:8px 20px 32px;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.32,.72,0,1);
+  z-index:200;
+}
+.cart-confirm-sheet.open { transform:translateY(0); }
+.cart-confirm-backdrop {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+  z-index:199;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s;
+}
+.cart-confirm-backdrop.open { opacity:1; pointer-events:all; }
+
 /* ══════════════════════════════════════════
    PAYMENT SHEET
 ══════════════════════════════════════════ */
@@ -2408,58 +2455,7 @@ function setQty(id, d) {
   haptic('light');
 }
 
-function renderCart() {
-  const el = document.getElementById('cartContent');
-  if (!cart.length) {
-    el.innerHTML = `
-      <div class="empty">
-        <div class="empty-ico">🛒</div>
-        <div class="empty-ttl">Корзина пуста</div>
-        <div class="empty-sub">Добавьте товары из каталога</div>
-      </div>`;
-    return;
-  }
-
-  const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
-
-  el.innerHTML = `
-    <div class="cart-list">
-      ${cart.map(item => `
-        <div class="ci">
-          ${item.image_url
-            ? `<img class="ci-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=ci-img-ph>${item.cat_emoji||'📦'}</div>'">`
-            : `<div class="ci-img-ph">${item.cat_emoji||'📦'}</div>`}
-          <div class="ci-body">
-            <div>
-              <div class="ci-name">${item.name}</div>
-              <div class="ci-unit">$${item.price.toFixed(2)} / шт</div>
-            </div>
-            <div class="ci-foot">
-              <div class="ci-ctrl">
-                <div class="q-sm" onclick="setQty(${item.id},-1)">−</div>
-                <div class="q-sm-v">${item.qty}</div>
-                <div class="q-sm" onclick="setQty(${item.id},1)">+</div>
-              </div>
-              <div class="ci-price">$${(item.price * item.qty).toFixed(2)}</div>
-            </div>
-          </div>
-        </div>`).join('')}
-    </div>
-    <div class="summary">
-      <div class="sum-r"><span>Товаров</span><span>${cart.reduce((s,i)=>s+i.qty,0)} шт</span></div>
-      <div class="sum-r"><span>Скидка</span><span>$0.00</span></div>
-      <div class="sum-r tot"><span>Итого</span><span class="v">$${sub.toFixed(2)}</span></div>
-    </div>
-    <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin:14px 18px 0;display:flex;align-items:center;justify-content:space-between">
-      <span style="font-size:12px;color:var(--sub)">Баланс</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="cartBalanceAmt">0.00</span></span>
-    </div>
-    <button class="pay-btn-main" id="payBtn" onclick="checkout()">
-      ❄️ Заморозить и оплатить
-    </button>
-    <div class="trust-row-cart">🔒 Средства заморозятся на балансе площадки</div>
-  `;
-}
+// renderCart moved to bottom (with checkbox logic)
 
 // ══════════════════════════════════════════════════════════
 // CHECKOUT
@@ -3178,6 +3174,151 @@ async function submitDispute() {
 
 function goCart() { switchPage('cart', document.getElementById('nt-cart')); }
 
+// ══════════════════════════════════════════════════════════
+// CART CHECKBOX SELECTION + CONFIRM SHEET
+// ══════════════════════════════════════════════════════════
+let selectedCartItemId = null; // только 1 товар можно выбрать
+
+function renderCart() {
+  const el = document.getElementById('cartContent');
+  if (!cart.length) {
+    selectedCartItemId = null;
+    el.innerHTML = `
+      <div class="empty">
+        <div class="empty-ico">🛒</div>
+        <div class="empty-ttl">Корзина пуста</div>
+        <div class="empty-sub">Добавьте товары из каталога</div>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="cart-list">
+      ${cart.map(item => {
+        const isSelected = selectedCartItemId === item.id;
+        return `
+        <div class="ci${isSelected ? ' selected' : ''}" id="ci-${item.id}">
+          <div class="ci-check-wrap" onclick="selectCartItem(${JSON.stringify(item.id)})">
+            <div class="ci-check${isSelected ? ' checked' : ''}">
+              <svg viewBox="0 0 12 10" width="12" height="10" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1,5 4.5,8.5 11,1"/>
+              </svg>
+            </div>
+          </div>
+          ${item.image_url
+            ? `<img class="ci-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=ci-img-ph>${item.cat_emoji||'📦'}</div>'">`
+            : `<div class="ci-img-ph">${item.cat_emoji||'📦'}</div>`}
+          <div class="ci-body">
+            <div>
+              <div class="ci-name">${item.name}</div>
+              <div class="ci-unit">$${item.price.toFixed(2)} / шт</div>
+            </div>
+            <div class="ci-foot">
+              <div class="ci-ctrl">
+                <div class="q-sm" onclick="setQty(${JSON.stringify(item.id)},-1)">−</div>
+                <div class="q-sm-v">${item.qty}</div>
+                <div class="q-sm" onclick="setQty(${JSON.stringify(item.id)},1)">+</div>
+              </div>
+              <div class="ci-price">$${(item.price * item.qty).toFixed(2)}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin:14px 18px 0;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:12px;color:var(--sub)">Баланс</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="cartBalanceAmt">0.00</span></span>
+    </div>
+    <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" ${selectedCartItemId === null ? 'disabled style="opacity:.35"' : ''}>
+      ❄️ Оплатить выбранное
+    </button>
+    <div class="trust-row-cart">🔒 Выберите товар галочкой для оплаты</div>
+    <div style="height:20px"></div>
+  `;
+  loadCartBalance();
+}
+
+function selectCartItem(id) {
+  if (selectedCartItemId === id) {
+    selectedCartItemId = null;
+  } else {
+    selectedCartItemId = id;
+    haptic('light');
+  }
+  renderCart();
+}
+
+function openCartConfirmSheet() {
+  if (selectedCartItemId === null) { toast('⚠️ Выберите товар'); return; }
+  const item = cart.find(x => x.id === selectedCartItemId);
+  if (!item) return;
+
+  const total = (item.price * item.qty).toFixed(2);
+
+  document.getElementById('cartConfirmItemName').textContent = item.name;
+  document.getElementById('cartConfirmQty').textContent = `${item.qty} шт`;
+  document.getElementById('cartConfirmAmount').textContent = total;
+  document.getElementById('cartConfirmAgree').checked = false;
+
+  document.getElementById('cartConfirmBackdrop').classList.add('open');
+  document.getElementById('cartConfirmSheet').classList.add('open');
+  haptic('medium');
+}
+
+function closeCartConfirmSheet() {
+  document.getElementById('cartConfirmBackdrop').classList.remove('open');
+  document.getElementById('cartConfirmSheet').classList.remove('open');
+}
+
+async function confirmCartPay() {
+  if (!document.getElementById('cartConfirmAgree').checked) {
+    toast('⚠️ Подтвердите согласие с условиями'); haptic('error'); return;
+  }
+  const item = cart.find(x => x.id === selectedCartItemId);
+  if (!item) return;
+
+  // Проверяем лимит активных сделок
+  try {
+    const { deals } = await api('/api/deals/my');
+    const activeDeals = deals.filter(d => d.status === 'frozen' || d.status === 'waiting_confirmation');
+    if (activeDeals.length >= 3) {
+      toast('❌ Максимум 3 активные сделки одновременно');
+      closeCartConfirmSheet();
+      return;
+    }
+  } catch {}
+
+  const btn = document.getElementById('cartConfirmPayBtn');
+  btn.disabled = true; btn.textContent = 'Замораживаем средства...';
+
+  try {
+    const listing_id = item.listing_id;
+    if (!listing_id) throw new Error('Нет ID объявления');
+
+    await api('/api/deals', {
+      method: 'POST',
+      body: JSON.stringify({ listing_id, quantity: item.qty })
+    });
+
+    // Удаляем оплаченный товар из корзины
+    cart = cart.filter(x => x.id !== selectedCartItemId);
+    selectedCartItemId = null;
+    saveCart(); syncBadge(); renderCart();
+
+    closeCartConfirmSheet();
+    toast('✅ Средства заморожены! Продавец уведомлён.');
+    haptic('success');
+    setTimeout(() => openMyDeals(), 600);
+
+  } catch (e) {
+    toast(`❌ ${e.message}`);
+    haptic('error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '❄️ Заморозить и оплатить';
+  }
+}
+
 function setTimer(minutes, el) {
   document.getElementById('lAutoConfirmMinutes').value = minutes;
   document.querySelectorAll('.timer-chip').forEach(c => c.classList.remove('on'));
@@ -3228,5 +3369,37 @@ function haptic(type) {
   else tg.HapticFeedback.impactOccurred(type);
 }
 </script>
+
+<!-- ══ CART CONFIRM SHEET ════════════════════ -->
+<div class="cart-confirm-backdrop" id="cartConfirmBackdrop" onclick="closeCartConfirmSheet()"></div>
+<div class="cart-confirm-sheet" id="cartConfirmSheet">
+  <div style="width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px"></div>
+  <div style="font-size:22px;text-align:center;margin-bottom:6px">❄️</div>
+  <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:4px">Подтверждение оплаты</div>
+  <div style="font-size:12px;color:var(--sub);text-align:center;margin-bottom:18px">Средства заморозятся до получения товара</div>
+
+  <div style="background:var(--s2);border:1px solid rgba(232,200,74,.25);border-radius:14px;padding:16px;margin-bottom:16px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Товар</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:4px" id="cartConfirmItemName">—</div>
+    <div style="font-size:12px;color:var(--sub)" id="cartConfirmQty">1 шт</div>
+    <div style="border-top:1px solid var(--border);margin:12px 0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:13px;color:var(--sub)">К заморозке</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)">$<span id="cartConfirmAmount">0.00</span></span>
+    </div>
+  </div>
+
+  <div class="agree-row" style="margin-bottom:16px">
+    <input type="checkbox" id="cartConfirmAgree">
+    <label for="cartConfirmAgree">Согласен с условиями: средства заморозятся до подтверждения получения товара.</label>
+  </div>
+
+  <button class="pay-btn-main" id="cartConfirmPayBtn" onclick="confirmCartPay()" style="margin:0;width:100%">
+    ❄️ Заморозить и оплатить
+  </button>
+  <button onclick="closeCartConfirmSheet()" style="width:100%;margin-top:10px;padding:13px;background:transparent;border:1px solid var(--border2);border-radius:12px;color:var(--sub);font-size:14px;font-weight:700;font-family:'Manrope',sans-serif;cursor:pointer">
+    Отмена
+  </button>
+</div>
 </body>
 </html>
