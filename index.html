@@ -779,7 +779,7 @@ body::after {
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
-  margin: 0;
+  margin: 14px 18px 0 !important;
 }
 
 .pay-btn-main:hover {
@@ -804,10 +804,13 @@ body::after {
 }
 
 .cart-button-sticky {
-  position: static;
-  width: 100%;
-  padding: 20px 18px;
-  margin: 20px 0 0 0;
+  position: fixed;
+  bottom: 60px;
+  left: 18px;
+  right: 18px;
+  margin: 0;
+  width: calc(100% - 36px);
+  z-index: 50;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -2512,13 +2515,13 @@ function quickAdd(id) {
 let wishlist = JSON.parse(sessionStorage.getItem('as_wish') || '[]');
 
 function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)); }
-function isWished(id) { return wishlist.some(x => x.id === id); }
+function isWished(id) { return wishlist.some(x => String(x.id) === String(id)); }
 
 function toggleWish(id) {
-  id = Number(id);
-  const p = allProducts.find(x => Number(x.id) === id);
+  id = String(id);
+  const p = allProducts.find(x => String(x.id) === id);
   if (!p) return;
-  const idx = wishlist.findIndex(x => Number(x.id) === id);
+  const idx = wishlist.findIndex(x => String(x.id) === id);
   if (idx >= 0) {
     wishlist.splice(idx, 1);
     toast('Убрано из избранного');
@@ -2528,7 +2531,6 @@ function toggleWish(id) {
     haptic('light');
   }
   saveWish();
-  // update heart button in grid
   const btn = document.getElementById(`wb-${id}`);
   if (btn) btn.classList.toggle('wished', isWished(id));
   syncWishCount();
@@ -2589,8 +2591,8 @@ function renderWish() {
         <div class="wi-foot">
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
-            ${inStock ? `<button class="wi-btn buy" onclick="window.addWishToCart(${item.id})">В корзину</button>` : ''}
-            <button class="wi-btn del" onclick="window.toggleWish(${item.id})">✕</button>
+            ${inStock ? `<button class="wi-btn buy" onclick="window.addWishToCart('${item.id}')">В корзину</button>` : ''}
+            <button class="wi-btn del" onclick="window.toggleWish('${item.id}')">✕</button>
           </div>
         </div>
       </div>
@@ -2599,11 +2601,10 @@ function renderWish() {
 }
 
 function addWishToCart(id) {
-  id = Number(id);
-  const p = allProducts.find(x => Number(x.id) === id) || wishlist.find(x => Number(x.id) === id);
+  id = String(id);
+  const p = allProducts.find(x => String(x.id) === id) || wishlist.find(x => String(x.id) === id);
   if (!p) return;
-  // refresh stock from allProducts
-  const fresh = allProducts.find(x => Number(x.id) === id);
+  const fresh = allProducts.find(x => String(x.id) === id);
   if (!fresh || fresh.stock <= 0) { toast('❌ Нет в наличии'); return; }
   addToCart(fresh, 1);
   switchCartTab('cart');
@@ -3698,12 +3699,13 @@ function renderCart() {
     </div>
   `;
 
-  // Создаём или обновляем липкую кнопку ВНУТРИ cartContent, не в body!
-  let stickyBtn = el.querySelector('.cart-button-sticky');
+  // Создаём или обновляем липкую кнопку
+  let stickyBtn = document.getElementById('payBtnSticky');
   if (!stickyBtn) {
     stickyBtn = document.createElement('div');
+    stickyBtn.id = 'payBtnSticky';
     stickyBtn.className = 'cart-button-sticky';
-    el.appendChild(stickyBtn);
+    document.body.appendChild(stickyBtn);
   }
   
   stickyBtn.innerHTML = `
