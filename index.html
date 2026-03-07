@@ -769,17 +769,28 @@ body::after {
 }
 
 .pay-btn-main {
-  width:100%; padding:17px;
-  background:linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
-  border:none; border-radius:14px;
-  color:#000; font-family:'Manrope',sans-serif;
-  font-size:16px; font-weight:900;
-  cursor:pointer;
-  display:flex; align-items:center; justify-content:center; gap:10px;
+  width: 100%; 
+  padding: 17px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
+  border: none; 
+  border-radius: 14px;
+  color: #000; 
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px; 
+  font-weight: 900;
+  cursor: pointer;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 10px;
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
-  margin: 14px 18px 0 !important;
+  margin: 14px 18px 0;
+}
+
+.cart-button-sticky .pay-btn-main {
+  margin: 0;
 }
 
 .pay-btn-main:hover {
@@ -805,12 +816,13 @@ body::after {
 
 .cart-button-sticky {
   position: fixed;
-  bottom: 60px;
+  bottom: 70px;
   left: 18px;
   right: 18px;
   margin: 0;
   width: calc(100% - 36px);
   z-index: 50;
+  padding: 0 0 20px 0;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -2591,13 +2603,30 @@ function renderWish() {
         <div class="wi-foot">
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
-            ${inStock ? `<button class="wi-btn buy" onclick="addWishToCart(${item.id})">В корзину</button>` : ''}
-            <button class="wi-btn del" onclick="toggleWish(${item.id})">✕</button>
+            ${inStock ? `<button class="wi-btn buy" data-wish-buy-id="${item.id}">В корзину</button>` : ''}
+            <button class="wi-btn del" data-wish-del-id="${item.id}">✕</button>
           </div>
         </div>
       </div>
     </div>`;
   }).join('')}</div>`;
+
+  // Делегирование событий для кнопок в избранном
+  el.querySelectorAll('[data-wish-buy-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = parseInt(btn.dataset.wishBuyId);
+      addWishToCart(id);
+    });
+  });
+  
+  el.querySelectorAll('[data-wish-del-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.wishDelId);
+      toggleWish(id);
+      haptic('light');
+    });
+  });
 }
 
 function addWishToCart(id) {
