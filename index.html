@@ -779,7 +779,11 @@ body::after {
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
-  margin: 14px 18px 0;
+  margin: 0;
+}
+
+.cart-button-sticky .pay-btn-main {
+  margin: 0;
 }
 
 .pay-btn-main:hover {
@@ -799,28 +803,16 @@ body::after {
 }
 
 #cartContent {
-  padding-bottom: 160px;
+  padding-bottom: 20px;
   min-height: calc(100vh - 300px);
 }
 
-#wishContent {
-  padding-bottom: 160px;
-}
-
 .cart-button-sticky {
-  position: fixed;
-  bottom: 75px;
-  left: 0;
-  right: 0;
-  padding: 0 18px;
-  margin: 0;
+  position: static;
+  width: 100%;
+  padding: 20px 0;
+  margin: 14px 0 0 0;
   z-index: 50;
-  background: linear-gradient(to top, rgba(6,6,8,1) 0%, rgba(6,6,8,0.95) 60%, rgba(6,6,8,0) 100%);
-  padding-top: 20px;
-}
-
-.cart-button-sticky .pay-btn-main {
-  margin: 0;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -3731,13 +3723,13 @@ function renderCart() {
     </div>
   `;
 
-  // Создаём или обновляем липкую кнопку
+  // Создаём липкую кнопку ВНУТРИ cartContent, не в body!
   let stickyBtn = document.getElementById('payBtnSticky');
   if (!stickyBtn) {
     stickyBtn = document.createElement('div');
     stickyBtn.id = 'payBtnSticky';
     stickyBtn.className = 'cart-button-sticky';
-    document.body.appendChild(stickyBtn);
+    el.appendChild(stickyBtn);  // ← Добавляем в el (cartContent), а не в body!
   }
   
   stickyBtn.innerHTML = `
