@@ -39,6 +39,12 @@
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html { scroll-behavior: smooth; }
 
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+@keyframes slideUp { from { transform:translateY(20px); opacity:0 } to { transform:translateY(0); opacity:1 } }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(232,200,74,0.2) } 50% { box-shadow: 0 0 30px rgba(232,200,74,0.4) } }
+@keyframes pulse { 0%, 100% { opacity:1 } 50% { opacity:0.8 } }
+
 body {
   font-family: 'Manrope', sans-serif;
   background: var(--bg);
@@ -98,9 +104,16 @@ body::after {
   background: var(--s2); border: 1px solid var(--border2);
   border-radius: 11px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: .15s;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-.ico-btn:active { transform: scale(.92); }
+.ico-btn:hover { 
+  background: var(--s3);
+  border-color: rgba(232,200,74,0.3);
+  box-shadow: 0 4px 16px rgba(232,200,74,0.15);
+  transform: translateY(-2px);
+}
+.ico-btn:active { transform: scale(0.92); }
 .ico-btn svg { width:17px; height:17px; stroke: var(--sub); }
 
 .n-badge {
@@ -266,16 +279,22 @@ body::after {
 
 /* Product Card */
 .pc {
-  background: var(--s1);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--s2) 0%, var(--s1) 100%);
+  border: 1px solid rgba(232,200,74,0.1);
   border-radius: var(--r2);
   overflow: hidden; cursor: pointer;
-  transition: border-color .2s, transform .15s;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative; display:flex; flex-direction:column;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 
-.pc:active { transform: scale(.97); }
-.pc:hover  { border-color: rgba(232,200,74,.2); }
+.pc:hover { 
+  border-color: rgba(232,200,74,0.3);
+  box-shadow: 0 12px 32px rgba(232,200,74,0.15);
+  transform: translateY(-6px);
+  background: linear-gradient(135deg, var(--s3) 0%, var(--s2) 100%);
+}
+.pc:active { transform: scale(0.97); }
 
 /* Thumbnail */
 .pc-img {
@@ -748,19 +767,43 @@ body::after {
 }
 
 .pay-btn-main {
-  margin:14px 18px 0;
-  width:calc(100% - 36px);
-  padding:17px;
-  background:linear-gradient(135deg, var(--gold), var(--orange));
+  width:100%; padding:17px;
+  background:linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
   border:none; border-radius:14px;
   color:#000; font-family:'Manrope',sans-serif;
   font-size:16px; font-weight:900;
-  cursor:pointer; transition:.2s;
+  cursor:pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display:flex; align-items:center; justify-content:center; gap:10px;
-  box-shadow: 0 10px 30px rgba(232,200,74,.2);
+  box-shadow: 0 8px 24px rgba(232,200,74,0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.pay-btn-main:active { transform:scale(.98); }
+.pay-btn-main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.pay-btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(232,200,74,0.4);
+}
+
+.pay-btn-main:hover::before {
+  left: 100%;
+}
+
+.pay-btn-main:active { 
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(232,200,74,0.2);
+}
 .pay-btn-main:disabled { opacity:.45; cursor:not-allowed; transform:none; }
 
 .trust-row-cart {
@@ -982,23 +1025,23 @@ body::after {
 .p-id   { font-size:11px; color:var(--dim); font-family:'JetBrains Mono',monospace; margin-top:3px; }
 
 .stats-g {
-  display:grid; grid-template-columns:1fr 1fr 1fr;
-  gap:8px; margin:14px 18px 0;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px; margin:10px 18px 0;
 }
 
 .stat-b {
   background:var(--s1); border:1px solid var(--border);
-  border-radius:14px; padding:14px 8px; text-align:center;
+  border-radius:12px; padding:10px 8px; text-align:center;
 }
 
 .st-v {
   font-family:'JetBrains Mono',monospace;
-  font-size:20px; font-weight:700; color:var(--gold);
+  font-size:18px; font-weight:700; color:var(--gold);
 }
 
 .st-l {
-  font-size:9px; font-weight:800; letter-spacing:.09em; text-transform:uppercase;
-  color:var(--dim); margin-top:5px;
+  font-size:8px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--dim); margin-top:3px;
 }
 
 .menu-l { padding:14px 18px 0; display:flex; flex-direction:column; gap:8px; }
@@ -1481,53 +1524,76 @@ body::after {
     <div class="p-id"   id="pId"></div>
   </div>
 
-  <div class="stats-g">
-    <div class="stat-b"><div class="st-v" id="st0">—</div><div class="st-l">Заказов</div></div>
-    <div class="stat-b"><div class="st-v" id="st1">—</div><div class="st-l">Объявлений</div></div>
-    <div class="stat-b"><div class="st-v" id="st2">—</div><div class="st-l">Сделок</div></div>
+  <div class="stats-g" style="display: none;">
   </div>
 
-  <!-- БАЛАНС -->
-  <div class="balance-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-      <div class="balance-label" style="margin-bottom:0;font-size:11px;font-weight:900">💳 БАЛАНС АККАУНТА</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)">$<span id="balanceAmt">0.00</span></div>
+  <!-- БАЛАНС И РЕПУТАЦИЯ -->
+  <div style="margin:12px 18px 0;padding:16px 18px">
+    
+    <!-- Баланс -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(232,200,74,0.2)">
+      <div style="font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text)">💳 Баланс</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)">$<span id="balanceAmt">0.00</span></div>
     </div>
-    <div style="height:1px;background:rgba(232,200,74,.15);margin:10px 0"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div style="font-size:11px;color:var(--dim)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>В сделке</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#4fc3f7">$<span id="frozenAmt">0.00</span></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div style="font-size:11px;color:var(--dim)">💸 Потрачено</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--sub)">$<span id="spentAmt">0.00</span></div>
-    </div>
-    <div class="balance-actions">
-      <button class="bal-btn topup" onclick="openOverlay('topupOverlay')">+ Пополнить</button>
-      <button class="bal-btn withdraw" onclick="openOverlay('withdrawOverlay')">↑ Вывести</button>
-      <button class="bal-btn history" onclick="openTxHistory()">История</button>
-    </div>
-  </div>
 
-  <!-- РЕПУТАЦИЯ -->
-  <div id="reputationBlock" style="display:none;margin:12px 18px 0;background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px 20px">
-    <div style="font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">⭐ Репутация продавца</div>
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+    <!-- Баланс детали -->
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--text);margin-bottom:4px">🔒 В сделке</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="frozenAmt">0.00</span></div>
+      </div>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:10px;color:var(--text);margin-bottom:4px">💸 Потрачено</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="spentAmt">0.00</span></div>
+      </div>
+    </div>
+
+    <!-- Кнопки -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(232,200,74,0.2)">
+      <button onclick="openOverlay('topupOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">+ Пополнить</button>
+      <button onclick="openOverlay('withdrawOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">↑ Вывести</button>
+      <button onclick="openTxHistory()" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">История</button>
+    </div>
+
+    <!-- Репутация -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:20px">⭐</div>
+        <div style="font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)">Репутация</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green)" id="repPos">0</div>
+          <div style="font-size:18px">👍</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--red)" id="repNeg">0</div>
+          <div style="font-size:18px">👎</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
       <div style="text-align:center">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:var(--gold)" id="repPct">—</div>
-        <div style="font-size:10px;color:var(--dim);margin-top:2px">позитивных</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold)" id="repPct">0%</div>
       </div>
       <div style="flex:1">
-        <div style="background:var(--s2);border-radius:6px;height:8px;overflow:hidden">
-          <div id="repBar" style="height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--orange));width:0%;transition:width .6s ease"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px">
-          <div style="font-size:11px;color:var(--sub)">Отзывов: <b id="repTotal">0</b></div>
-          <div style="font-size:11px;color:var(--green)">👍 <span id="repPos">0</span></div>
+        <div style="background:rgba(232,200,74,0.2);border-radius:6px;height:6px;overflow:hidden">
+          <div id="repBar" style="height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:width .6s ease"></div>
         </div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--dim);text-align:center">Репутация формируется из завершённых сделок покупателей</div>
+    
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;background:rgba(232,200,74,0.15);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:10px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;font-weight:700">📢 Объявлений</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)" id="repListings">0</div>
+      </div>
+      <div style="flex:1;background:rgba(232,200,74,0.15);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:10px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;font-weight:700">🤝 Сделок</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)" id="repDeals">0</div>
+      </div>
+    </div>
   </div>
 
   <div class="menu-l">
@@ -1689,19 +1755,24 @@ body::after {
 
 <!-- ══ TOPUP SHEET ════════════════════════════ -->
 <div class="overlay" id="withdrawOverlay" onclick="closeOverlayByBg(event,'withdrawOverlay')">
-  <div class="overlay-box" onclick="e=>e.stopPropagation()">
-    <div class="ov-title">↑ Вывод средств</div>
-    <p style="color:var(--text2);font-size:13px;margin:0 0 14px">Средства придут в USDT на ваш CryptoBot</p>
-    <div class="topup-amounts">
-      <button class="chip" onclick="setWithdrawAmount(5)">$5</button>
-      <button class="chip" onclick="setWithdrawAmount(10)">$10</button>
-      <button class="chip" onclick="setWithdrawAmount(25)">$25</button>
-      <button class="chip" onclick="setWithdrawAmount(50)">$50</button>
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">↑ Вывод средств</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Выберите сумму или введите свою</div>
+      <div class="topup-amounts">
+        <div class="ta-chip" onclick="setWithdrawAmount(5)">$5</div>
+        <div class="ta-chip" onclick="setWithdrawAmount(10)">$10</div>
+        <div class="ta-chip" onclick="setWithdrawAmount(25)">$25</div>
+        <div class="ta-chip" onclick="setWithdrawAmount(50)">$50</div>
+        <div class="ta-chip" onclick="setWithdrawAmount(100)">$100</div>
+      </div>
+      <input class="topup-input" id="withdrawInput" type="number" min="1" placeholder="0.00" oninput="clearWithdrawChips()">
+      <div style="font-size:11px;color:var(--dim);margin-bottom:16px">Минимум $1 · Выплата через CryptoBot</div>
+      <button class="pay-btn-main" onclick="doWithdraw()" id="withdrawBtn">
+        Вывести через CryptoBot
+      </button>
     </div>
-    <input class="topup-input" id="withdrawInput" type="number" min="1" placeholder="Сумма в USD" oninput="clearWithdrawChips()">
-    <button class="pay-btn-main" onclick="doWithdraw()" id="withdrawBtn">
-      Вывести через CryptoBot
-    </button>
   </div>
 </div>
 
@@ -1948,6 +2019,23 @@ body::after {
       </div>
       <textarea class="form-input form-textarea" id="reviewText" placeholder="Комментарий (необязательно)..."></textarea>
       <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">✅ Подтвердить получение</button>
+    </div>
+  </div>
+</div>
+
+<!-- SELLER REVIEW OVERLAY -->
+<div class="overlay" id="sellerReviewOverlay" onclick="closeOverlayByBg(event,'sellerReviewOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 28px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">⭐ Отзыв о покупателе</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Оцените своего покупателя за сделку</div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <button id="sellerRevGood" class="deal-btn confirm" style="flex:1" onclick="setSellerReview(1)">👍 Хорошо</button>
+        <button id="sellerRevBad"  class="deal-btn cancel"  style="flex:1" onclick="setSellerReview(-1)">👎 Плохо</button>
+      </div>
+      <textarea class="form-input form-textarea" id="sellerReviewText" placeholder="Комментарий (необязательно)..."></textarea>
+      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">⭐ Отправить отзыв</button>
     </div>
   </div>
 </div>
@@ -2641,24 +2729,21 @@ async function loadOrders() {
 async function loadProfile() {
   try {
     const { stats } = await api('/api/profile');
-    document.getElementById('st0').textContent = stats.total_orders   || 0;
     document.getElementById('st1').textContent = stats.total_listings || stats.total_accounts || 0;
     document.getElementById('st2').textContent = stats.total_deals || stats.total_orders || 0;
 
-    // Репутация продавца
-    const total = Number(stats.seller_deals_total || 0);
-    const pos   = Number(stats.seller_deals_positive || 0);
-    const repBlock = document.getElementById('reputationBlock');
-    if (total > 0) {
-      const pct = Math.round(100 * pos / total);
-      document.getElementById('repPct').textContent = pct + '%';
-      document.getElementById('repBar').style.width  = pct + '%';
-      document.getElementById('repTotal').textContent = total;
-      document.getElementById('repPos').textContent   = pos;
-      repBlock.style.display = '';
-    } else {
-      repBlock.style.display = 'none';
-    }
+    // Общая репутация
+    const total = Number(stats.total_deals || 0);
+    const pos   = Number(stats.total_positive || 0);
+    const neg   = Number(stats.total_negative || 0);
+    const pct = total > 0 ? Math.round(100 * pos / total) : 0;
+    
+    document.getElementById('repPct').textContent = pct + '%';
+    document.getElementById('repBar').style.width  = pct + '%';
+    document.getElementById('repPos').textContent   = pos;
+    document.getElementById('repNeg').textContent   = neg;
+    document.getElementById('repListings').textContent = stats.total_listings || 0;
+    document.getElementById('repDeals').textContent = stats.total_deals || 0;
 
     // Потраченные средства
     const spent = Number(stats.total_spent || 0);
@@ -3153,6 +3238,7 @@ async function loadDealsPage() {
       const canDispute  = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
       const canMarkSent = !isBuyer && d.status === 'frozen';
       const canCancel   = d.status === 'frozen' && isBuyer;
+      const canSellerReview = !isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
 
       let timerHtml = '';
       if (d.status === 'waiting_confirmation' && d.auto_confirm_at) {
@@ -3164,8 +3250,9 @@ async function loadDealsPage() {
 
       const btns =
         (canConfirm  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">✅ Получил товар — подтвердить</button>' : '') +
-        (canMarkSent ? '<button class="deal-btn sent" onclick="markSent(' + d.id + ')">📤 Отправил товар</button>' : '') +
-        (canDispute  ? '<button class="deal-btn dispute" onclick="openDispute(' + d.id + ')">⚠️ Открыть спор</button>' : '') +
+        (canMarkSent ? '<button class="deal-btn sent" onclick="markItemSent(' + d.id + ')">📤 Отправил товар</button>' : '') +
+        (canSellerReview ? '<button class="deal-btn confirm" onclick="openSellerReview(' + d.id + ')">⭐ Оставить отзыв</button>' : '') +
+        (canDispute  ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">⚠️ Открыть спор</button>' : '') +
         (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">Отменить сделку</button>' : '');
 
       const party = isBuyer
@@ -3387,6 +3474,38 @@ function openReview(dealId) {
   document.getElementById('revGood').style.opacity = '1';
   document.getElementById('revBad').style.opacity  = '.45';
   openOverlay('reviewOverlay');
+}
+
+function openSellerReview(dealId) {
+  curDealId = dealId; reviewScore = 1;
+  document.getElementById('sellerReviewText').value = '';
+  document.getElementById('sellerRevGood').style.opacity = '1';
+  document.getElementById('sellerRevBad').style.opacity  = '.45';
+  openOverlay('sellerReviewOverlay');
+}
+
+function setSellerReview(score) {
+  reviewScore = score;
+  document.getElementById('sellerRevGood').style.opacity = score === 1  ? '1' : '.45';
+  document.getElementById('sellerRevBad').style.opacity  = score === -1 ? '1' : '.45';
+}
+
+async function submitSellerReview() {
+  const btn = document.getElementById('submitSellerReviewBtn');
+  btn.disabled = true; btn.textContent = 'Отправляем...';
+  try {
+    await api(`/api/deals/${curDealId}/seller-confirm`, { method:'POST', body: JSON.stringify({
+      review_score: reviewScore,
+      review_text:  document.getElementById('sellerReviewText').value.trim()
+    })});
+    closeOverlay('sellerReviewOverlay');
+    toast('✅ Отзыв отправлен!');
+    haptic('success');
+    openMyDeals();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+    btn.disabled = false; btn.textContent = '⭐ Отправить отзыв';
+  }
 }
 function setReview(score) {
   reviewScore = score;
