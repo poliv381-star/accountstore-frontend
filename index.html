@@ -2515,10 +2515,10 @@ function quickAdd(id) {
 let wishlist = JSON.parse(sessionStorage.getItem('as_wish') || '[]');
 
 function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)); }
-function isWished(id) { return wishlist.some(x => String(x.id) === String(id)); }
+function isWished(id) { return wishlist.some(x => x.id === id); }
 
 function toggleWish(id) {
-  id = String(id);
+  id = String(id).trim();
   const p = allProducts.find(x => String(x.id) === id);
   if (!p) return;
   const idx = wishlist.findIndex(x => String(x.id) === id);
@@ -2531,6 +2531,7 @@ function toggleWish(id) {
     haptic('light');
   }
   saveWish();
+  // update heart button in grid
   const btn = document.getElementById(`wb-${id}`);
   if (btn) btn.classList.toggle('wished', isWished(id));
   syncWishCount();
@@ -2601,7 +2602,7 @@ function renderWish() {
 }
 
 function addWishToCart(id) {
-  id = String(id);
+  id = String(id).trim();
   const p = allProducts.find(x => String(x.id) === id) || wishlist.find(x => String(x.id) === id);
   if (!p) return;
   const fresh = allProducts.find(x => String(x.id) === id);
