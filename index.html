@@ -2298,7 +2298,7 @@ function renderGrid() {
           ${imgHtml}
           ${p.badge ? `<div class="pc-badge ${badgeCls(p.badge)}">${p.badge}</div>` : ''}
           <div class="pc-stock ${sCls}">${sLabel}</div>
-          <button class="wish-btn ${isWished(p.id)?'wished':''}" onclick="event.stopPropagation();toggleWish('${p.id}')" id="wb-${p.id}">
+          <button class="wish-btn ${isWished(p.id)?'wished':''}" data-wish-id="${p.id}" id="wb-${p.id}">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
@@ -2515,13 +2515,12 @@ function quickAdd(id) {
 let wishlist = JSON.parse(sessionStorage.getItem('as_wish') || '[]');
 
 function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)); }
-function isWished(id) { return wishlist.some(x => String(x.id) === String(id)); }
+function isWished(id) { return wishlist.some(x => x.id === id); }
 
 function toggleWish(id) {
-  id = String(id);
-  const p = allProducts.find(x => String(x.id) === id);
+  const p = allProducts.find(x => x.id === id);
   if (!p) return;
-  const idx = wishlist.findIndex(x => String(x.id) === id);
+  const idx = wishlist.findIndex(x => x.id === id);
   if (idx >= 0) {
     wishlist.splice(idx, 1);
     toast('Убрано из избранного');
@@ -2531,6 +2530,7 @@ function toggleWish(id) {
     haptic('light');
   }
   saveWish();
+  // update heart button in grid
   const btn = document.getElementById(`wb-${id}`);
   if (btn) btn.classList.toggle('wished', isWished(id));
   syncWishCount();
@@ -2591,8 +2591,8 @@ function renderWish() {
         <div class="wi-foot">
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
-            ${inStock ? `<button class="wi-btn buy" onclick="window.addWishToCart('${item.id}')">В корзину</button>` : ''}
-            <button class="wi-btn del" onclick="window.toggleWish('${item.id}')">✕</button>
+            ${inStock ? `<button class="wi-btn buy" onclick="window.addWishToCart(${item.id})">В корзину</button>` : ''}
+            <button class="wi-btn del" onclick="window.toggleWish(${item.id})">✕</button>
           </div>
         </div>
       </div>
@@ -2601,10 +2601,10 @@ function renderWish() {
 }
 
 function addWishToCart(id) {
-  id = String(id);
-  const p = allProducts.find(x => String(x.id) === id) || wishlist.find(x => String(x.id) === id);
+  const p = allProducts.find(x => x.id === id) || wishlist.find(x => x.id === id);
   if (!p) return;
-  const fresh = allProducts.find(x => String(x.id) === id);
+  // refresh stock from allProducts
+  const fresh = allProducts.find(x => x.id === id);
   if (!fresh || fresh.stock <= 0) { toast('❌ Нет в наличии'); return; }
   addToCart(fresh, 1);
   switchCartTab('cart');
@@ -3864,6 +3864,21 @@ function haptic(type) {
   else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
   else tg.HapticFeedback.impactOccurred(type);
 }
+
+// ══════════════════════════════════════════════════════════
+// ГЛОБАЛЬНОЕ ДЕЛЕГИРОВАНИЕ ДЛЯ КНОПОК ИЗБРАННОГО
+// ══════════════════════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  const wishBtn = e.target.closest('.wish-btn');
+  if (wishBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = wishBtn.dataset.wishId || wishBtn.id.replace('wb-', '');
+    if (id) {
+      toggleWish(id);
+    }
+  }
+});
 </script>
 
 <!-- ══ LISTING FULLSCREEN VIEWER ════════════ -->
