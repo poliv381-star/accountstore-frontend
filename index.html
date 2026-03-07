@@ -39,12 +39,6 @@
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html { scroll-behavior: smooth; }
 
-/* ── ANIMATIONS ── */
-@keyframes fadeIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
-@keyframes slideUp { from { transform:translateY(20px); opacity:0 } to { transform:translateY(0); opacity:1 } }
-@keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(232,200,74,0.2) } 50% { box-shadow: 0 0 30px rgba(232,200,74,0.4) } }
-@keyframes pulse { 0%, 100% { opacity:1 } 50% { opacity:0.8 } }
-
 body {
   font-family: 'Manrope', sans-serif;
   background: var(--bg);
@@ -104,14 +98,13 @@ body::after {
   background: var(--s2); border: 1px solid var(--border2);
   border-radius: 11px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .ico-btn:hover { 
   background: var(--s3);
   border-color: rgba(232,200,74,0.3);
   box-shadow: 0 4px 16px rgba(232,200,74,0.15);
-  transform: translateY(-2px);
 }
 .ico-btn:active { transform: scale(0.92); }
 .ico-btn svg { width:17px; height:17px; stroke: var(--sub); }
@@ -283,7 +276,6 @@ body::after {
   border: 1px solid rgba(232,200,74,0.1);
   border-radius: var(--r2);
   overflow: hidden; cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative; display:flex; flex-direction:column;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
@@ -291,7 +283,6 @@ body::after {
 .pc:hover { 
   border-color: rgba(232,200,74,0.3);
   box-shadow: 0 12px 32px rgba(232,200,74,0.15);
-  transform: translateY(-6px);
   background: linear-gradient(135deg, var(--s3) 0%, var(--s2) 100%);
 }
 .pc:active { transform: scale(0.97); }
@@ -773,31 +764,14 @@ body::after {
   color:#000; font-family:'Manrope',sans-serif;
   font-size:16px; font-weight:900;
   cursor:pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   display:flex; align-items:center; justify-content:center; gap:10px;
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
 }
 
-.pay-btn-main::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
-
 .pay-btn-main:hover {
-  transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(232,200,74,0.4);
-}
-
-.pay-btn-main:hover::before {
-  left: 100%;
 }
 
 .pay-btn-main:active { 
@@ -1315,40 +1289,100 @@ body::after {
    КАРУСЕЛЬ В КАРТОЧКЕ
 ══════════════════════════════════════════ */
 .pc-carousel {
-  position: relative; overflow: hidden;
-  width: 100%; aspect-ratio: 3/2;
-  background: #000; touch-action: pan-y;
+  position: relative; 
+  overflow: hidden;
+  width: 100%; 
+  aspect-ratio: 16/10;
+  background: #0a0a0f; 
+  touch-action: pan-y;
 }
+
 .pc-carousel-track {
-  display: flex; height: 100%;
-  transition: transform 0.3s cubic-bezier(.25,.46,.45,.94);
+  display: flex; 
+  height: 100%;
+  width: 100%;
 }
+
 .pc-carousel-slide {
-  min-width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
+  min-width: 100%; 
+  height: 100%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  background: #000;
+  flex-shrink: 0;
 }
+
 .pc-carousel-slide img {
-  width: 100%; height: 100%; object-fit: contain;
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain;
+  padding: 8px;
+  max-width: 100%;
+  max-height: 100%;
 }
+
 .pc-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(0,0,0,.5); border: none; color: #fff;
-  font-size: 16px; width: 26px; height: 26px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 3; opacity: 0; transition: opacity .2s;
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6); 
+  border: 1px solid rgba(232, 200, 74, 0.3);
+  color: var(--gold);
+  font-size: 20px; 
+  width: 32px; 
+  height: 32px;
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  cursor: pointer; 
+  z-index: 10; 
+  opacity: 0;
 }
-.pc-carousel:hover .pc-nav { opacity: 1; }
-.pc-nav.prev { left: 5px; }
-.pc-nav.next { right: 5px; }
+
+.pc-nav:hover {
+  background: rgba(232, 200, 74, 0.15);
+  box-shadow: 0 0 12px rgba(232, 200, 74, 0.2);
+}
+
+.pc-carousel:hover .pc-nav { 
+  opacity: 1; 
+}
+
+.pc-nav.prev { 
+  left: 8px; 
+}
+
+.pc-nav.next { 
+  right: 8px; 
+}
+
 .pc-dots {
-  position: absolute; bottom: 6px; left: 0; right: 0;
-  display: flex; justify-content: center; gap: 4px; z-index: 3;
+  position: absolute; 
+  bottom: 8px; 
+  left: 0; 
+  right: 0;
+  display: flex; 
+  justify-content: center; 
+  gap: 5px; 
+  z-index: 10;
 }
+
 .pc-dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: rgba(255,255,255,.35); transition: all .2s;
+  width: 6px; 
+  height: 6px; 
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3); 
+  cursor: pointer;
 }
-.pc-dot.on { background: var(--gold); width: 12px; border-radius: 3px; }
+
+.pc-dot.on {
+  background: var(--gold);
+  width: 20px;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(232, 200, 74, 0.4);
+}
 
 /* ══════════════════════════════════════════
    КАРУСЕЛЬ В ЛИСТИНГЕ (детальный вид)
@@ -2222,17 +2256,17 @@ function renderGrid() {
 
   document.getElementById('grid').innerHTML = list.map(p => {
     const [sLabel, sCls] = stockLabel(p.stock);
-    // Карусель из первых 3 фото на карточке
-    const imgs = p.images && p.images.length ? p.images.slice(0,3) : (p.image_url ? [p.image_url] : []);
+    // Карусель из фото
+    const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
     const imgHtml = imgs.length
       ? `<div class="pc-carousel" id="pcc-${p.id}">
-           <div class="pc-carousel-track" id="pcct-${p.id}" style="transform:translateX(0)">
-             ${imgs.map(url => `<div class="pc-carousel-slide"><img src="${url}" alt="" onerror="this.style.display='none'"></div>`).join('')}
+           <div class="pc-carousel-track" id="pcct-${p.id}" style="transform:translateX(0%)">
+             ${imgs.map((url, idx) => `<div class="pc-carousel-slide"><img src="${url}" alt="Фото ${idx+1}" loading="lazy"></div>`).join('')}
            </div>
            ${imgs.length > 1 ? `
              <button class="pc-nav prev" onclick="event.stopPropagation();pcSlide('${p.id}',-1)">‹</button>
              <button class="pc-nav next" onclick="event.stopPropagation();pcSlide('${p.id}',1)">›</button>
-             <div class="pc-dots">${imgs.map((_,i)=>`<div class="pc-dot${i===0?' on':''}"></div>`).join('')}</div>
+             <div class="pc-dots">${imgs.map((_, i) => `<div class="pc-dot${i === 0 ? ' on' : ''}"></div>`).join('')}</div>
            ` : ''}
          </div>`
       : `<div class="pc-img-placeholder">${p.cat_emoji || '📦'}</div>`;
@@ -3766,19 +3800,35 @@ function setTimer(minutes, el) {
 
 // Карусель на карточке
 const pcIdxMap = {};
+
 function pcSlide(pid, d) {
   const p = allProducts.find(x => x.id === pid);
-  if (!p || !p.images || p.images.length <= 1) return;
+  if (!p) return;
+  
+  const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
+  if (imgs.length <= 1) return;
+  
   if (!pcIdxMap[pid]) pcIdxMap[pid] = 0;
-  pcIdxMap[pid] = (pcIdxMap[pid] + d + p.images.length) % p.images.length;
+  pcIdxMap[pid] = (pcIdxMap[pid] + d + imgs.length) % imgs.length;
+  
   const track = document.getElementById('pcct-' + pid);
-  if (track) track.style.transform = `translateX(-${pcIdxMap[pid] * 100}%)`;
+  if (track) {
+    track.style.transform = `translateX(-${pcIdxMap[pid] * 100}%)`;
+  }
+  
   const card = document.getElementById('pcc-' + pid);
   if (card) {
     const dots = card.querySelectorAll('.pc-dot');
-    dots.forEach((dot, i) => dot.classList.toggle('on', i === pcIdxMap[pid]));
+    dots.forEach((dot, i) => {
+      if (i === pcIdxMap[pid]) {
+        dot.classList.add('on');
+      } else {
+        dot.classList.remove('on');
+      }
+    });
   }
-  haptic('light');
+  
+  if (typeof haptic === 'function') haptic('light');
 }
 
 // ══════════════════════════════════════════════════════════
