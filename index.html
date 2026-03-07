@@ -625,20 +625,30 @@ body::after {
 .pg-head {
   padding:20px 18px 16px;
   font-size:22px; font-weight:900; letter-spacing:-.4px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 /* CART TABS */
 .cart-tabs {
-  display:flex; margin:0 18px 16px; gap:8px;
-  background:var(--s1); border:1px solid var(--border);
-  border-radius:12px; padding:4px;
+  display:flex; margin:0; gap:8px;
+  background:transparent; border:none;
+  border-radius:12px; padding:14px 18px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .cart-tab {
-  flex:1; padding:9px; text-align:center;
+  flex:1; padding:12px; text-align:center;
   font-size:13px; font-weight:700; border-radius:9px;
   cursor:pointer; transition:.2s; color:var(--sub);
+  border: 1px solid var(--border);
+  background: var(--s1);
 }
-.cart-tab.on { background:var(--s3); color:var(--text); }
+.cart-tab.on { background:var(--s2); color:var(--text); border-color: var(--border2); }
 
 /* WISHLIST */
 .wi {
@@ -789,7 +799,18 @@ body::after {
 }
 
 #cartContent {
-  padding-bottom: 200px;
+  padding-bottom: 100px;
+  min-height: calc(100vh - 300px);
+}
+
+.cart-button-sticky {
+  position: fixed;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  margin: 0 18px;
+  width: calc(100% - 36px);
+  z-index: 50;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -1520,7 +1541,6 @@ body::after {
 <!-- CATALOG -->
 <div class="pg on" id="pg-catalog">
   <div class="hero">
-    <div class="hero-eyebrow"><div class="live-dot"></div> В сети</div>
     <div class="hero-title">Доска объявлений<br><span class="hl">без границ</span><br>и цензуры</div>
     <div class="hero-sub">Доска объявлений с оплатой криптой. Быстро, анонимно, без посредников.</div>
     <div class="trust-chips">
@@ -1545,7 +1565,6 @@ body::after {
 
 <!-- CART -->
 <div class="pg" id="pg-cart">
-  <div class="pg-head">Корзина</div>
   <div class="cart-tabs">
     <div class="cart-tab on" id="tab-cart" onclick="switchCartTab('cart')">🛒 Корзина <span id="cartTabCount"></span></div>
     <div class="cart-tab" id="tab-wish" onclick="switchCartTab('wish')">❤️ Избранное <span id="wishTabCount"></span></div>
@@ -3662,11 +3681,22 @@ function renderCart() {
         </div>`;
       }).join('')}
     </div>
+  `;
+
+  // Создаём или обновляем липкую кнопку
+  let stickyBtn = document.getElementById('payBtnSticky');
+  if (!stickyBtn) {
+    stickyBtn = document.createElement('div');
+    stickyBtn.id = 'payBtnSticky';
+    stickyBtn.className = 'cart-button-sticky';
+    document.body.appendChild(stickyBtn);
+  }
+  
+  stickyBtn.innerHTML = `
     <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" ${selectedCartItemId === null ? 'disabled style="opacity:.35;cursor:not-allowed"' : ''}>
       ❄️ Оплатить выбранное
     </button>
     <div class="trust-row-cart">🔒 Выберите товар галочкой для оплаты</div>
-    <div style="height:20px"></div>
   `;
 
   // Делегирование: чекбокс
