@@ -404,7 +404,7 @@ body::after {
 .carousel-slide {
   min-width: 100%;
   position: relative;
-  background: #000;
+  background: var(--s2);
 }
 .carousel-slide img {
   width: 100%;
@@ -469,9 +469,8 @@ body::after {
   width: 32px; height: 32px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  z-index: 3; opacity: 0; transition: opacity .2s;
+  z-index: 3;
 }
-.carousel:hover .carousel-nav { opacity: 1; }
 .carousel-nav.prev { left: 8px; }
 .carousel-nav.next { right: 8px; }
 
@@ -2374,7 +2373,7 @@ function openProduct(id) {
       <div class="carousel">
         <div class="carousel-track" id="cTrack">
           <div class="carousel-slide">
-            <img src="${imgs[0]}" alt="${p.name}" onclick="openLb(0)" onerror="this.style.display='none'">
+            <img src="${imgs[0]}" alt="${p.name}" onclick="openLb(0)" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNDQ0Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7ilr/ilr8=</text>'">
           </div>
         </div>
         <button class="expand-btn" onclick="openLb(0)">
@@ -2388,7 +2387,7 @@ function openProduct(id) {
         <div class="carousel-track" id="cTrack">
           ${imgs.map((url, i) => `
             <div class="carousel-slide">
-              <img src="${url}" alt="${p.name} ${i+1}" onclick="openLb(${i})" onerror="this.parentElement.style.display='none'">
+              <img src="${url}" alt="${p.name} ${i+1}" onclick="openLb(${i})" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNDQ0Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7ilr/ilr8=</text>'">
             </div>`).join('')}
         </div>
         <button class="carousel-nav prev" onclick="slideTo(carouselIdx-1)">‹</button>
