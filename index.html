@@ -1596,19 +1596,19 @@ body::after {
     
     <!-- Баланс -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(232,200,74,0.2)">
-      <div style="font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text)">💳 Баланс</div>
+      <div style="font-size:22px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text)">Баланс</div>
       <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)">$<span id="balanceAmt">0.00</span></div>
     </div>
 
     <!-- Баланс детали -->
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <div style="flex:1;text-align:center">
-        <div style="font-size:10px;color:var(--text);margin-bottom:4px">🔒 В сделке</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="frozenAmt">0.00</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">В сделке</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text)">$<span id="frozenAmt">0.00</span></div>
       </div>
-      <div style="flex:1;text-align:center">
-        <div style="font-size:10px;color:var(--text);margin-bottom:4px">💸 Потрачено</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="spentAmt">0.00</span></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">Общие сделки</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text)"><span id="dealsCount">0</span> шт • $<span id="dealsAmount">0.00</span></div>
       </div>
     </div>
 
@@ -1616,48 +1616,26 @@ body::after {
     <div style="display:flex;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(232,200,74,0.2)">
       <button onclick="openOverlay('topupOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">+ Пополнить</button>
       <button onclick="openOverlay('withdrawOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">↑ Вывести</button>
-      <button onclick="openTxHistory()" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">История</button>
     </div>
 
     <!-- Репутация -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="font-size:20px">⭐</div>
-        <div style="font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)">Репутация</div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text)">Репутация</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--text)" id="repTotal">0</div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="display:flex;align-items:center;gap:6px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green)" id="repPos">0</div>
-          <div style="font-size:18px">👍</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">% положительных</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green)" id="repPosPct">0%</div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--red)" id="repNeg">0</div>
-          <div style="font-size:18px">👎</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-      <div style="text-align:center">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold)" id="repPct">0%</div>
-      </div>
-      <div style="flex:1">
-        <div style="background:rgba(232,200,74,0.2);border-radius:6px;height:6px;overflow:hidden">
-          <div id="repBar" style="height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--gold));width:0%;transition:width .6s ease"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;font-weight:700;color:var(--text)">% отрицательных</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--red)" id="repNegPct">0%</div>
         </div>
       </div>
     </div>
     
-    <div style="display:flex;gap:8px">
-      <div style="flex:1;background:rgba(232,200,74,0.15);border-radius:12px;padding:12px;text-align:center">
-        <div style="font-size:10px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;font-weight:700">📢 Объявлений</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)" id="repListings">0</div>
-      </div>
-      <div style="flex:1;background:rgba(232,200,74,0.15);border-radius:12px;padding:12px;text-align:center">
-        <div style="font-size:10px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;font-weight:700">🤝 Сделок</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)" id="repDeals">0</div>
-      </div>
-    </div>
   </div>
 
   <div class="menu-l">
@@ -1668,6 +1646,16 @@ body::after {
         </svg>
       </div>
       <div class="m-txt">Поддержка</div>
+      <div class="m-arr">›</div>
+    </div>
+    <div class="mrow" onclick="openTxHistory()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="m-txt">История баланса</div>
       <div class="m-arr">›</div>
     </div>
     <div class="mrow" onclick="openOverlay('aboutOverlay')">
@@ -2778,18 +2766,23 @@ async function loadProfile() {
     const pos   = Number(stats.total_positive || 0);
     const neg   = Number(stats.total_negative || 0);
     const pct = total > 0 ? Math.round(100 * pos / total) : 0;
+    const negPct = total > 0 ? Math.round(100 * neg / total) : 0;
     
-    document.getElementById('repPct').textContent = pct + '%';
-    document.getElementById('repBar').style.width  = pct + '%';
-    document.getElementById('repPos').textContent   = pos;
-    document.getElementById('repNeg').textContent   = neg;
-    document.getElementById('repListings').textContent = stats.total_listings || 0;
-    document.getElementById('repDeals').textContent = stats.total_deals || 0;
+    // Обновляю новые элементы
+    const repTotalEl = document.getElementById('repTotal');
+    if (repTotalEl) repTotalEl.textContent = total;
+    
+    const repPosPctEl = document.getElementById('repPosPct');
+    if (repPosPctEl) repPosPctEl.textContent = pct + '%';
+    
+    const repNegPctEl = document.getElementById('repNegPct');
+    if (repNegPctEl) repNegPctEl.textContent = negPct + '%';
 
-    // Потраченные средства
-    const spent = Number(stats.total_spent || 0);
-    const spentEl = document.getElementById('spentAmt');
-    if (spentEl) spentEl.textContent = spent.toFixed(2);
+    // Сделки
+    const dealsCountEl = document.getElementById('dealsCount');
+    if (dealsCountEl) dealsCountEl.textContent = stats.total_deals || 0;
+    const dealsAmountEl = document.getElementById('dealsAmount');
+    if (dealsAmountEl) dealsAmountEl.textContent = Number(stats.total_deals_amount || 0).toFixed(2);
   } catch {}
   loadBalance();
 }
