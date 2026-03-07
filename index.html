@@ -799,7 +799,7 @@ body::after {
 }
 
 #cartContent {
-  padding-bottom: 150px;
+  padding-bottom: 100px;
   min-height: calc(100vh - 300px);
 }
 
@@ -808,11 +808,9 @@ body::after {
   bottom: 60px;
   left: 18px;
   right: 18px;
-  width: calc(100% - 36px);
   margin: 0;
+  width: calc(100% - 36px);
   z-index: 50;
-  background: linear-gradient(to top, rgba(6,6,8,1) 0%, rgba(6,6,8,0.9) 70%, transparent 100%);
-  padding: 20px 0 0 0;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -2600,10 +2598,10 @@ function renderWish() {
       </div>
     </div>`;
   }).join('')}</div>`;
-
-  // Удаляем старый обработчик и добавляем новый
+  
+  // Правильное делегирование
   el.removeEventListener('click', handleWishClick);
-  el.addEventListener('click', handleWishClick, true);
+  el.addEventListener('click', handleWishClick);
 }
 
 function handleWishClick(e) {
@@ -2611,13 +2609,9 @@ function handleWishClick(e) {
   const delBtn = e.target.closest('[data-wish-del]');
 
   if (buyBtn) {
-    e.preventDefault();
-    e.stopPropagation();
     const id = parseInt(buyBtn.dataset.wishBuy);
     addWishToCart(id);
   } else if (delBtn) {
-    e.preventDefault();
-    e.stopPropagation();
     const id = parseInt(delBtn.dataset.wishDel);
     toggleWish(id);
     haptic('light');
