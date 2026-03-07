@@ -2257,19 +2257,10 @@ function renderGrid() {
 
   document.getElementById('grid').innerHTML = list.map(p => {
     const [sLabel, sCls] = stockLabel(p.stock);
-    // Карусель из фото
-    const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
-    const imgHtml = imgs.length
-      ? `<div class="pc-carousel" id="pcc-${p.id}">
-           <div class="pc-carousel-track" id="pcct-${p.id}" style="transform:translateX(0%)">
-             ${imgs.map((url, idx) => `<div class="pc-carousel-slide"><img src="${url}" alt="Фото ${idx+1}" loading="lazy"></div>`).join('')}
-           </div>
-           ${imgs.length > 1 ? `
-             <button class="pc-nav prev" onclick="event.stopPropagation();pcSlide('${p.id}',-1)">‹</button>
-             <button class="pc-nav next" onclick="event.stopPropagation();pcSlide('${p.id}',1)">›</button>
-             <div class="pc-dots">${imgs.map((_, i) => `<div class="pc-dot${i === 0 ? ' on' : ''}"></div>`).join('')}</div>
-           ` : ''}
-         </div>`
+    // Только главное фото (БЕЗ карусели)
+    const mainImg = p.images && p.images.length ? p.images[0] : p.image_url;
+    const imgHtml = mainImg
+      ? `<img src="${mainImg}" alt="${p.name}" class="pc-img">`
       : `<div class="pc-img-placeholder">${p.cat_emoji || '📦'}</div>`;
 
     return `
@@ -2300,21 +2291,7 @@ function renderGrid() {
       </div>`;
   }).join('');
 
-  // Touch swipe для каруселей на карточках
-  setTimeout(() => {
-    list.forEach(p => {
-      if (!p.images || p.images.length <= 1) return;
-      let sx = 0, sy = 0;
-      const car = document.getElementById('pcc-' + p.id);
-      if (!car) return;
-      car.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-      car.addEventListener('touchend', e => {
-        const dx = e.changedTouches[0].clientX - sx;
-        const dy = e.changedTouches[0].clientY - sy;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 35) pcSlide(p.id, dx < 0 ? 1 : -1);
-      }, { passive: true });
-    });
-  }, 100);
+  // Карусель в карточках удалена — она теперь только в деталях товара
 }
 
 function renderSkeleton() {
@@ -3809,35 +3786,7 @@ function setTimer(minutes, el) {
 // Карусель на карточке
 const pcIdxMap = {};
 
-function pcSlide(pid, d) {
-  const p = allProducts.find(x => x.id === pid);
-  if (!p) return;
-  
-  const imgs = p.images && p.images.length ? p.images : (p.image_url ? [p.image_url] : []);
-  if (imgs.length <= 1) return;
-  
-  if (!pcIdxMap[pid]) pcIdxMap[pid] = 0;
-  pcIdxMap[pid] = (pcIdxMap[pid] + d + imgs.length) % imgs.length;
-  
-  const track = document.getElementById('pcct-' + pid);
-  if (track) {
-    track.style.transform = `translateX(-${pcIdxMap[pid] * 100}%)`;
-  }
-  
-  const card = document.getElementById('pcc-' + pid);
-  if (card) {
-    const dots = card.querySelectorAll('.pc-dot');
-    dots.forEach((dot, i) => {
-      if (i === pcIdxMap[pid]) {
-        dot.classList.add('on');
-      } else {
-        dot.classList.remove('on');
-      }
-    });
-  }
-  
-  if (typeof haptic === 'function') haptic('light');
-}
+// Функция pcSlide удалена - карусель теперь только в деталях товара
 
 // ══════════════════════════════════════════════════════════
 // OVERLAYS
