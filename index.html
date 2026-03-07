@@ -2515,9 +2515,10 @@ function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)
 function isWished(id) { return wishlist.some(x => x.id === id); }
 
 function toggleWish(id) {
-  const p = allProducts.find(x => x.id === id);
+  id = Number(id);
+  const p = allProducts.find(x => Number(x.id) === id);
   if (!p) return;
-  const idx = wishlist.findIndex(x => x.id === id);
+  const idx = wishlist.findIndex(x => Number(x.id) === id);
   if (idx >= 0) {
     wishlist.splice(idx, 1);
     toast('Убрано из избранного');
@@ -2598,10 +2599,11 @@ function renderWish() {
 }
 
 function addWishToCart(id) {
-  const p = allProducts.find(x => x.id === id) || wishlist.find(x => x.id === id);
+  id = Number(id);
+  const p = allProducts.find(x => Number(x.id) === id) || wishlist.find(x => Number(x.id) === id);
   if (!p) return;
   // refresh stock from allProducts
-  const fresh = allProducts.find(x => x.id === id);
+  const fresh = allProducts.find(x => Number(x.id) === id);
   if (!fresh || fresh.stock <= 0) { toast('❌ Нет в наличии'); return; }
   addToCart(fresh, 1);
   switchCartTab('cart');
