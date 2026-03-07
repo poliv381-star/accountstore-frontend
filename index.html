@@ -779,7 +779,7 @@ body::after {
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
-  margin: 14px 18px 0 !important;
+  margin: 0;
 }
 
 .pay-btn-main:hover {
@@ -804,13 +804,10 @@ body::after {
 }
 
 .cart-button-sticky {
-  position: fixed;
-  bottom: 60px;
-  left: 18px;
-  right: 18px;
-  margin: 0;
-  width: calc(100% - 36px);
-  z-index: 50;
+  position: static;
+  width: 100%;
+  padding: 20px 18px;
+  margin: 20px 0 0 0;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -3699,13 +3696,12 @@ function renderCart() {
     </div>
   `;
 
-  // Создаём или обновляем липкую кнопку
-  let stickyBtn = document.getElementById('payBtnSticky');
+  // Создаём или обновляем липкую кнопку ВНУТРИ cartContent, не в body!
+  let stickyBtn = el.querySelector('.cart-button-sticky');
   if (!stickyBtn) {
     stickyBtn = document.createElement('div');
-    stickyBtn.id = 'payBtnSticky';
     stickyBtn.className = 'cart-button-sticky';
-    document.body.appendChild(stickyBtn);
+    el.appendChild(stickyBtn);
   }
   
   stickyBtn.innerHTML = `
