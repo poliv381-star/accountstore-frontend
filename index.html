@@ -769,28 +769,17 @@ body::after {
 }
 
 .pay-btn-main {
-  width: 100%; 
-  padding: 17px;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
-  border: none; 
-  border-radius: 14px;
-  color: #000; 
-  font-family: 'Manrope', sans-serif;
-  font-size: 16px; 
-  font-weight: 900;
-  cursor: pointer;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 10px;
+  width:100%; padding:17px;
+  background:linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
+  border:none; border-radius:14px;
+  color:#000; font-family:'Manrope',sans-serif;
+  font-size:16px; font-weight:900;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:10px;
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
   margin: 14px 18px 0;
-}
-
-.cart-button-sticky .pay-btn-main {
-  margin: 0;
 }
 
 .pay-btn-main:hover {
@@ -810,19 +799,28 @@ body::after {
 }
 
 #cartContent {
-  padding-bottom: 100px;
+  padding-bottom: 160px;
   min-height: calc(100vh - 300px);
+}
+
+#wishContent {
+  padding-bottom: 160px;
 }
 
 .cart-button-sticky {
   position: fixed;
-  bottom: 70px;
-  left: 18px;
-  right: 18px;
+  bottom: 75px;
+  left: 0;
+  right: 0;
+  padding: 0 18px;
   margin: 0;
-  width: calc(100% - 36px);
   z-index: 50;
-  padding: 0 0 20px 0;
+  background: linear-gradient(to top, rgba(6,6,8,1) 0%, rgba(6,6,8,0.95) 60%, rgba(6,6,8,0) 100%);
+  padding-top: 20px;
+}
+
+.cart-button-sticky .pay-btn-main {
+  margin: 0;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -2589,9 +2587,10 @@ function renderWish() {
     el.innerHTML = `<div class="empty"><div class="empty-ico">🤍</div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары сердечком ❤️</div></div>`;
     return;
   }
-  el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
+  
+  el.innerHTML = `<div class="cart-list">${wishlist.map((item, idx) => {
     const inStock = item.stock > 0;
-    return `<div class="wi">
+    return `<div class="wi" data-wish-item-idx="${idx}">
       ${item.image_url
         ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||'📦'}</div>'">`
         : `<div class="wi-img-ph">${item.cat_emoji||'📦'}</div>`}
@@ -2603,26 +2602,30 @@ function renderWish() {
         <div class="wi-foot">
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
-            ${inStock ? `<button class="wi-btn buy" data-wish-buy-id="${item.id}">В корзину</button>` : ''}
-            <button class="wi-btn del" data-wish-del-id="${item.id}">✕</button>
+            ${inStock ? `<button class="wi-btn buy wi-btn-buy" data-wish-id="${item.id}">В корзину</button>` : ''}
+            <button class="wi-btn del wi-btn-del" data-wish-id="${item.id}">✕</button>
           </div>
         </div>
       </div>
     </div>`;
   }).join('')}</div>`;
 
-  // Делегирование событий для кнопок в избранном
-  el.querySelectorAll('[data-wish-buy-id]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.wishBuyId);
+  // Делегирование для кнопки "В корзину"
+  el.querySelectorAll('.wi-btn-buy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = parseInt(btn.dataset.wishId);
       addWishToCart(id);
     });
   });
-  
-  el.querySelectorAll('[data-wish-del-id]').forEach(btn => {
+
+  // Делегирование для кнопки удаления
+  el.querySelectorAll('.wi-btn-del').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
-      const id = parseInt(btn.dataset.wishDelId);
+      const id = parseInt(btn.dataset.wishId);
       toggleWish(id);
       haptic('light');
     });
