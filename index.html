@@ -2456,7 +2456,7 @@ function addToCart(p, qty) {
     if (newQty > maxQty) { toast(`⚠️ Максимум ${maxQty} шт`); cart[i].qty = maxQty; }
     else cart[i].qty = newQty;
   } else {
-    cart.push({ id: p.id, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, qty: Math.min(qty, maxQty), stock: p.stock });
+    cart.push({ id: p.id, listing_id: p.listing_id || null, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, qty: Math.min(qty, maxQty), stock: p.stock });
   }
   saveCart();
   syncBadge();
@@ -2802,8 +2802,15 @@ function openListing(id, listingObj) {
     : 'Не указано';
   const isMine = TG_USER && String(l.seller_id) === String(TG_USER.id);
 
-  // Карусель фото
-  const limgs = l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []);
+  // Карусель фото — пробуем все возможные источники
+  let limgs = [];
+  try {
+    if (Array.isArray(l.images) && l.images.length) limgs = l.images;
+    else if (typeof l.images === 'string' && l.images) limgs = JSON.parse(l.images);
+  } catch {}
+  if (!limgs.length && l.image_url) limgs = [l.image_url];
+  // Фильтруем пустые/невалидные
+  limgs = limgs.filter(u => u && typeof u === 'string' && u.startsWith('http'));
   let lCarouselIdx = 0;
   const carouselHtml = limgs.length
     ? `<div class="ld-carousel" id="ldCarousel">
@@ -3325,7 +3332,14 @@ function renderCart() {
                 <div class="q-sm-v">${item.qty}</div>
                 <div class="q-sm" data-qty-id="${safeId}" data-qty-d="1">+</div>
               </div>
-              <div class="ci-price">$${(item.price * item.qty).toFixed(2)}</div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="ci-price">$${(item.price * item.qty).toFixed(2)}</div>
+                <div class="ci-wish-btn${isWished(item.id) ? ' wished' : ''}" data-wish-id="${safeId}" style="width:28px;height:28px;border-radius:8px;background:var(--s2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="${isWished(item.id) ? '#ff4d6a' : 'none'}" stroke="${isWished(item.id) ? '#ff4d6a' : 'rgba(255,255,255,.5)'}" stroke-width="2.5">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>`;
@@ -3355,6 +3369,16 @@ function renderCart() {
       const id = btn.dataset.qtyId;
       const d = parseInt(btn.dataset.qtyD);
       setQty(id, d);
+    });
+  });
+  // Делегирование: кнопка избранного
+  el.querySelectorAll('[data-wish-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.wishId;
+      const item = cart.find(x => String(x.id) === String(id));
+      if (!item) return;
+      toggleWish(item.id);
+      renderCart();
     });
   });
 
