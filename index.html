@@ -769,6 +769,7 @@ body::after {
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
+  margin: 14px 18px 0 !important;
 }
 
 .pay-btn-main:hover {
@@ -785,6 +786,10 @@ body::after {
   margin:10px 18px 0;
   display:flex; justify-content:center; align-items:center;
   gap:6px; font-size:11px; color:var(--dim);
+}
+
+#cartContent {
+  padding-bottom: 200px;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -3636,8 +3641,7 @@ function renderCart() {
           <div class="ci-body">
             <div>
               <div class="ci-name">${item.name}</div>
-              <div class="ci-unit">$${item.price.toFixed(2)} / шт</div>
-              <div style="font-size:11px;color:var(--green);margin-top:4px">📦 В наличии: ${item.stock || 1} шт</div>
+              <div style="font-size:11px;color:var(--sub);margin-top:4px">В наличии: ${item.stock || 1} шт</div>
             </div>
             <div class="ci-foot">
               <div class="ci-ctrl">
