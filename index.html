@@ -2518,10 +2518,9 @@ function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)
 function isWished(id) { return wishlist.some(x => x.id === id); }
 
 function toggleWish(id) {
-  id = parseInt(id) || id;
-  const p = allProducts.find(x => x.id === id || String(x.id) === String(id));
+  const p = allProducts.find(x => x.id === id);
   if (!p) return;
-  const idx = wishlist.findIndex(x => x.id === id || String(x.id) === String(id));
+  const idx = wishlist.findIndex(x => x.id === id);
   if (idx >= 0) {
     wishlist.splice(idx, 1);
     toast('Убрано из избранного');
@@ -2580,7 +2579,6 @@ function renderWish() {
   }
   el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
     const inStock = item.stock > 0;
-    const itemId = item.id;
     return `<div class="wi">
       ${item.image_url
         ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||'📦'}</div>'">`
@@ -2593,8 +2591,8 @@ function renderWish() {
         <div class="wi-foot">
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
-            ${inStock ? `<button class="wi-btn buy" onclick="addWishToCart('${itemId}')">В корзину</button>` : ''}
-            <button class="wi-btn del" onclick="toggleWish('${itemId}')">✕</button>
+            ${inStock ? `<button class="wi-btn buy" onclick="window.addWishToCart(${item.id})">В корзину</button>` : ''}
+            <button class="wi-btn del" onclick="window.toggleWish(${item.id})">✕</button>
           </div>
         </div>
       </div>
@@ -2603,11 +2601,10 @@ function renderWish() {
 }
 
 function addWishToCart(id) {
-  id = parseInt(id) || id;
-  const p = allProducts.find(x => x.id === id || String(x.id) === String(id)) || wishlist.find(x => x.id === id || String(x.id) === String(id));
+  const p = allProducts.find(x => x.id === id) || wishlist.find(x => x.id === id);
   if (!p) return;
   // refresh stock from allProducts
-  const fresh = allProducts.find(x => x.id === id || String(x.id) === String(id));
+  const fresh = allProducts.find(x => x.id === id);
   if (!fresh || fresh.stock <= 0) { toast('❌ Нет в наличии'); return; }
   addToCart(fresh, 1);
   switchCartTab('cart');
