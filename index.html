@@ -1410,10 +1410,10 @@ body::after {
   <div id="wishContent" style="display:none"></div>
 </div>
 
-<!-- ORDERS -->
-<div class="pg" id="pg-orders">
-  <div class="pg-head">История заказов</div>
-  <div id="ordersContent"><div class="spin-wrap"><div class="spin"></div></div></div>
+<!-- DEALS -->
+<div class="pg" id="pg-deals">
+  <div class="pg-head">Сделки</div>
+  <div id="dealsPageContent"><div class="spin-wrap"><div class="spin"></div></div></div>
 </div>
 
 <!-- PROFILE -->
@@ -1433,8 +1433,19 @@ body::after {
 
   <!-- БАЛАНС -->
   <div class="balance-card">
-    <div class="balance-label">💳 Баланс аккаунта</div>
-    <div class="balance-amount"><span>$</span><span id="balanceAmt">0.00</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="balance-label" style="margin-bottom:0;font-size:11px;font-weight:900">💳 БАЛАНС АККАУНТА</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)">$<span id="balanceAmt">0.00</span></div>
+    </div>
+    <div style="height:1px;background:rgba(232,200,74,.15);margin:10px 0"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:11px;color:var(--dim)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#4fc3f7" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>В сделке</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#4fc3f7">$<span id="frozenAmt">0.00</span></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-size:11px;color:var(--dim)">💸 Потрачено</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--sub)">$<span id="spentAmt">0.00</span></div>
+    </div>
     <div class="balance-actions">
       <button class="bal-btn topup" onclick="openOverlay('topupOverlay')">+ Пополнить</button>
       <button class="bal-btn withdraw" onclick="openOverlay('withdrawOverlay')">↑ Вывести</button>
@@ -1442,19 +1453,28 @@ body::after {
     </div>
   </div>
 
-  <div class="menu-l">
-    <div class="mrow" onclick="switchPage('orders')">
-      <div class="m-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-        </svg>
+  <!-- РЕПУТАЦИЯ -->
+  <div id="reputationBlock" style="display:none;margin:12px 18px 0;background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:18px 20px">
+    <div style="font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">⭐ Репутация продавца</div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+      <div style="text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:var(--gold)" id="repPct">—</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px">позитивных</div>
       </div>
-      <div class="m-txt">История заказов</div>
-      <div class="m-arr">›</div>
+      <div style="flex:1">
+        <div style="background:var(--s2);border-radius:6px;height:8px;overflow:hidden">
+          <div id="repBar" style="height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--orange));width:0%;transition:width .6s ease"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <div style="font-size:11px;color:var(--sub)">Отзывов: <b id="repTotal">0</b></div>
+          <div style="font-size:11px;color:var(--green)">👍 <span id="repPos">0</span></div>
+        </div>
+      </div>
     </div>
+    <div style="font-size:11px;color:var(--dim);text-align:center">Репутация формируется из завершённых сделок покупателей</div>
+  </div>
+
+  <div class="menu-l">
     <div class="mrow" id="supportBtn">
       <div class="m-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1531,12 +1551,11 @@ body::after {
     </svg>
     <span>Добавить</span>
   </div>
-  <div class="nt" id="nt-orders" onclick="switchPage('orders',this)">
+  <div class="nt" id="nt-deals" onclick="switchPage('deals',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
     </svg>
-    <span>Заказы</span>
+    <span>Сделки</span>
   </div>
   <div class="nt" id="nt-profile" onclick="switchPage('profile',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -2485,7 +2504,7 @@ async function checkout() {
 
     // Переходим в сделки
     setTimeout(() => {
-      switchPage('orders');
+      switchPage('deals');
       openMyDeals();
     }, 800);
 
@@ -2569,14 +2588,36 @@ async function loadProfile() {
     document.getElementById('st0').textContent = stats.total_orders   || 0;
     document.getElementById('st1').textContent = stats.total_listings || stats.total_accounts || 0;
     document.getElementById('st2').textContent = stats.total_deals || stats.total_orders || 0;
+
+    // Репутация продавца
+    const total = Number(stats.seller_deals_total || 0);
+    const pos   = Number(stats.seller_deals_positive || 0);
+    const repBlock = document.getElementById('reputationBlock');
+    if (total > 0) {
+      const pct = Math.round(100 * pos / total);
+      document.getElementById('repPct').textContent = pct + '%';
+      document.getElementById('repBar').style.width  = pct + '%';
+      document.getElementById('repTotal').textContent = total;
+      document.getElementById('repPos').textContent   = pos;
+      repBlock.style.display = '';
+    } else {
+      repBlock.style.display = 'none';
+    }
+
+    // Потраченные средства
+    const spent = Number(stats.total_spent || 0);
+    const spentEl = document.getElementById('spentAmt');
+    if (spentEl) spentEl.textContent = spent.toFixed(2);
   } catch {}
   loadBalance();
 }
 
 async function loadBalance() {
   try {
-    const { balance } = await api('/api/balance');
+    const { balance, frozen_balance } = await api('/api/balance');
     document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+    const frozen = document.getElementById('frozenAmt');
+    if (frozen) frozen.textContent = Number(frozen_balance || 0).toFixed(2);
     const cba = document.getElementById('cartBalanceAmt');
     if (cba) cba.textContent = Number(balance).toFixed(2);
   } catch {}
@@ -2685,7 +2726,7 @@ function switchPage(name, el) {
   const nav = el || document.getElementById('nt-' + name);
   if (nav) nav.classList.add('on');
   if (name === 'cart') { switchCartTab('cart'); syncWishCount(); loadCartBalance(); }
-  if (name === 'orders')  loadOrders();
+  if (name === 'deals')   loadDealsPage();
   if (name === 'profile') loadProfile();
   if (name === 'p2p')     loadP2P();
 }
@@ -2808,7 +2849,7 @@ function openListing(id, listingObj) {
           <div class="q-val" id="ldQtyVal">1</div>
           <div class="q-btn" onclick="ldChQty(1)">+</div>
         </div>
-        <div style="display:flex;gap:10px;margin-bottom:12px">
+        <div style="display:flex;gap:10px;margin-bottom:20px">
           <button class="add-btn" onclick="addListingToCart()" style="flex:1">
             🛒 В корзину
           </button>
@@ -2817,14 +2858,7 @@ function openListing(id, listingObj) {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
-        </div>
-        <div class="agree-row">
-          <input type="checkbox" id="agreeCheck">
-          <label for="agreeCheck">Согласен с условиями: средства заморозятся до подтверждения получения товара.</label>
-        </div>
-        <button class="pay-btn-main" onclick="buyListing()" id="buyListingBtn" style="margin:10px 0 0">
-          ❄️ Купить · заморозить $${Number(l.price).toFixed(2)}
-        </button>`}
+        </div>`}
     </div>
   `;
 
@@ -2916,7 +2950,78 @@ async function buyListing() {
   }
 }
 
+async function loadDealsPage() {
+  const el = document.getElementById('dealsPageContent');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { deals } = await api('/api/deals/my');
+    if (!deals.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Сделок нет</div><div class="empty-sub">Купите товар через эскроу</div></div>';
+      return;
+    }
+    const sMap = {
+      frozen:               ['❄️', 'Заморожено',            '#4fc3f7'],
+      waiting_confirmation: ['📦', 'Ожидает подтверждения', '#ffb74d'],
+      dispute:              ['⚠️', 'Спор',                  '#ef5350'],
+      completed:            ['✅', 'Завершено',             '#66bb6a'],
+      auto_completed:       ['✅', 'Авто-завершено',        '#66bb6a'],
+      cancelled:            ['❌', 'Отменено',              '#9e9e9e'],
+      refunded:             ['↩️', 'Возврат',               '#ab47bc']
+    };
+
+    function buildDealCard(d) {
+      const isBuyer     = d.my_role === 'buyer';
+      const sm          = sMap[d.status] || ['⏳', 'Ожидание', '#9e9e9e'];
+      const ico = sm[0], label = sm[1], color = sm[2];
+      const canConfirm  = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
+      const canDispute  = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
+      const canMarkSent = !isBuyer && d.status === 'frozen';
+      const canCancel   = d.status === 'frozen' && isBuyer;
+
+      let timerHtml = '';
+      if (d.status === 'waiting_confirmation' && d.auto_confirm_at) {
+        const left = Math.max(0, new Date(d.auto_confirm_at) - Date.now());
+        const h = Math.floor(left / 3600000);
+        const m = Math.floor((left % 3600000) / 60000);
+        timerHtml = '<div style="font-size:11px;color:var(--dim);margin-bottom:8px">⏳ Авто-завершение через: <b>' + h + 'ч ' + m + 'мин</b></div>';
+      }
+
+      const btns =
+        (canConfirm  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">✅ Получил товар — подтвердить</button>' : '') +
+        (canMarkSent ? '<button class="deal-btn sent" onclick="markSent(' + d.id + ')">📤 Отправил товар</button>' : '') +
+        (canDispute  ? '<button class="deal-btn dispute" onclick="openDispute(' + d.id + ')">⚠️ Открыть спор</button>' : '') +
+        (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">Отменить сделку</button>' : '');
+
+      const party = isBuyer
+        ? '🧑 Продавец: @' + (d.seller_username || 'скрыт')
+        : '🛍 Покупатель: @' + (d.buyer_username || 'скрыт');
+
+      return '<div class="deal-card">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+          '<div style="font-size:13px;font-weight:800;color:var(--sub)">#' + d.id + ' · ' + (isBuyer ? 'Покупка' : 'Продажа') + '</div>' +
+          '<div style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;background:' + color + '22;color:' + color + '">' + ico + ' ' + label + '</div>' +
+        '</div>' +
+        timerHtml +
+        '<div style="font-size:15px;font-weight:900;margin-bottom:4px">' + (d.listing_title || d.title || '—') + '</div>' +
+        "<div style=\"font-family:monospace;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:10px\">$" + Number(d.amount || d.total || 0).toFixed(2) + "</div>" +
+        '<div style="font-size:12px;color:var(--sub);margin-bottom:12px">' + party + '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px">' + btns + '</div>' +
+      '</div>';
+    }
+
+    el.innerHTML = '<div style="padding:0 18px 80px;display:flex;flex-direction:column;gap:12px;margin-top:4px">' +
+      deals.map(buildDealCard).join('') +
+    '</div>';
+  } catch(e) {
+    el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--sub)">❌ ' + e.message + '</div>';
+  }
+}
+
+
 async function openMyDeals() {
+  switchPage('deals', document.getElementById('nt-deals'));
+  return;
+  // legacy overlay (unused)
   openOverlay('myDealsOverlay');
   const el = document.getElementById('myDealsList');
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
@@ -3196,9 +3301,10 @@ function renderCart() {
     <div class="cart-list">
       ${cart.map(item => {
         const isSelected = selectedCartItemId === item.id;
+        const safeId = String(item.id).replace(/"/g, '');
         return `
-        <div class="ci${isSelected ? ' selected' : ''}" id="ci-${item.id}">
-          <div class="ci-check-wrap" onclick="selectCartItem(${JSON.stringify(item.id)})">
+        <div class="ci${isSelected ? ' selected' : ''}" id="ci-${safeId}">
+          <div class="ci-check-wrap" data-cart-id="${safeId}">
             <div class="ci-check${isSelected ? ' checked' : ''}">
               <svg viewBox="0 0 12 10" width="12" height="10" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="1,5 4.5,8.5 11,1"/>
@@ -3206,7 +3312,7 @@ function renderCart() {
             </div>
           </div>
           ${item.image_url
-            ? `<img class="ci-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=ci-img-ph>${item.cat_emoji||'📦'}</div>'">`
+            ? `<img class="ci-img" src="${item.image_url}" alt="" onerror="this.style.display='none'">`
             : `<div class="ci-img-ph">${item.cat_emoji||'📦'}</div>`}
           <div class="ci-body">
             <div>
@@ -3215,9 +3321,9 @@ function renderCart() {
             </div>
             <div class="ci-foot">
               <div class="ci-ctrl">
-                <div class="q-sm" onclick="setQty(${JSON.stringify(item.id)},-1)">−</div>
+                <div class="q-sm" data-qty-id="${safeId}" data-qty-d="-1">−</div>
                 <div class="q-sm-v">${item.qty}</div>
-                <div class="q-sm" onclick="setQty(${JSON.stringify(item.id)},1)">+</div>
+                <div class="q-sm" data-qty-id="${safeId}" data-qty-d="1">+</div>
               </div>
               <div class="ci-price">$${(item.price * item.qty).toFixed(2)}</div>
             </div>
@@ -3229,20 +3335,40 @@ function renderCart() {
       <span style="font-size:12px;color:var(--sub)">Баланс</span>
       <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--gold)">$<span id="cartBalanceAmt">0.00</span></span>
     </div>
-    <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" ${selectedCartItemId === null ? 'disabled style="opacity:.35"' : ''}>
+    <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" ${selectedCartItemId === null ? 'disabled style="opacity:.35;cursor:not-allowed"' : ''}>
       ❄️ Оплатить выбранное
     </button>
     <div class="trust-row-cart">🔒 Выберите товар галочкой для оплаты</div>
     <div style="height:20px"></div>
   `;
+
+  // Делегирование: чекбокс
+  el.querySelectorAll('[data-cart-id]').forEach(wrap => {
+    wrap.addEventListener('click', () => {
+      const id = wrap.dataset.cartId;
+      selectCartItem(id);
+    });
+  });
+  // Делегирование: кнопки +/−
+  el.querySelectorAll('[data-qty-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.qtyId;
+      const d = parseInt(btn.dataset.qtyD);
+      setQty(id, d);
+    });
+  });
+
   loadCartBalance();
 }
 
 function selectCartItem(id) {
-  if (selectedCartItemId === id) {
+  // data-* атрибуты всегда строки, cart.id может быть числом — используем ==
+  if (selectedCartItemId == id) {
     selectedCartItemId = null;
   } else {
-    selectedCartItemId = id;
+    // Ищем реальный id из cart чтобы сохранить правильный тип
+    const item = cart.find(x => String(x.id) === String(id));
+    selectedCartItemId = item ? item.id : id;
     haptic('light');
   }
   renderCart();
@@ -3250,7 +3376,7 @@ function selectCartItem(id) {
 
 function openCartConfirmSheet() {
   if (selectedCartItemId === null) { toast('⚠️ Выберите товар'); return; }
-  const item = cart.find(x => x.id === selectedCartItemId);
+  const item = cart.find(x => String(x.id) === String(selectedCartItemId));
   if (!item) return;
 
   const total = (item.price * item.qty).toFixed(2);
@@ -3274,7 +3400,7 @@ async function confirmCartPay() {
   if (!document.getElementById('cartConfirmAgree').checked) {
     toast('⚠️ Подтвердите согласие с условиями'); haptic('error'); return;
   }
-  const item = cart.find(x => x.id === selectedCartItemId);
+  const item = cart.find(x => String(x.id) === String(selectedCartItemId));
   if (!item) return;
 
   // Проверяем лимит активных сделок
@@ -3301,7 +3427,7 @@ async function confirmCartPay() {
     });
 
     // Удаляем оплаченный товар из корзины
-    cart = cart.filter(x => x.id !== selectedCartItemId);
+    cart = cart.filter(x => String(x.id) !== String(selectedCartItemId));
     selectedCartItemId = null;
     saveCart(); syncBadge(); renderCart();
 
