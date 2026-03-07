@@ -779,11 +779,7 @@ body::after {
   box-shadow: 0 8px 24px rgba(232,200,74,0.3);
   position: relative;
   overflow: hidden;
-  margin: 0;
-}
-
-.cart-button-sticky .pay-btn-main {
-  margin: 0;
+  margin: 14px 18px 0 !important;
 }
 
 .pay-btn-main:hover {
@@ -803,16 +799,20 @@ body::after {
 }
 
 #cartContent {
-  padding-bottom: 20px;
+  padding-bottom: 150px;
   min-height: calc(100vh - 300px);
 }
 
 .cart-button-sticky {
-  position: static;
-  width: 100%;
-  padding: 20px 0;
-  margin: 14px 0 0 0;
+  position: fixed;
+  bottom: 60px;
+  left: 18px;
+  right: 18px;
+  width: calc(100% - 36px);
+  margin: 0;
   z-index: 50;
+  background: linear-gradient(to top, rgba(6,6,8,1) 0%, rgba(6,6,8,0.9) 70%, transparent 100%);
+  padding: 20px 0 0 0;
 }
 
 /* ── CART ITEM CHECKBOX ─────────────────── */
@@ -2579,10 +2579,9 @@ function renderWish() {
     el.innerHTML = `<div class="empty"><div class="empty-ico">🤍</div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары сердечком ❤️</div></div>`;
     return;
   }
-  
-  el.innerHTML = `<div class="cart-list">${wishlist.map((item, idx) => {
+  el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
     const inStock = item.stock > 0;
-    return `<div class="wi" data-wish-item-idx="${idx}">
+    return `<div class="wi">
       ${item.image_url
         ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||'📦'}</div>'">`
         : `<div class="wi-img-ph">${item.cat_emoji||'📦'}</div>`}
@@ -2594,34 +2593,35 @@ function renderWish() {
         <div class="wi-foot">
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
-            ${inStock ? `<button class="wi-btn buy wi-btn-buy" data-wish-id="${item.id}">В корзину</button>` : ''}
-            <button class="wi-btn del wi-btn-del" data-wish-id="${item.id}">✕</button>
+            ${inStock ? `<button class="wi-btn buy" data-wish-buy="${item.id}">В корзину</button>` : ''}
+            <button class="wi-btn del" data-wish-del="${item.id}">✕</button>
           </div>
         </div>
       </div>
     </div>`;
   }).join('')}</div>`;
 
-  // Делегирование для кнопки "В корзину"
-  el.querySelectorAll('.wi-btn-buy').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const id = parseInt(btn.dataset.wishId);
-      addWishToCart(id);
-    });
-  });
+  // Удаляем старый обработчик и добавляем новый
+  el.removeEventListener('click', handleWishClick);
+  el.addEventListener('click', handleWishClick, true);
+}
 
-  // Делегирование для кнопки удаления
-  el.querySelectorAll('.wi-btn-del').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const id = parseInt(btn.dataset.wishId);
-      toggleWish(id);
-      haptic('light');
-    });
-  });
+function handleWishClick(e) {
+  const buyBtn = e.target.closest('[data-wish-buy]');
+  const delBtn = e.target.closest('[data-wish-del]');
+
+  if (buyBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = parseInt(buyBtn.dataset.wishBuy);
+    addWishToCart(id);
+  } else if (delBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    const id = parseInt(delBtn.dataset.wishDel);
+    toggleWish(id);
+    haptic('light');
+  }
 }
 
 function addWishToCart(id) {
@@ -3723,13 +3723,13 @@ function renderCart() {
     </div>
   `;
 
-  // Создаём липкую кнопку ВНУТРИ cartContent, не в body!
+  // Создаём или обновляем липкую кнопку
   let stickyBtn = document.getElementById('payBtnSticky');
   if (!stickyBtn) {
     stickyBtn = document.createElement('div');
     stickyBtn.id = 'payBtnSticky';
     stickyBtn.className = 'cart-button-sticky';
-    el.appendChild(stickyBtn);  // ← Добавляем в el (cartContent), а не в body!
+    document.body.appendChild(stickyBtn);
   }
   
   stickyBtn.innerHTML = `
