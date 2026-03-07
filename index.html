@@ -1223,8 +1223,11 @@ body::after {
 .form-textarea { resize:none; height:80px; line-height:1.5; }
 .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .deal-card {
-  background:var(--s1); border:1px solid var(--border);
-  border-radius:14px; padding:13px; margin-bottom:10px;
+  background:linear-gradient(135deg, rgba(19,19,24,0.8) 0%, rgba(26,26,34,0.6) 100%);
+  border:1px solid rgba(232,200,74,0.15);
+  border-radius:16px; padding:16px; margin-bottom:12px;
+  backdrop-filter:blur(10px);
+  transition:.2s;
 }
 .deal-status {
   display:inline-flex; align-items:center; gap:5px;
@@ -3407,15 +3410,19 @@ async function openMyListings() {
     }
     const sMap = { active:'🟢 Активно', paused:'⏸ Пауза', sold:'✅ Продано', deleted:'🗑 Удалено' };
     el.innerHTML = listings.map(l => `<div class="deal-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <div style="font-size:14px;font-weight:800">${l.title}</div>
-        <div style="font-size:11px;color:var(--sub)">${sMap[l.status]}</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:4px">${l.title}</div>
+          <div style="font-size:14px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700">$${Number(l.price).toFixed(2)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(232,200,74,.1);border-radius:8px">
+          <div style="font-size:12px;font-weight:700;color:${l.status === 'active' ? 'var(--green)' : l.status === 'paused' ? 'var(--dim)' : 'var(--green)'}">${sMap[l.status]}</div>
+        </div>
       </div>
-      <div style="font-size:13px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:10px">$${Number(l.price).toFixed(2)}</div>
       <div style="display:flex;gap:8px">
-        ${l.status === 'active' ? `<button class="deal-btn cancel" style="flex:1" onclick="changeListingStatus(${l.id},'paused')">⏸ Пауза</button>` : ''}
-        ${l.status === 'paused' ? `<button class="deal-btn confirm" style="flex:1" onclick="changeListingStatus(${l.id},'active')">▶️ Активировать</button>` : ''}
-        ${['active','paused'].includes(l.status) ? `<button class="deal-btn cancel" style="color:var(--red)" onclick="changeListingStatus(${l.id},'deleted')">🗑</button>` : ''}
+        ${l.status === 'active' ? `<button class="deal-btn cancel" style="flex:1;font-size:12px" onclick="changeListingStatus(${l.id},'paused')">⏸ Пауза</button>` : ''}
+        ${l.status === 'paused' ? `<button class="deal-btn confirm" style="flex:1;font-size:12px" onclick="changeListingStatus(${l.id},'active')">▶️ Активировать</button>` : ''}
+        ${['active','paused'].includes(l.status) ? `<button class="deal-btn cancel" style="padding:11px 8px;font-size:14px" onclick="changeListingStatus(${l.id},'deleted')" title="Удалить объявление">🗑</button>` : ''}
       </div>
     </div>`).join('');
   } catch (e) {
