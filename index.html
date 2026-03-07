@@ -1596,7 +1596,7 @@ body::after {
     
     <!-- Баланс -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(232,200,74,0.2)">
-      <div style="font-size:22px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text)">Баланс</div>
+      <div style="font-size:22px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)">Баланс</div>
       <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)">$<span id="balanceAmt">0.00</span></div>
     </div>
 
@@ -1614,8 +1614,8 @@ body::after {
 
     <!-- Кнопки -->
     <div style="display:flex;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(232,200,74,0.2)">
-      <button onclick="openOverlay('topupOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">+ Пополнить</button>
-      <button onclick="openOverlay('withdrawOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">↑ Вывести</button>
+      <button onclick="openOverlay('topupOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Пополнить</button>
+      <button onclick="openOverlay('withdrawOverlay')" style="flex:1;padding:11px;background:rgba(232,200,74,0.2);border:1px solid rgba(232,200,74,0.4);border-radius:10px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s">Вывести</button>
     </div>
 
     <!-- Репутация -->
@@ -1639,15 +1639,6 @@ body::after {
   </div>
 
   <div class="menu-l">
-    <div class="mrow" id="supportBtn">
-      <div class="m-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-        </svg>
-      </div>
-      <div class="m-txt">Поддержка</div>
-      <div class="m-arr">›</div>
-    </div>
     <div class="mrow" onclick="openTxHistory()">
       <div class="m-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1656,6 +1647,15 @@ body::after {
         </svg>
       </div>
       <div class="m-txt">История баланса</div>
+      <div class="m-arr">›</div>
+    </div>
+    <div class="mrow" id="supportBtn">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+      </div>
+      <div class="m-txt">Поддержка</div>
       <div class="m-arr">›</div>
     </div>
     <div class="mrow" onclick="openOverlay('aboutOverlay')">
@@ -2165,7 +2165,7 @@ async function api(path, opts = {}) {
 // STATE
 // ══════════════════════════════════════════════════════════
 let allProducts  = [];
-let cart         = JSON.parse(sessionStorage.getItem('as_cart') || '[]');
+let cart         = JSON.parse(localStorage.getItem('as_cart') || '[]');
 let curProduct   = null;
 let curQty       = 1;
 let curPayUrl    = null;
@@ -2500,9 +2500,9 @@ function quickAdd(id) {
 // ══════════════════════════════════════════════════════════
 // WISHLIST
 // ══════════════════════════════════════════════════════════
-let wishlist = JSON.parse(sessionStorage.getItem('as_wish') || '[]');
+let wishlist = JSON.parse(localStorage.getItem('as_wish') || '[]');
 
-function saveWish() { sessionStorage.setItem('as_wish', JSON.stringify(wishlist)); }
+function saveWish() { localStorage.setItem('as_wish', JSON.stringify(wishlist)); }
 function isWished(id) { return wishlist.some(x => String(x.id) === String(id)); }
 
 function toggleWish(id) {
@@ -2601,7 +2601,7 @@ function addWishToCart(id) {
 // ══════════════════════════════════════════════════════════
 // CART
 // ══════════════════════════════════════════════════════════
-function saveCart() { sessionStorage.setItem('as_cart', JSON.stringify(cart)); }
+function saveCart() { localStorage.setItem('as_cart', JSON.stringify(cart)); }
 
 function syncBadge() {
   const n = cart.reduce((s, i) => s + i.qty, 0);
