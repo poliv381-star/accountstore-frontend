@@ -2696,16 +2696,21 @@ function addNotification(dealId, message, type = 'deal') {
   renderNotifications();
 }
 
-function removeNotification(notifId) {
-  // Удаляем с сервера
-  api(`/api/notifications/${notifId}`, { method: 'DELETE' }).catch(e => 
-    console.log('Ошибка удаления уведомления:', e.message)
-  );
+async function removeNotification(notifId) {
+  try {
+    // Удаляем с сервера
+    await api(`/api/notifications/${notifId}`, { method: 'DELETE' });
+  } catch (e) {
+    console.log('Ошибка удаления уведомления:', e.message);
+  }
   
   // Удаляем локально
   notifications = notifications.filter(n => n.id !== notifId);
   localStorage.setItem('as_notifs', JSON.stringify(notifications));
-  updateNotifBadge();
+  
+  // Синхронизируем бейдж с сервером (очень важно!)
+  await syncNotifBadgeWithServer();
+  
   renderNotifications();
 }
 
@@ -2719,7 +2724,10 @@ function clearAllNotifications() {
     // Очищаем локально
     notifications = [];
     localStorage.setItem('as_notifs', JSON.stringify(notifications));
-    updateNotifBadge();
+    
+    // Синхронизируем бейдж с сервером
+    syncNotifBadgeWithServer();
+    
     renderNotifications();
     toast('✅ Все уведомления очищены');
   }
@@ -2741,6 +2749,22 @@ function updateNotifBadge() {
     badge.style.display = 'flex';
   } else {
     badge.style.display = 'none';
+  }
+}
+
+// Синхронизируем бейдж с сервером (загружаем актуальное количество)
+async function syncNotifBadgeWithServer() {
+  try {
+    const { unread } = await api('/api/notifications');
+    const badge = document.getElementById('notifBadge');
+    if (unread > 0) {
+      badge.textContent = unread;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch (e) {
+    console.log('Ошибка синхронизации бейджа:', e.message);
   }
 }
 
