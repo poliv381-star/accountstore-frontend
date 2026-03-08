@@ -2697,6 +2697,12 @@ function addNotification(dealId, message, type = 'deal') {
 }
 
 function removeNotification(notifId) {
+  // Удаляем с сервера
+  api(`/api/notifications/${notifId}`, { method: 'DELETE' }).catch(e => 
+    console.log('Ошибка удаления уведомления:', e.message)
+  );
+  
+  // Удаляем локально
   notifications = notifications.filter(n => n.id !== notifId);
   localStorage.setItem('as_notifs', JSON.stringify(notifications));
   updateNotifBadge();
@@ -2705,6 +2711,12 @@ function removeNotification(notifId) {
 
 function clearAllNotifications() {
   if (confirm('Вы уверены? Все уведомления будут удалены.')) {
+    // Очищаем на сервере
+    api('/api/notifications', { method: 'DELETE' }).catch(e => 
+      console.log('Ошибка очистки уведомлений:', e.message)
+    );
+    
+    // Очищаем локально
     notifications = [];
     localStorage.setItem('as_notifs', JSON.stringify(notifications));
     updateNotifBadge();
@@ -2765,9 +2777,27 @@ function renderNotifications() {
     ${notifHtml}`;
 }
 
-function openNotifs() {
+async function openNotifs() {
   openOverlay('notifOverlay');
   haptic('light');
+  
+  // Загружаем уведомления с сервера
+  try {
+    const { notifications: serverNotifs } = await api('/api/notifications');
+    // Обновляем локальные уведомления из сервера
+    notifications = serverNotifs.map(n => ({
+      id: n.id,
+      dealId: n.deal_id,
+      message: n.message,
+      type: n.type,
+      timestamp: new Date(n.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
+      createdAt: new Date(n.created_at).getTime(),
+      read: n.read
+    }));
+  } catch (e) {
+    console.log('Ошибка загрузки уведомлений:', e.message);
+  }
+  
   renderNotifications();
 }
 
