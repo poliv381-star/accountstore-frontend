@@ -2088,14 +2088,14 @@ body::after {
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:6px">⭐ Отзыв о покупателе</div>
-      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Оцените своего покупателя за сделку</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">📤 Отправить товар</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Товар отправлен? Оцените вашего покупателя</div>
       <div style="display:flex;gap:10px;margin-bottom:14px">
         <button id="sellerRevGood" class="deal-btn confirm" style="flex:1" onclick="setSellerReview(1)">👍 Хорошо</button>
         <button id="sellerRevBad"  class="deal-btn cancel"  style="flex:1" onclick="setSellerReview(-1)">👎 Плохо</button>
       </div>
       <textarea class="form-input form-textarea" id="sellerReviewText" placeholder="Комментарий (необязательно)..."></textarea>
-      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">⭐ Отправить отзыв</button>
+      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">📤 Отправить товар</button>
     </div>
   </div>
 </div>
@@ -3250,6 +3250,8 @@ function openListing(id, listingObj) {
     addToCart(p, window._ldQty || 1);
     closeOverlay('listingOverlay');
     toast('✅ Добавлено в корзину!');
+    // Перезагружаем каталог чтобы показалось актуальное количество
+    loadP2P();
   };
   openOverlay('listingOverlay');
   haptic('medium');
@@ -3266,7 +3268,8 @@ async function buyListing() {
     closeOverlay('listingOverlay');
     toast('✅ Средства заморожены! Свяжитесь с продавцом.');
     haptic('success');
-    loadP2P();
+    // Перезагружаем каталог и сделки
+    await loadP2P();
     setTimeout(() => openMyDeals(), 400);
   } catch (e) {
     toast(`❌ ${e.message}`);
@@ -3285,33 +3288,61 @@ async function loadDealsPage() {
       return;
     }
     const sMap = {
-      frozen:               ['❄️', 'Заморожено',            '#4fc3f7'],
-      waiting_confirmation: ['📦', 'Ожидает подтверждения', '#ffb74d'],
-      dispute:              ['⚠️', 'Спор',                  '#ef5350'],
-      completed:            ['✅', 'Завершено',             '#66bb6a'],
-      auto_completed:       ['✅', 'Авто-завершено',        '#66bb6a'],
-      cancelled:            ['❌', 'Отменено',              '#9e9e9e'],
-      refunded:             ['↩️', 'Возврат',               '#ab47bc']
+      frozen:               ['❄️', 'Ожидание подтверждения',    '#4fc3f7'],
+      accepted:             ['📦', 'Принято, готовка',          '#ffb74d'],
+      waiting_confirmation: ['📤', 'Товар отправлен',           '#ffa726'],
+      dispute:              ['⚠️', 'Спор',                      '#ef5350'],
+      completed:            ['✅', 'Завершено',                 '#66bb6a'],
+      auto_completed:       ['✅', 'Авто-завершено',            '#66bb6a'],
+      cancelled:            ['❌', 'Отменено',                  '#9e9e9e'],
+      refunded:             ['↩️', 'Возврат',                   '#ab47bc']
     };
 
     function buildDealCard(d) {
       const isBuyer     = d.my_role === 'buyer';
       const sm          = sMap[d.status] || ['⏳', 'Ожидание', '#9e9e9e'];
       const ico = sm[0], label = sm[1], color = sm[2];
-      const canConfirm  = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
-      const canDispute  = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
-      const canMarkSent = !isBuyer && d.status === 'frozen';
-      const canCancel   = d.status === 'frozen' && isBuyer;
-      const canSellerReview = !isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
+      const isSeller = d.my_role === 'seller';
+      const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
+      const canSendItem = isSeller && d.status === 'accepted';            // Продавец отправляет
+      const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
+      const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
+      const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller); // Отменить
 
       let timerHtml = '';
+      
+      // Информационное сообщение в зависимости от статуса и роли
+      let statusInfo = '';
+      if (d.status === 'frozen') {
+        if (isSeller) {
+          statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(79,195,247,0.1);border-radius:8px">⏳ Ожидайте - покупатель ждёт вашего подтверждения</div>';
+        } else {
+          statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(79,195,247,0.1);border-radius:8px">⏳ Ожидайте подтверждения продавцом...</div>';
+        }
+      } else if (d.status === 'accepted') {
+        if (isSeller) {
+          statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(255,183,77,0.1);border-radius:8px">📦 Сделка принята - отправьте товар покупателю</div>';
+        } else {
+          statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(255,183,77,0.1);border-radius:8px">📦 Продавец принял заказ - скоро отправит</div>';
+        }
+      } else if (d.status === 'waiting_confirmation') {
+        if (isSeller) {
+          statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(255,167,38,0.1);border-radius:8px">📤 Товар отправлен - ожидайте подтверждения покупателя</div>';
+        } else {
+          statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(255,167,38,0.1);border-radius:8px">📤 Товар в пути - проверьте и подтвердите получение</div>';
+        }
+      }
 
       const btns =
-        (canConfirm  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">✅ Получил товар — подтвердить</button>' : '') +
-        (canMarkSent ? '<button class="deal-btn sent" onclick="markItemSent(' + d.id + ')">📤 Отправил товар</button>' : '') +
-        (canSellerReview ? '<button class="deal-btn confirm" onclick="openSellerReview(' + d.id + ')">⭐ Оставить отзыв</button>' : '') +
+        // СТАТУС: frozen (ждём подтверждения продавца)
+        (canAccept  ? '<button class="deal-btn confirm" onclick="acceptDeal(' + d.id + ')">✅ Подтвердить сделку</button>' : '') +
+        // СТАТУС: accepted (продавец принял, отправляет товар)
+        (canSendItem ? '<button class="deal-btn confirm" onclick="openSellerReview(' + d.id + ')">📤 Отправил товар</button>' : '') +
+        // СТАТУС: waiting_confirmation (ждём подтверждения покупателя)
+        (canReceive  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">✅ Получил товар</button>' : '') +
         (canDispute  ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">⚠️ Открыть спор</button>' : '') +
-        (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">Отменить сделку</button>' : '');
+        // Отмена (для frozen и accepted статусов)
+        (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">❌ Отменить</button>' : '');
 
       const party = isBuyer
         ? '🧑 Продавец: @' + (d.seller_username || 'скрыт')
@@ -3322,6 +3353,7 @@ async function loadDealsPage() {
           '<div style="font-size:13px;font-weight:800;color:var(--sub)">#' + d.id + ' · ' + (isBuyer ? 'Покупка' : 'Продажа') + '</div>' +
           '<div style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;background:' + color + '22;color:' + color + '">' + ico + ' ' + label + '</div>' +
         '</div>' +
+        statusInfo +
         '<div style="font-size:15px;font-weight:900;margin-bottom:4px">' + (d.listing_title || d.title || '—') + '</div>' +
         "<div style=\"font-family:monospace;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:10px\">$" + Number(d.amount || d.total || 0).toFixed(2) + "</div>" +
         '<div style="font-size:12px;color:var(--sub);margin-bottom:12px">' + party + '</div>' +
@@ -3352,8 +3384,9 @@ async function openMyDeals() {
       return;
     }
     const sMap = {
-      frozen: '❄️ Заморожено',
-      waiting_confirmation: '📦 Ожидает подтверждения',
+      frozen: '❄️ Ожидание подтверждения',
+      accepted: '📦 Принято, готовка',
+      waiting_confirmation: '📤 Товар отправлен',
       dispute: '⚠️ Спор',
       completed: '✅ Завершено',
       auto_completed: '✅ Авто-завершено',
@@ -3363,10 +3396,11 @@ async function openMyDeals() {
     el.innerHTML = deals.map(d => {
       const isBuyer = d.my_role === 'buyer';
       const isSeller = !isBuyer;
-      const canConfirm = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
-      const canDispute = isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
-      const canMarkSent = isSeller && d.status === 'frozen';
-      const canCancel = d.status === 'frozen' && isBuyer;
+      const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
+      const canSendItem = isSeller && d.status === 'accepted';            // Продавец отправляет
+      const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
+      const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
+      const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller);
 
       let timerHtml = '';
 
@@ -3377,16 +3411,17 @@ async function openMyDeals() {
         </div>
         <div style="font-size:14px;font-weight:800;margin-bottom:4px">${d.title}</div>
         <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? '🛒 Покупка' : '📦 Продажа'} · <b style="color:var(--gold)">$${Number(d.amount).toFixed(2)}</b></div>
-        ${(d.status === 'frozen' || d.status === 'waiting_confirmation' || d.status === 'dispute') ? `
+        ${(d.status === 'frozen' || d.status === 'accepted' || d.status === 'waiting_confirmation' || d.status === 'dispute') ? `
           <div style="background:rgba(0,207,232,.08);border:1px solid rgba(0,207,232,.2);border-radius:10px;padding:10px;font-size:12px;margin-bottom:8px">
             ${isBuyer
               ? `👤 Продавец: <b>@${d.other_username || d.other_name || '—'}</b>`
               : `👤 Покупатель: <b>@${d.other_username || d.other_name || '—'}</b>`}
           </div>` : ''}
-        ${canMarkSent ? `<button class="deal-btn confirm" onclick="markItemSent(${d.id})">Товар передан покупателю</button>` : ''}
-        ${canConfirm ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар — подтвердить</button>` : ''}
+        ${canAccept ? `<button class="deal-btn confirm" onclick="acceptDeal(${d.id})">✅ Подтвердить сделку</button>` : ''}
+        ${canSendItem ? `<button class="deal-btn confirm" onclick="openSellerReview(${d.id})">📤 Отправил товар</button>` : ''}
+        ${canReceive ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар</button>` : ''}
         ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
-        ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить сделку</button>` : ''}
+        ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">❌ Отменить</button>` : ''}
       </div>`;
     }).join('');
   } catch (e) {
@@ -3589,6 +3624,15 @@ async function submitReview() {
     btn.disabled = false; btn.textContent = '✅ Подтвердить получение';
   }
 }
+async function acceptDeal(dealId) {
+  try {
+    await api(`/api/deals/${dealId}/seller-accept`, { method:'POST' });
+    toast('✅ Сделка подтверждена! Начните подготовку товара.');
+    haptic('success');
+    openMyDeals();
+  } catch(e) { toast(`❌ ${e.message}`); }
+}
+
 async function cancelDeal(dealId) {
   try {
     await api(`/api/deals/${dealId}/cancel`, { method:'POST' });
@@ -3599,12 +3643,8 @@ async function cancelDeal(dealId) {
 }
 
 async function markItemSent(dealId) {
-  try {
-    await api(`/api/deals/${dealId}/sent`, { method:'POST' });
-    toast('📦 Отмечено! Покупатель уведомлён.');
-    haptic('success');
-    openMyDeals();
-  } catch(e) { toast(`❌ ${e.message}`); }
+  // Это была старая функция, теперь используем openSellerReview
+  openSellerReview(dealId);
 }
 
 let curDisputeDealId = null;
