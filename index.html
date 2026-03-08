@@ -1944,101 +1944,102 @@ body::after {
   <div class="sheet" style="max-height:92vh;overflow-y:auto">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 Новое объявление</div>
-      <div style="font-size:12px;color:var(--sub);margin-bottom:16px;line-height:1.55">Объявление появится в общей ленте. Покупатель выберет количество и добавит в корзину или купит через эскроу.</div>
+      <div style="font-size:20px;font-weight:900;margin-bottom:4px;color:var(--gold)">Новое объявление</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:20px;line-height:1.6">Заполните информацию о товаре. Объявление появится в каталоге для всех пользователей.</div>
+      
       <div class="form-group">
-        <label class="form-label">Название</label>
-        <input class="form-input" id="lTitle" placeholder="Например: Netflix Premium 1 мес">
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Название товара</label>
+        <input class="form-input" id="lTitle" placeholder="Netflix Premium 1 месяц" style="font-size:15px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--s1)">
       </div>
+      
       <div class="form-group">
-        <label class="form-label">Категория</label>
-        <select class="form-input" id="lCategory" style="appearance:none">
-          <option value="accounts">👤 Аккаунты</option>
-          <option value="games">🎮 Игры</option>
-          <option value="software">💻 Софт</option>
-          <option value="other">📦 Другое</option>
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Категория товара</label>
+        <select class="form-input" id="lCategory" style="appearance:none;font-size:15px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--s1);cursor:pointer">
+          <option value="accounts">Аккаунты</option>
+          <option value="games">Игры</option>
+          <option value="software">Софт</option>
+          <option value="other">Другое</option>
         </select>
       </div>
+      
       <div class="form-group">
-        <label class="form-label">Описание</label>
-        <textarea class="form-input form-textarea" id="lDesc" placeholder="Опишите товар подробно..."></textarea>
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Описание товара</label>
+        <textarea class="form-input form-textarea" id="lDesc" placeholder="Подробно опишите: что входит, какие функции, сроки действия..." style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--s1);min-height:100px;resize:vertical"></textarea>
       </div>
+      
       <div class="form-group">
-        <label class="form-label">⚖️ Условия сделки</label>
-        <textarea class="form-input form-textarea" id="lDealTerms" placeholder="Например: Без возврата • Только для РФ • Доступ на 1 месяц • Обмен невозможен"></textarea>
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Условия сделки</label>
+        <textarea class="form-input form-textarea" id="lDealTerms" placeholder="Без возврата • Работает 30 дней • Максимум 3 устройства" style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--s1);min-height:80px;resize:vertical"></textarea>
       </div>
-      <div class="form-group">
-        <label class="form-label">Цена ($)</label>
-        <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="0.00">
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div class="form-group">
+          <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Цена ($)</label>
+          <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="9.99" style="font-size:16px;font-weight:700;padding:14px;border:2px solid var(--gold);border-radius:12px;background:var(--s1);color:var(--gold)">
+        </div>
+        <div class="form-group">
+          <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Количество (шт)</label>
+          <input class="form-input" id="lQuantity" type="number" min="1" max="9999" value="1" placeholder="1" style="font-size:16px;font-weight:700;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--s1)">
+        </div>
       </div>
+      
       <div class="form-group">
-        <label class="form-label">Количество товара</label>
-        <input class="form-input" id="lQuantity" type="number" min="1" max="9999" value="1" placeholder="1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Фото (до 3 штук)</label>
-        <div style="margin-bottom:8px">
-          <div id="lImgPreview0" style="display:none;margin-bottom:6px;border-radius:10px;overflow:hidden;background:#000;height:120px">
-            <img id="lImgThumb0" style="width:100%;height:120px;object-fit:contain;display:block">
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:12px">Фото товара (до 3 штук)</label>
+        <div style="margin-bottom:10px">
+          <div id="lImgPreview0" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
+            <img id="lImgThumb0" style="width:100%;height:140px;object-fit:contain;display:block">
           </div>
           <input type="file" id="lImageFile0" accept="image/*" style="display:none" onchange="prevImg(this,0)">
           <button type="button" onclick="document.getElementById('lImageFile0').click()" id="lImgBtn0"
-            style="width:100%;padding:10px;background:var(--s1);border:1px dashed var(--border2);border-radius:10px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
-            📷 Фото 1 (главное)
+            style="width:100%;padding:14px;background:var(--s1);border:2px dashed var(--gold);border-radius:12px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s">
+            Загрузить фото 1 (главное)
           </button>
         </div>
-        <div style="margin-bottom:8px">
-          <div id="lImgPreview1" style="display:none;margin-bottom:6px;border-radius:10px;overflow:hidden;background:#000;height:120px">
-            <img id="lImgThumb1" style="width:100%;height:120px;object-fit:contain;display:block">
+        <div style="margin-bottom:10px">
+          <div id="lImgPreview1" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
+            <img id="lImgThumb1" style="width:100%;height:140px;object-fit:contain;display:block">
           </div>
           <input type="file" id="lImageFile1" accept="image/*" style="display:none" onchange="prevImg(this,1)">
           <button type="button" onclick="document.getElementById('lImageFile1').click()" id="lImgBtn1"
-            style="width:100%;padding:10px;background:var(--s1);border:1px dashed var(--border2);border-radius:10px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
-            📷 Фото 2
+            style="width:100%;padding:14px;background:var(--s1);border:1px dashed var(--border2);border-radius:12px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
+            Загрузить фото 2
           </button>
         </div>
-        <div style="margin-bottom:8px">
-          <div id="lImgPreview2" style="display:none;margin-bottom:6px;border-radius:10px;overflow:hidden;background:#000;height:120px">
-            <img id="lImgThumb2" style="width:100%;height:120px;object-fit:contain;display:block">
+        <div style="margin-bottom:10px">
+          <div id="lImgPreview2" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
+            <img id="lImgThumb2" style="width:100%;height:140px;object-fit:contain;display:block">
           </div>
           <input type="file" id="lImageFile2" accept="image/*" style="display:none" onchange="prevImg(this,2)">
           <button type="button" onclick="document.getElementById('lImageFile2').click()" id="lImgBtn2"
-            style="width:100%;padding:10px;background:var(--s1);border:1px dashed var(--border2);border-radius:10px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
-            📷 Фото 3
+            style="width:100%;padding:14px;background:var(--s1);border:1px dashed var(--border2);border-radius:12px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
+            Загрузить фото 3
           </button>
         </div>
       </div>
+      
       <div class="form-group">
-        <label class="form-label">Время работы (МСК)</label>
-        <div class="form-row">
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:12px">Доступность (время МСК)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
-            <label class="form-label" style="margin-bottom:4px">С</label>
-            <input class="form-input" id="lFrom" type="time" value="09:00">
+            <label class="form-label" style="font-size:12px;color:var(--dim);margin-bottom:6px;font-weight:600">Работаю с</label>
+            <input class="form-input" id="lFrom" type="time" value="09:00" style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--s1)">
           </div>
           <div>
-            <label class="form-label" style="margin-bottom:4px">До</label>
-            <input class="form-input" id="lTo" type="time" value="23:00">
+            <label class="form-label" style="font-size:12px;color:var(--dim);margin-bottom:6px;font-weight:600">Работаю до</label>
+            <input class="form-input" id="lTo" type="time" value="23:00" style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--s1)">
           </div>
         </div>
       </div>
+      
       <div class="form-group">
-        <label class="form-label">Срок выдачи после оплаты (минут)</label>
-        <input class="form-input" id="lDelivery" type="number" min="1" max="1440" value="60">
-      </div>
-      <div class="form-group">
-        <label class="form-label">⏳ Авто-завершение сделки</label>
-        <div style="font-size:11px;color:var(--sub);margin-bottom:8px;line-height:1.5">Если покупатель не нажал «Получил» и не открыл спор — деньги автоматически уйдут вам через выбранное время.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px" id="timerChips">
-          <div class="timer-chip" onclick="setTimer(15,this)">15 мин</div>
-          <div class="timer-chip" onclick="setTimer(30,this)">30 мин</div>
-          <div class="timer-chip on" onclick="setTimer(60,this)">1 час</div>
-          <div class="timer-chip" onclick="setTimer(180,this)">3 часа</div>
-          <div class="timer-chip" onclick="setTimer(720,this)">12 часов</div>
-          <div class="timer-chip" onclick="setTimer(1440,this)">24 часа</div>
+        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Срок выдачи после оплаты</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input class="form-input" id="lDelivery" type="number" min="1" max="1440" value="60" style="font-size:16px;font-weight:700;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--s1);flex:1">
+          <span style="color:var(--dim);font-weight:600">минут</span>
         </div>
-        <input type="hidden" id="lAutoConfirmMinutes" value="60">
       </div>
-      <button class="pay-btn-main" onclick="submitListing()" id="submitListingBtn">Опубликовать объявление</button>
+      
+      <button class="pay-btn-main" onclick="submitListing()" id="submitListingBtn" style="width:100%;padding:16px;margin-top:20px;font-size:16px;font-weight:900;border-radius:14px">Опубликовать объявление</button>
     </div>
   </div>
 </div>
@@ -3304,12 +3305,6 @@ async function loadDealsPage() {
       const canSellerReview = !isBuyer && (d.status === 'frozen' || d.status === 'waiting_confirmation');
 
       let timerHtml = '';
-      if (d.status === 'waiting_confirmation' && d.auto_confirm_at) {
-        const left = Math.max(0, new Date(d.auto_confirm_at) - Date.now());
-        const h = Math.floor(left / 3600000);
-        const m = Math.floor((left % 3600000) / 60000);
-        timerHtml = '<div style="font-size:11px;color:var(--dim);margin-bottom:8px">⏳ Авто-завершение через: <b>' + h + 'ч ' + m + 'мин</b></div>';
-      }
 
       const btns =
         (canConfirm  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">✅ Получил товар — подтвердить</button>' : '') +
@@ -3327,7 +3322,6 @@ async function loadDealsPage() {
           '<div style="font-size:13px;font-weight:800;color:var(--sub)">#' + d.id + ' · ' + (isBuyer ? 'Покупка' : 'Продажа') + '</div>' +
           '<div style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;background:' + color + '22;color:' + color + '">' + ico + ' ' + label + '</div>' +
         '</div>' +
-        timerHtml +
         '<div style="font-size:15px;font-weight:900;margin-bottom:4px">' + (d.listing_title || d.title || '—') + '</div>' +
         "<div style=\"font-family:monospace;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:10px\">$" + Number(d.amount || d.total || 0).toFixed(2) + "</div>" +
         '<div style="font-size:12px;color:var(--sub);margin-bottom:12px">' + party + '</div>' +
@@ -3374,14 +3368,7 @@ async function openMyDeals() {
       const canMarkSent = isSeller && d.status === 'frozen';
       const canCancel = d.status === 'frozen' && isBuyer;
 
-      // Таймер авто-завершения
       let timerHtml = '';
-      if (d.status === 'waiting_confirmation' && d.auto_confirm_at) {
-        const left = Math.max(0, new Date(d.auto_confirm_at) - Date.now());
-        const h = Math.floor(left / 3600000);
-        const m = Math.floor((left % 3600000) / 60000);
-        timerHtml = `<div style="font-size:11px;color:var(--dim);margin-bottom:8px">⏳ Авто-завершение через: <b>${h}ч ${m}мин</b></div>`;
-      }
 
       return `<div class="deal-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -3396,8 +3383,7 @@ async function openMyDeals() {
               ? `👤 Продавец: <b>@${d.other_username || d.other_name || '—'}</b>`
               : `👤 Покупатель: <b>@${d.other_username || d.other_name || '—'}</b>`}
           </div>` : ''}
-        ${timerHtml}
-        ${canMarkSent ? `<button class="deal-btn confirm" onclick="markItemSent(${d.id})">📦 Товар передан покупателю</button>` : ''}
+        ${canMarkSent ? `<button class="deal-btn confirm" onclick="markItemSent(${d.id})">Товар передан покупателю</button>` : ''}
         ${canConfirm ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар — подтвердить</button>` : ''}
         ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
         ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить сделку</button>` : ''}
@@ -3500,7 +3486,6 @@ async function submitListing() {
       avail_from:  document.getElementById('lFrom').value || null,
       avail_to:    document.getElementById('lTo').value   || null,
       delivery_minutes: Number(document.getElementById('lDelivery').value) || 60,
-      auto_confirm_minutes: Number(document.getElementById('lAutoConfirmMinutes').value) || 60,
     };
     console.log('📤 Отправляем объявление:', listingData);
     try {
@@ -3526,7 +3511,6 @@ async function submitListing() {
     // Сбрасываем форму
     ['lTitle','lDesc','lDealTerms','lPrice'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('lQuantity').value = '1';
-    document.getElementById('lAutoConfirmMinutes').value = '60';
     document.querySelectorAll('.timer-chip').forEach((c,i) => c.classList.toggle('on', i===2));
     fileInputs.forEach((fid, i) => {
       const inp = document.getElementById(fid);
@@ -3829,12 +3813,6 @@ async function confirmCartPay() {
   }
 }
 
-function setTimer(minutes, el) {
-  document.getElementById('lAutoConfirmMinutes').value = minutes;
-  document.querySelectorAll('.timer-chip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-  haptic('light');
-}
 
 // Карусель на карточке
 const pcIdxMap = {};
