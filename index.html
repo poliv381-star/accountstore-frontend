@@ -3954,7 +3954,7 @@ async function openDealChat(dealId) {
     document.getElementById('chatMessages').innerHTML = messages.map(m => `
       <div style="display:flex;flex-direction:${m.sender_id === TG_USER.id ? 'row-reverse' : 'row'};gap:8px;margin-bottom:12px">
         <div style="max-width:75%">
-          <div style="font-size:12px;color:#fff;font-weight:600;margin-bottom:4px;text-align:${m.sender_id === TG_USER.id ? 'right' : 'left'}">${m.first_name || m.username}</div>
+          <div style="font-size:12px;color:#fff;font-weight:600;margin-bottom:4px;text-align:${m.sender_id === TG_USER.id ? 'right' : 'left'}">${m.sender_id === TG_USER.id ? 'Вы' : (m.first_name || m.username)}</div>
           <div style="padding:10px 14px;background:${m.sender_id === TG_USER.id ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:14px;word-wrap:break-word;color:${m.sender_id === TG_USER.id ? '#000' : '#fff'}">
             <div style="font-size:14px;line-height:1.4">${m.message}</div>
             <div style="font-size:11px;color:${m.sender_id === TG_USER.id ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'};margin-top:6px;text-align:right">${new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'})}</div>
@@ -3996,8 +3996,8 @@ async function sendDealMessage() {
     input.value = '';
     toast('✅ Сообщение отправлено');
     
-    // Добавляем уведомление о новом сообщении
-    addNotification(curChatDealId, `Новое сообщение: ${msg.slice(0, 50)}${msg.length > 50 ? '...' : ''}`, 'message');
+    // НЕ добавляем уведомление для своего же сообщения - ты и так об этом знаешь!
+    // Уведомление добавится на сервере и придёт второй стороне
     
     // Перезагружаем чат
     setTimeout(() => openDealChat(curChatDealId), 300);
