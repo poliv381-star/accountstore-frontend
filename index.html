@@ -2190,6 +2190,7 @@ async function api(path, opts = {}) {
 // ══════════════════════════════════════════════════════════
 let allProducts  = [];
 let cart         = JSON.parse(localStorage.getItem('as_cart') || '[]');
+let notifications = JSON.parse(localStorage.getItem('as_notifs') || '[]'); // Уведомления
 let curProduct   = null;
 let curQty       = 1;
 let curPayUrl    = null;
@@ -2258,6 +2259,8 @@ let searchQ      = '';
        </div>`;
   }
   syncBadge();
+  cleanOldNotifications(); // Очищаем уведомления старше 7 дней
+  updateNotifBadge(); // Инициализируем бейдж уведомлений
 })();
 
 function catEmoji(cat) {
@@ -2666,9 +2669,106 @@ function syncBadge() {
   if (tc) tc.textContent = n > 0 ? `(${n})` : '';
 }
 
+// ══════════════════════════════════════════════════════════
+// УВЕДОМЛЕНИЯ
+// ══════════════════════════════════════════════════════════
+
+function addNotification(dealId, message, type = 'deal') {
+  const notif = {
+    id: Date.now(),
+    dealId,
+    message,
+    type, // 'deal', 'message', 'status'
+    timestamp: new Date().toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
+    createdAt: Date.now(), // Время создания для очистки старых
+    read: false
+  };
+  
+  notifications.unshift(notif); // Добавляем в начало
+  
+  // Ограничиваем до 50 последних уведомлений
+  if (notifications.length > 50) {
+    notifications = notifications.slice(0, 50);
+  }
+  
+  localStorage.setItem('as_notifs', JSON.stringify(notifications));
+  updateNotifBadge();
+  renderNotifications();
+}
+
+function removeNotification(notifId) {
+  notifications = notifications.filter(n => n.id !== notifId);
+  localStorage.setItem('as_notifs', JSON.stringify(notifications));
+  updateNotifBadge();
+  renderNotifications();
+}
+
+function clearAllNotifications() {
+  if (confirm('Вы уверены? Все уведомления будут удалены.')) {
+    notifications = [];
+    localStorage.setItem('as_notifs', JSON.stringify(notifications));
+    updateNotifBadge();
+    renderNotifications();
+    toast('✅ Все уведомления очищены');
+  }
+}
+
+// Автоматически удаляем уведомления старше 7 дней при загрузке
+function cleanOldNotifications() {
+  const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+  notifications = notifications.filter(n => (n.createdAt || n.id) > sevenDaysAgo);
+  localStorage.setItem('as_notifs', JSON.stringify(notifications));
+  updateNotifBadge();
+}
+
+function updateNotifBadge() {
+  const unread = notifications.filter(n => !n.read).length;
+  const badge = document.getElementById('notifBadge');
+  if (unread > 0) {
+    badge.textContent = unread;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderNotifications() {
+  const container = document.getElementById('notifList');
+  
+  if (!notifications.length) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 0;color:var(--sub)">
+        <div style="font-size:36px;margin-bottom:10px">🔕</div>
+        <div style="font-size:14px">Уведомлений пока нет</div>
+        <div style="font-size:12px;margin-top:6px;color:var(--dim)">Здесь будут новости и акции</div>
+      </div>
+    `;
+    return;
+  }
+  
+  const notifHtml = notifications.map(n => 
+    `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px;background:rgba(232,200,74,0.05);border-radius:10px;margin-bottom:10px;border-left:3px solid var(--gold)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px">Сделка #${n.dealId}</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.4;margin-bottom:6px">${n.message}</div>
+        <div style="font-size:11px;color:var(--dim)">${n.timestamp}</div>
+      </div>
+      <button onclick="removeNotification(${n.id})" style="background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;padding:0;margin-left:8px;flex-shrink:0;opacity:0.7;transition:0.2s">✕</button>
+    </div>`
+  ).join('');
+  
+  container.innerHTML = 
+    `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <div style="font-size:12px;color:var(--dim)">Всего: ${notifications.length}</div>
+      <button onclick="clearAllNotifications()" style="background:none;border:none;color:var(--gold);font-size:12px;cursor:pointer;font-weight:600;text-decoration:underline">Очистить всё</button>
+    </div>
+    ${notifHtml}`;
+}
+
 function openNotifs() {
   openOverlay('notifOverlay');
   haptic('light');
+  renderNotifications();
 }
 
 function addToCart(p, qty) {
@@ -2727,6 +2827,11 @@ async function checkout() {
     });
 
     cart = []; saveCart(); syncBadge(); renderCart();
+
+    // Добавляем уведомления для каждой созданной сделки
+    deals.forEach(deal => {
+      addNotification(deal.id, `Сделка создана. Откройте чат с ${deal.my_role === 'buyer' ? 'продавцом' : 'покупателем'}`, 'deal');
+    });
 
     // Обновляем баланс
     document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
@@ -3316,7 +3421,13 @@ async function buyListing() {
   const btn = document.getElementById('buyListingBtn');
   btn.disabled = true; btn.textContent = 'Создаём сделку...';
   try {
-    await api('/api/deals', { method:'POST', body: JSON.stringify({ listing_id: curListing.id }) });
+    const { deal } = await api('/api/deals', { method:'POST', body: JSON.stringify({ listing_id: curListing.id }) });
+    
+    // Добавляем уведомление о создании сделки
+    if (deal) {
+      addNotification(deal.id, `Сделка создана. Откройте чат с продавцом`, 'deal');
+    }
+    
     closeOverlay('listingOverlay');
     toast('✅ Средства заморожены! Свяжитесь с продавцом.');
     haptic('success');
@@ -3646,6 +3757,7 @@ async function submitSellerReview() {
       review_score: reviewScore,
       review_text:  document.getElementById('sellerReviewText').value.trim()
     })});
+    addNotification(curDealId, `Товар отправлен. Ожидаем подтверждения получения от покупателя.`, 'status');
     closeOverlay('sellerReviewOverlay');
     toast('✅ Отзыв отправлен!');
     haptic('success');
@@ -3668,6 +3780,7 @@ async function submitReview() {
       review_score: reviewScore,
       review_text:  document.getElementById('reviewText').value.trim()
     })});
+    addNotification(curDealId, `Сделка завершена! Товар получен. Благодарим за покупку.`, 'status');
     closeOverlay('reviewOverlay');
     toast('✅ Сделка завершена! Деньги переведены продавцу.');
     haptic('success');
@@ -3681,6 +3794,7 @@ async function submitReview() {
 async function acceptDeal(dealId) {
   try {
     await api(`/api/deals/${dealId}/seller-accept`, { method:'POST' });
+    addNotification(dealId, `Продавец подтвердил сделку. Товар готовится к отправке.`, 'status');
     toast('✅ Сделка подтверждена! Начните подготовку товара.');
     haptic('success');
     openMyDeals();
@@ -3690,6 +3804,7 @@ async function acceptDeal(dealId) {
 async function cancelDeal(dealId) {
   try {
     await api(`/api/deals/${dealId}/cancel`, { method:'POST' });
+    addNotification(dealId, `Сделка отменена. Средства возвращены.`, 'status');
     toast('↩️ Сделка отменена, средства возвращены');
     openMyDeals();
     loadBalance();
@@ -3715,7 +3830,39 @@ async function openDealChat(dealId) {
   openOverlay('dealChatOverlay');
   
   try {
+    // Получаем сообщения и ищем статус сделки
     const { messages } = await api(`/api/deals/${dealId}/messages`);
+    
+    // Получаем данные сделки для проверки статуса
+    const { deals } = await api(`/api/deals/my`);
+    const deal = deals.find(d => d.id === dealId);
+    const isCompleted = deal && (deal.status === 'completed' || deal.status === 'cancelled');
+    
+    // Замораживаем чат если сделка завершена (но НЕ при споре!)
+    const chatInput = document.getElementById('chatInput');
+    const chatButton = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
+    
+    if (isCompleted) {
+      chatInput.disabled = true;
+      chatInput.placeholder = 'Чат заморожен - сделка завершена';
+      chatInput.style.opacity = '0.5';
+      chatInput.style.cursor = 'not-allowed';
+      if (chatButton) {
+        chatButton.disabled = true;
+        chatButton.style.opacity = '0.5';
+        chatButton.style.cursor = 'not-allowed';
+      }
+    } else {
+      chatInput.disabled = false;
+      chatInput.placeholder = 'Сообщение...';
+      chatInput.style.opacity = '1';
+      chatInput.style.cursor = 'text';
+      if (chatButton) {
+        chatButton.disabled = false;
+        chatButton.style.opacity = '1';
+        chatButton.style.cursor = 'pointer';
+      }
+    }
     
     if (!messages.length) {
       document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim);padding:20px">Нет сообщений. Начните беседу!</div>';
@@ -3747,6 +3894,13 @@ async function openDealChat(dealId) {
 
 async function sendDealMessage() {
   const input = document.getElementById('chatInput');
+  
+  // Проверяем если чат заморожен
+  if (input.disabled || input.style.opacity === '0.5') {
+    toast('❌ Чат заморожен - сделка завершена');
+    return;
+  }
+  
   const msg = input.value.trim();
   
   if (!msg) return;
@@ -3760,6 +3914,9 @@ async function sendDealMessage() {
     
     input.value = '';
     toast('✅ Сообщение отправлено');
+    
+    // Добавляем уведомление о новом сообщении
+    addNotification(curChatDealId, `Новое сообщение: ${msg.slice(0, 50)}${msg.length > 50 ? '...' : ''}`, 'message');
     
     // Перезагружаем чат
     setTimeout(() => openDealChat(curChatDealId), 300);
