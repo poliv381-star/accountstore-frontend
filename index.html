@@ -2667,10 +2667,19 @@ async function checkout() {
   haptic('medium');
 
   try {
+    // Развёртываем каждый товар в отдельный item
+    // Если в корзине 3x Netflix, отправляем 3 отдельных запроса
+    const items = [];
+    for (const cartItem of cart) {
+      for (let i = 0; i < cartItem.qty; i++) {
+        items.push({ listing_id: cartItem.listing_id, quantity: 1 });
+      }
+    }
+    
     // Один запрос — создаём сделки для всех товаров из корзины
     const { deals, total, balance } = await api('/api/deals/cart', {
       method: 'POST',
-      body: JSON.stringify({ items: cart.map(i => ({ listing_id: i.listing_id, quantity: i.qty })) }),
+      body: JSON.stringify({ items }),
     });
 
     cart = []; saveCart(); syncBadge(); renderCart();
