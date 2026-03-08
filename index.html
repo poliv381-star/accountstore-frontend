@@ -3958,7 +3958,7 @@ async function openDealChat(dealId) {
             <div style="font-size:14px;line-height:1.4">${m.message}</div>
             <div style="display:flex;align-items:center;gap:4px;margin-top:6px;justify-content:flex-end">
               <div style="font-size:11px;color:${m.sender_id === TG_USER.id ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">${new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'})}</div>
-              ${m.sender_id === TG_USER.id ? (m.read ? '<div style="font-size:11px;color:rgba(0,0,0,0.6)">✓✓</div>' : '<div style="font-size:11px;color:rgba(0,0,0,0.6)">✓</div>') : ''}
+              ${m.sender_id === TG_USER.id ? '<div style="font-size:11px;color:rgba(0,0,0,0.6)">✓✓</div>' : ''}
             </div>
           </div>
         </div>
