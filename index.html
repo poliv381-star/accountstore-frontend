@@ -2774,7 +2774,17 @@ async function loadOrders() {
 // ══════════════════════════════════════════════════════════
 async function loadProfile() {
   try {
-    const { stats } = await api('/api/profile');
+    console.log('📊 Загружаем профиль...');
+    const res = await api('/api/profile');
+    console.log('📊 Ответ профиля:', res);
+    const { stats } = res;
+    console.log('📊 Stats:', stats);
+    
+    if (!stats) {
+      console.error('❌ Stats не получены!');
+      return;
+    }
+    
     document.getElementById('st1').textContent = stats.total_listings || stats.total_accounts || 0;
     document.getElementById('st2').textContent = stats.total_deals || stats.total_orders || 0;
 
@@ -2784,6 +2794,8 @@ async function loadProfile() {
     const neg   = Number(stats.total_negative || 0);
     const pct = total > 0 ? Math.round(100 * pos / total) : 0;
     const negPct = total > 0 ? Math.round(100 * neg / total) : 0;
+    
+    console.log(`📊 Репутация: total=${total}, pos=${pos}, neg=${neg}, pct=${pct}%`);
     
     // Обновляю новые элементы
     const repTotalEl = document.getElementById('repTotal');
@@ -2800,7 +2812,9 @@ async function loadProfile() {
     if (dealsCountEl) dealsCountEl.textContent = stats.total_deals || 0;
     const dealsAmountEl = document.getElementById('dealsAmount');
     if (dealsAmountEl) dealsAmountEl.textContent = Number(stats.total_deals_amount || 0).toFixed(2);
-  } catch {}
+  } catch (e) {
+    console.error('❌ Ошибка loadProfile:', e);
+  }
   loadBalance();
 }
 
@@ -2890,12 +2904,24 @@ async function openTxHistory() {
       return;
     }
     el.innerHTML = transactions.map(tx => {
-      const isIn = tx.type === 'topup' || tx.type === 'refund';
-      const icon = tx.type === 'topup' ? '⬆️' : tx.type === 'refund' ? '↩️' : '⬇️';
-      const desc = tx.description || (tx.type === 'topup' ? 'Пополнение' : tx.type === 'refund' ? 'Возврат' : 'Списание');
+      // ПРИХОД: пополнение, возврат, выплата за сделку
+      const isIn = tx.type === 'topup' || tx.type === 'refund' || tx.type === 'deal_payout';
+      
+      // Описание
+      const desc = tx.description || {
+        'topup': 'Пополнение',
+        'deal_payout': 'Выплата за сделку',
+        'refund': 'Возврат',
+        'payment': 'Списание',
+        'withdraw': 'Вывод',
+        'topup_error': 'Ошибка пополнения',
+        'withdraw_error': 'Ошибка вывода'
+      }[tx.type] || 'Транзакция';
+      
       const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+      
       return `<div class="tx-item">
-        <div class="tx-ico ${isIn?'in':'out'}">${icon}</div>
+        <div class="tx-ico ${isIn?'in':'out'}"></div>
         <div class="tx-info">
           <div class="tx-desc">${desc}</div>
           <div class="tx-date">${date}</div>
