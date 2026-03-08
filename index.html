@@ -3952,7 +3952,7 @@ async function openDealChat(dealId) {
     
     // Выводим сообщения
     document.getElementById('chatMessages').innerHTML = messages.map(m => `
-      <div style="display:flex;flex-direction:${m.sender_id === TG_USER.id ? 'row-reverse' : 'row'};gap:8px;margin-bottom:12px">
+      <div style="display:flex;flex-direction:${m.sender_id === TG_USER.id ? 'row' : 'row-reverse'};gap:8px;margin-bottom:12px;justify-content:${m.sender_id === TG_USER.id ? 'flex-end' : 'flex-start'}">
         <div style="max-width:75%">
           <div style="font-size:12px;color:#fff;font-weight:600;margin-bottom:4px;text-align:${m.sender_id === TG_USER.id ? 'right' : 'left'}">${m.sender_id === TG_USER.id ? 'Вы' : (m.first_name || m.username)}</div>
           <div style="padding:10px 14px;background:${m.sender_id === TG_USER.id ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:14px;word-wrap:break-word;color:${m.sender_id === TG_USER.id ? '#000' : '#fff'}">
