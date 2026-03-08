@@ -2103,6 +2103,22 @@ body::after {
 <div class="toast" id="toast"></div>
 
 <!-- ══ DISPUTE OVERLAY ══════════════════════ -->
+<div class="overlay" id="dealChatOverlay" onclick="closeOverlayByBg(event,'dealChatOverlay')">
+  <div class="sheet" style="height:70vh;display:flex;flex-direction:column">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:18px;font-weight:900">💬 Чат сделки #<span id="chatDealId">—</span></div>
+    </div>
+    <!-- Сообщения -->
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px"></div>
+    <!-- Форма отправки -->
+    <div style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:8px">
+      <input id="chatInput" type="text" placeholder="Сообщение..." style="flex:1;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px">
+      <button onclick="sendDealMessage()" style="padding:10px 16px;background:var(--gold);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">📤</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="disputeOverlay" onclick="closeOverlayByBg(event,'disputeOverlay')">
   <div class="sheet">
     <div class="sh-handle"></div>
@@ -3377,7 +3393,9 @@ async function loadDealsPage() {
         (canReceive  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">✅ Получил товар</button>' : '') +
         (canDispute  ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">⚠️ Открыть спор</button>' : '') +
         // Отмена (для frozen и accepted статусов)
-        (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">❌ Отменить</button>' : '');
+        (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">❌ Отменить</button>' : '') +
+        // Чат - всегда доступен
+        '<button class="deal-btn" onclick="openDealChat(' + d.id + ')" style="background:rgba(102,187,106,0.2);border:1px solid rgba(102,187,106,0.3);color:#66bb6a">💬 Чат</button>';
 
       const party = isBuyer
         ? '🧑 Продавец: @' + (d.seller_username || 'скрыт')
@@ -3679,6 +3697,73 @@ async function cancelDeal(dealId) {
 async function markItemSent(dealId) {
   // Это была старая функция, теперь используем openSellerReview
   openSellerReview(dealId);
+}
+
+// ══════════════════════════════════════════════════════════
+// ЧАТ В СДЕЛКЕ
+// ══════════════════════════════════════════════════════════
+let curChatDealId = null;
+
+async function openDealChat(dealId) {
+  curChatDealId = dealId;
+  document.getElementById('chatDealId').textContent = dealId;
+  document.getElementById('chatInput').value = '';
+  document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim)">Загружаем сообщения...</div>';
+  
+  openOverlay('dealChatOverlay');
+  
+  try {
+    const { messages } = await api(`/api/deals/${dealId}/messages`);
+    
+    if (!messages.length) {
+      document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim);padding:20px">Нет сообщений. Начните беседу!</div>';
+      return;
+    }
+    
+    // Выводим сообщения
+    document.getElementById('chatMessages').innerHTML = messages.map(m => `
+      <div style="display:flex;flex-direction:${m.sender_id === TG_USER.id ? 'row-reverse' : 'row'};gap:8px">
+        <div style="flex:1;max-width:80%;padding:10px 12px;background:${m.sender_id === TG_USER.id ? 'var(--gold)' : 'var(--s2)'};border-radius:12px;word-wrap:break-word">
+          <div style="font-size:11px;color:${m.sender_id === TG_USER.id ? '#000' : 'var(--dim)'};margin-bottom:4px">${m.first_name || ('@' + m.username)}</div>
+          <div style="font-size:14px;color:${m.sender_id === TG_USER.id ? '#000' : 'var(--text)'}">${m.message}</div>
+          <div style="font-size:10px;color:${m.sender_id === TG_USER.id ? 'rgba(0,0,0,0.5)' : 'var(--dim)'};margin-top:4px">${new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+      </div>
+    `).join('');
+    
+    // Скролим вниз
+    setTimeout(() => {
+      const el = document.getElementById('chatMessages');
+      el.scrollTop = el.scrollHeight;
+    }, 100);
+  } catch (e) {
+    document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--red);padding:20px">❌ ${e.message}</div>`;
+  }
+}
+
+async function sendDealMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  
+  if (!msg) return;
+  
+  input.disabled = true;
+  try {
+    await api(`/api/deals/${curChatDealId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ message: msg })
+    });
+    
+    input.value = '';
+    toast('✅ Сообщение отправлено');
+    
+    // Перезагружаем чат
+    setTimeout(() => openDealChat(curChatDealId), 300);
+  } catch (e) {
+    toast(`❌ ${e.message}`);
+  } finally {
+    input.disabled = false;
+  }
 }
 
 let curDisputeDealId = null;
