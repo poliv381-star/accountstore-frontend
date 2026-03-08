@@ -2818,7 +2818,8 @@ async function loadProfile() {
 async function loadBalance() {
   try {
     const { balance, frozen_balance } = await api('/api/balance');
-    document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
+    const balEl = document.getElementById('balanceAmt');
+    if (balEl) balEl.textContent = Number(balance).toFixed(2);
     const frozen = document.getElementById('frozenAmt');
     if (frozen) frozen.textContent = Number(frozen_balance || 0).toFixed(2);
     const cba = document.getElementById('cartBalanceAmt');
@@ -2943,71 +2944,13 @@ function switchPage(name, el) {
   if (name === 'cart') { switchCartTab('cart'); syncWishCount(); loadCartBalance(); }
   if (name === 'deals')   loadDealsPage();
   if (name === 'profile') loadProfile();
-  if (name === 'p2p')     loadP2P();
 }
 
 // ══════════════════════════════════════════════════════════
-// P2P ДОСКА
 // ══════════════════════════════════════════════════════════
-let p2pFilterCat = 'all';
-let p2pListings  = [];
-let curListing   = null;
-let curDealId    = null;
-let reviewScore  = 1;
-
-async function loadP2P() {
-  const el = document.getElementById('p2pGrid');
-  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
-  try {
-    const params = new URLSearchParams();
-    if (p2pFilterCat !== 'all') params.set('category', p2pFilterCat);
-    const { listings } = await api('/api/listings?' + params);
-    p2pListings = listings;
-    renderP2PGrid();
-  } catch (e) {
-    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
-  }
-}
-
-function p2pFilter(cat, el) {
-  p2pFilterCat = cat;
-  document.querySelectorAll('.p2p-tab').forEach(t => t.classList.remove('on'));
-  el.classList.add('on');
-  loadP2P();
-}
-
-function renderP2PGrid() {
-  const el = document.getElementById('p2pGrid');
-  if (!p2pListings.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Будьте первым — нажмите «+ Продать»</div></div>';
-    return;
-  }
-  el.innerHTML = p2pListings.map(l => {
-    const rat = l.seller_rating;
-    const rCls = rat === null ? 'new' : Number(rat) >= 55 ? 'good' : 'bad';
-    const rTxt = rat === null ? 'Новый' : `${rat}% ★`;
-    const timeText = l.avail_from
-      ? `🕐 ${l.avail_from.slice(0,5)}–${l.avail_to.slice(0,5)} · ⏱ ${l.delivery_minutes} мин`
-      : `⏱ Выдача до ${l.delivery_minutes} мин`;
-    return `<div class="listing-card" onclick="openListing(${l.id})">
-      ${l.image_url
-        ? `<img class="listing-img" src="${l.image_url}" onerror="this.outerHTML='<div class=listing-img-ph>📦</div>'">`
-        : `<div class="listing-img-ph">📦</div>`}
-      <div class="listing-body">
-        <div class="listing-title">${l.title}</div>
-        <div class="listing-desc">${l.description || ''}</div>
-        <div class="listing-foot">
-          <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
-          <span class="seller-rating ${rCls}">${rTxt}</span>
-        </div>
-        <div class="listing-time">${timeText}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
 
 function openListing(id, listingObj) {
-  curListing = listingObj || p2pListings.find(l => l.id === id);
+  curListing = listingObj;
   if (!curListing) return;
   const l = curListing;
   const rat = l.seller_rating;
@@ -3282,8 +3225,6 @@ function openListing(id, listingObj) {
     addToCart(p, window._ldQty || 1);
     closeOverlay('listingOverlay');
     toast('✅ Добавлено в корзину!');
-    // Перезагружаем каталог чтобы показалось актуальное количество
-    loadP2P();
   };
   openOverlay('listingOverlay');
   haptic('medium');
@@ -3300,8 +3241,7 @@ async function buyListing() {
     closeOverlay('listingOverlay');
     toast('✅ Средства заморожены! Свяжитесь с продавцом.');
     haptic('success');
-    // Перезагружаем каталог и сделки
-    await loadP2P();
+    // Переходим в сделки
     setTimeout(() => openMyDeals(), 400);
   } catch (e) {
     toast(`❌ ${e.message}`);
@@ -3497,7 +3437,6 @@ async function changeListingStatus(id, status) {
   try {
     await api(`/api/listings/${id}/status`, { method:'PUT', body: JSON.stringify({ status }) });
     openMyListings();
-    if (status !== 'paused') loadP2P();
   } catch(e) { toast(`❌ ${e.message}`); }
 }
 
