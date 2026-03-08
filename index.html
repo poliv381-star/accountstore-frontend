@@ -2784,9 +2784,6 @@ async function loadProfile() {
       console.error('❌ Stats не получены!');
       return;
     }
-    
-    document.getElementById('st1').textContent = stats.total_listings || stats.total_accounts || 0;
-    document.getElementById('st2').textContent = stats.total_deals || stats.total_orders || 0;
 
     // Общая репутация
     const total = Number(stats.total_deals || 0);
