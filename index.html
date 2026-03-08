@@ -3954,14 +3954,25 @@ async function openDealChat(dealId) {
     document.getElementById('chatMessages').innerHTML = messages.map(m => `
       <div style="display:flex;flex-direction:${m.sender_id === TG_USER.id ? 'row' : 'row-reverse'};gap:8px;margin-bottom:12px;justify-content:${m.sender_id === TG_USER.id ? 'flex-end' : 'flex-start'}">
         <div style="max-width:75%">
-          <div style="font-size:12px;color:#fff;font-weight:600;margin-bottom:4px;text-align:${m.sender_id === TG_USER.id ? 'right' : 'left'}">${m.sender_id === TG_USER.id ? 'Вы' : (m.first_name || m.username)}</div>
-          <div style="padding:10px 14px;background:${m.sender_id === TG_USER.id ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:14px;word-wrap:break-word;color:${m.sender_id === TG_USER.id ? '#000' : '#fff'}">
+          <div style="padding:10px 14px;background:${m.sender_id === TG_USER.id ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:18px;word-wrap:break-word;color:${m.sender_id === TG_USER.id ? '#000' : '#fff'}">
             <div style="font-size:14px;line-height:1.4">${m.message}</div>
-            <div style="font-size:11px;color:${m.sender_id === TG_USER.id ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'};margin-top:6px;text-align:right">${new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'})}</div>
+            <div style="display:flex;align-items:center;gap:4px;margin-top:6px;justify-content:flex-end">
+              <div style="font-size:11px;color:${m.sender_id === TG_USER.id ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">${new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'})}</div>
+              ${m.sender_id === TG_USER.id ? (m.read ? '<div style="font-size:11px;color:rgba(0,0,0,0.6)">✓✓</div>' : '<div style="font-size:11px;color:rgba(0,0,0,0.6)">✓</div>') : ''}
+            </div>
           </div>
         </div>
       </div>
     `).join('');
+    
+    // Отмечаем чужие сообщения как прочитанные в фоне
+    messages.forEach(m => {
+      if (m.sender_id !== TG_USER.id && !m.read) {
+        api(`/api/deals/${curChatDealId}/messages/${m.id}/read`, { method: 'PUT' }).catch(e => 
+          console.log('Ошибка отметки сообщения:', e.message)
+        );
+      }
+    });
     
     // Скролим вниз
     setTimeout(() => {
