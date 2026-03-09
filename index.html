@@ -3951,19 +3951,25 @@ async function openDealChat(dealId) {
     }
     
     // Выводим сообщения
-    document.getElementById('chatMessages').innerHTML = messages.map(m => `
-      <div style="display:flex;flex-direction:${m.sender_id === TG_USER.id ? 'row' : 'row-reverse'};gap:8px;margin-bottom:12px;justify-content:${m.sender_id === TG_USER.id ? 'flex-end' : 'flex-start'}">
+    document.getElementById('chatMessages').innerHTML = messages.map(m => {
+      const isOwn = m.sender_id === TG_USER.id;
+      const readStatus = m.read ? '✓✓' : '✓';  // Двойная галочка если прочитано, одинарная если нет
+      const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
+      
+      return `
+      <div style="display:flex;gap:8px;margin-bottom:12px;${isOwn ? 'justify-content:flex-end' : 'justify-content:flex-start'}">
         <div style="max-width:75%">
-          <div style="padding:10px 14px;background:${m.sender_id === TG_USER.id ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:18px;word-wrap:break-word;color:${m.sender_id === TG_USER.id ? '#000' : '#fff'}">
+          <div style="padding:10px 14px;background:${isOwn ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:18px;word-wrap:break-word;color:${isOwn ? '#000' : '#fff'}">
             <div style="font-size:14px;line-height:1.4">${m.message}</div>
-            <div style="display:flex;align-items:center;gap:4px;margin-top:6px;justify-content:flex-end">
-              <div style="font-size:11px;color:${m.sender_id === TG_USER.id ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">${new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'})}</div>
-              ${m.sender_id === TG_USER.id ? '<div style="font-size:11px;color:rgba(0,0,0,0.6)">✓✓</div>' : ''}
+            <div style="display:flex;align-items:center;gap:4px;margin-top:6px;${isOwn ? 'justify-content:flex-end' : 'justify-content:flex-start'}">
+              <div style="font-size:11px;color:${isOwn ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">${timeStr}</div>
+              ${isOwn ? `<div style="font-size:11px;color:${m.read ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.4)'};font-weight:700">${readStatus}</div>` : ''}
             </div>
           </div>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     
     // Отмечаем чужие сообщения как прочитанные в фоне
     messages.forEach(m => {
