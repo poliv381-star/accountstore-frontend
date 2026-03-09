@@ -4055,6 +4055,7 @@ async function openDealChat(dealId) {
 
 // Глобальная переменная для хранения выбранного фото
 let chatSelectedPhoto = null;
+let chatPhotoUploadedUrl = null; // URL после загрузки на сервер
 
 // Функция для обработки выбора фото
 function handleChatPhotoSelect(event) {
@@ -4090,6 +4091,7 @@ function handleChatPhotoSelect(event) {
 // Функция для очистки выбранного фото
 function clearChatPhoto() {
   chatSelectedPhoto = null;
+  chatPhotoUploadedUrl = null;
   document.getElementById('chatPhotoInput').value = '';
   document.getElementById('chatPhotoPreview').style.display = 'none';
   document.getElementById('chatPhotoPreviewImg').src = '';
@@ -4129,49 +4131,65 @@ async function sendDealMessage() {
   const msg = input.value.trim();
   
   // Проверяем что есть текст или фото
-  if (!msg && !chatSelectedPhoto) {
+  if (!msg && !chatSelectedPhoto && !chatPhotoUploadedUrl) {
     toast('❌ Напишите сообщение или загрузьте фото');
     return;
   }
   
   input.disabled = true;
+  const btn = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
+  if (btn) btn.disabled = true;
+  
   try {
-    // Если есть фото, используем FormData
-    if (chatSelectedPhoto) {
+    let imageUrl = chatPhotoUploadedUrl;
+    
+    // Шаг 1: Если есть выбранное фото, загружаем его на /api/upload
+    if (chatSelectedPhoto && !chatPhotoUploadedUrl) {
+      console.log('📸 Загружаю фото на /api/upload...');
       const formData = new FormData();
-      formData.append('message', msg);
       formData.append('image', chatSelectedPhoto);
       
-      // Используем fetch вместо api() так как нужно передать FormData
-      const response = await fetch(`/api/deals/${curChatDealId}/messages`, {
+      const uploadResponse = await fetch('/api/upload', {
         method: 'POST',
         body: formData
         // НЕ устанавливаем Content-Type, браузер установит правильный multipart/form-data
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Ошибка отправки');
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.error || 'Ошибка загрузки фото');
       }
-    } else {
-      // Если только текст, используем обычный запрос
-      await api(`/api/deals/${curChatDealId}/messages`, {
-        method: 'POST',
-        body: JSON.stringify({ message: msg })
-      });
+      
+      const uploadData = await uploadResponse.json();
+      imageUrl = uploadData.url;
+      chatPhotoUploadedUrl = imageUrl;
+      console.log('✅ Фото загружено:', imageUrl);
     }
+    
+    // Шаг 2: Отправляем сообщение с text + image_url (простой JSON)
+    console.log('📤 Отправляю сообщение...');
+    const response = await api(`/api/deals/${curChatDealId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ 
+        message: msg || null,
+        image_url: imageUrl || null
+      })
+    });
+    
+    console.log('✅ Сообщение отправлено:', response);
     
     input.value = '';
     clearChatPhoto();
     toast('✅ Сообщение отправлено');
     
-    // Перезагружаем только сообщения вместо полной переинициализации чата
+    // Перезагружаем только сообщения
     setTimeout(() => reloadChatMessages(), 300);
   } catch (e) {
     console.error('❌ Ошибка отправки сообщения:', e);
     toast(`❌ ${e.message}`);
   } finally {
     input.disabled = false;
+    if (btn) btn.disabled = false;
   }
 }
 
