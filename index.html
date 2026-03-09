@@ -1569,8 +1569,8 @@ body::after {
 <!-- CART -->
 <div class="pg" id="pg-cart">
   <div class="cart-tabs">
-    <div class="cart-tab on" id="tab-cart" onclick="switchCartTab('cart')">🛒 Корзина <span id="cartTabCount"></span></div>
-    <div class="cart-tab" id="tab-wish" onclick="switchCartTab('wish')">❤️ Избранное <span id="wishTabCount"></span></div>
+    <div class="cart-tab on" id="tab-cart" onclick="switchCartTab('cart')">Корзина <span id="cartTabCount"></span></div>
+    <div class="cart-tab" id="tab-wish" onclick="switchCartTab('wish')">Избранное <span id="wishTabCount"></span></div>
   </div>
   <div id="cartContent"></div>
   <div id="wishContent" style="display:none"></div>
@@ -1683,25 +1683,7 @@ body::after {
     Мои объявления
     <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Новое</button>
   </div>
-  <div style="padding:12px 18px 0;text-align:center;color:var(--sub);font-size:13px;line-height:1.6">
-    Ваши объявления видны всем пользователям в каталоге.
-  </div>
-  <div style="padding:20px 18px;display:flex;flex-direction:column;gap:8px">
-    <div class="mrow" onclick="openMyListings()">
-      <div class="m-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      </div>
-      <div class="m-txt">Мои объявления</div>
-      <div class="m-arr">›</div>
-    </div>
-    <div class="mrow" onclick="openMyDeals()">
-      <div class="m-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-      </div>
-      <div class="m-txt">Мои сделки</div>
-      <div class="m-arr">›</div>
-    </div>
-  </div>
+  <div id="myListingsContent" style="padding:0 18px;display:flex;flex-direction:column;gap:8px"></div>
   <div class="gap"></div>
 </div>
 
@@ -2393,6 +2375,8 @@ function renderSkeleton() {
 
 function filterCat(slug, el) {
   filterSlug = slug;
+  searchQ = '';  // Очищаем поиск при смене категории
+  document.getElementById('searchInput').value = '';  // Очищаем input
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
   renderGrid();
@@ -2401,6 +2385,11 @@ function filterCat(slug, el) {
 
 function onSearch(v) {
   searchQ = v.trim();
+  if (searchQ) {
+    filterSlug = 'all';  // При поиске показываем все категории
+    document.querySelectorAll('.cat').forEach(c => c.classList.remove('on'));
+    document.querySelector('.cat[onclick*=\"all\"]').classList.add('on');
+  }
   renderGrid();
 }
 
@@ -2630,7 +2619,7 @@ function renderWish() {
   const el = document.getElementById('wishContent');
   syncWishCount();
   if (!wishlist.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">🤍</div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары сердечком ❤️</div></div>`;
+    el.innerHTML = `<div class="empty"><div class="empty-ico">🤍</div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары в избранное</div></div>`;
     return;
   }
   el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
@@ -3195,6 +3184,7 @@ function switchPage(name, el) {
   if (nav) nav.classList.add('on');
   if (name === 'cart') { switchCartTab('cart'); syncWishCount(); loadCartBalance(); }
   if (name === 'deals')   loadDealsPage();
+  if (name === 'p2p')     loadMyListingsInline();
   if (name === 'profile') loadProfile();
 }
 
@@ -3457,6 +3447,12 @@ function openListing(id, listingObj) {
   // Add to cart from listing
   window.addListingToCart = function() {
     if (!curListing) return;
+    // Проверяем что это не свой товар
+    if (TG_USER && String(curListing.seller_id) === String(TG_USER.id)) {
+      toast('❌ Вы не можете купить свой товар');
+      haptic('error');
+      return;
+    }
     const p = {
       id: 'l_' + curListing.id,
       listing_id: curListing.id,
@@ -3695,6 +3691,38 @@ async function openMyListings() {
   }
 }
 
+// Загрузка списка объявлений встроено в раздел P2P
+async function loadMyListingsInline() {
+  const el = document.getElementById('myListingsContent');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { listings } = await api('/api/listings/my');
+    if (!listings.length) {
+      el.innerHTML = '<div class="empty" style="padding:40px 0"><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Создайте первое, нажав «+ Новое»</div></div>';
+      return;
+    }
+    const sMap = { active:'Активно', paused:'Пауза', sold:'Продано', deleted:'Удалено' };
+    el.innerHTML = listings.map(l => `<div class="deal-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:4px">${l.title}</div>
+          <div style="font-size:14px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700">$${Number(l.price).toFixed(2)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(232,200,74,.1);border-radius:8px">
+          <div style="font-size:12px;font-weight:700;color:${l.status === 'active' ? 'var(--green)' : l.status === 'paused' ? 'var(--dim)' : 'var(--green)'}">${sMap[l.status]}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        ${l.status === 'active' ? `<button class="deal-btn cancel" style="flex:1;font-size:12px" onclick="changeListingStatus(${l.id},'paused')">Пауза</button>` : ''}
+        ${l.status === 'paused' ? `<button class="deal-btn confirm" style="flex:1;font-size:12px" onclick="changeListingStatus(${l.id},'active')">Активировать</button>` : ''}
+        ${['active','paused'].includes(l.status) ? `<button class="deal-btn cancel" style="padding:11px 8px;font-size:14px" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>` : ''}
+      </div>
+    </div>`).join('');
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+  }
+}
+
 async function changeListingStatus(id, status) {
   try {
     await api(`/api/listings/${id}/status`, { method:'PUT', body: JSON.stringify({ status }) });
@@ -3844,13 +3872,15 @@ async function submitReview() {
   const btn = document.getElementById('submitReviewBtn');
   btn.disabled = true; btn.textContent = 'Отправляем...';
   try {
+    // После подтверждения получения - сделка становится completed (на бэкенде)
+    // Отзыв автоматически опубликуется при запросе истории сделок
     await api(`/api/deals/${curDealId}/confirm`, { method:'POST', body: JSON.stringify({
       review_score: reviewScore,
       review_text:  document.getElementById('reviewText').value.trim()
     })});
     // Уведомление создаст сервер
     closeOverlay('reviewOverlay');
-    toast('✅ Сделка завершена! Деньги переведены продавцу.');
+    toast('✅ Сделка завершена! Отзыв опубликован.');
     haptic('success');
     openMyDeals();
     loadBalance();
@@ -3874,6 +3904,17 @@ async function cancelDeal(dealId) {
     await api(`/api/deals/${dealId}/cancel`, { method:'POST' });
     // Уведомление создаст сервер
     toast('↩️ Сделка отменена, средства возвращены');
+    // Перезагружаем каталог чтобы обновить остатки товара
+    const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
+    allProducts = (listings || []).map(l => ({
+      id: `l_${l.id}`, listing_id: l.id, name: l.title, description: l.description || '',
+      price: l.price, image_url: l.image_url,
+      images: l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
+      cat_name: l.category, cat_emoji: catEmoji(l.category), cat_slug: l.category,
+      stock: l.quantity || 1, badge: null, specs: [], source: 'listing', listing: l,
+    }));
+    buildCats();
+    renderGrid();
     openMyDeals();
     loadBalance();
   } catch(e) { toast(`❌ ${e.message}`); }
@@ -3984,40 +4025,41 @@ async function openDealChat(dealId) {
   openOverlay('dealChatOverlay');
   
   try {
-    // Получаем сообщения и ищем статус сделки
-    console.log('🔄 Загружаю сообщения для сделки #' + dealId);
-    const { messages } = await api(`/api/deals/${dealId}/messages`);
-    console.log('✅ Получил сообщения:', messages);
-    
     // Получаем данные сделки для проверки статуса
     const { deals } = await api(`/api/deals/my`);
     const deal = deals.find(d => d.id === dealId);
     const isCompleted = deal && (deal.status === 'completed' || deal.status === 'cancelled');
     
-    // Замораживаем чат если сделка завершена (но НЕ при споре!)
+    // Если сделка завершена - чат недоступен (сообщения удаляются)
+    if (isCompleted) {
+      document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--dim);padding:40px"><div style="font-size:36px;margin-bottom:12px">🔒</div><div style="font-size:14px">Чат закрыт</div><div style="font-size:12px;margin-top:6px;color:var(--dim)">Сделка завершена - история сообщений удалена</div></div>`;
+      const chatInput = document.getElementById('chatInput');
+      chatInput.disabled = true;
+      chatInput.placeholder = 'Чат удален';
+      chatInput.style.opacity = '0.3';
+      const chatButton = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
+      if (chatButton) { chatButton.style.display = 'none'; }
+      return;
+    }
+    
+    // Загружаем сообщения только если сделка активна
+    console.log('🔄 Загружаю сообщения для сделки #' + dealId);
+    const { messages } = await api(`/api/deals/${dealId}/messages`);
+    console.log('✅ Получил сообщения:', messages);
+    
+    // Включаем чат для активной сделки
     const chatInput = document.getElementById('chatInput');
     const chatButton = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
     
-    if (isCompleted) {
-      chatInput.disabled = true;
-      chatInput.placeholder = 'Чат заморожен - сделка завершена';
-      chatInput.style.opacity = '0.5';
-      chatInput.style.cursor = 'not-allowed';
-      if (chatButton) {
-        chatButton.disabled = true;
-        chatButton.style.opacity = '0.5';
-        chatButton.style.cursor = 'not-allowed';
-      }
-    } else {
-      chatInput.disabled = false;
-      chatInput.placeholder = 'Сообщение...';
-      chatInput.style.opacity = '1';
-      chatInput.style.cursor = 'text';
-      if (chatButton) {
-        chatButton.disabled = false;
-        chatButton.style.opacity = '1';
-        chatButton.style.cursor = 'pointer';
-      }
+    chatInput.disabled = false;
+    chatInput.placeholder = 'Сообщение...';
+    chatInput.style.opacity = '1';
+    chatInput.style.cursor = 'text';
+    if (chatButton) {
+      chatButton.disabled = false;
+      chatButton.style.opacity = '1';
+      chatButton.style.cursor = 'pointer';
+      chatButton.style.display = 'block';
     }
     
     await renderChatMessages(messages);
