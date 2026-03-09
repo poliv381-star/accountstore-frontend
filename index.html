@@ -2905,13 +2905,13 @@ async function checkout() {
   haptic('medium');
 
   try {
-    // Развёртываем каждый товар в отдельный item
-    // Если в корзине 3x Netflix, отправляем 3 отдельных запроса
+    // Преобразуем корзину в формат для API
     const items = [];
     for (const cartItem of cart) {
-      for (let i = 0; i < cartItem.qty; i++) {
-        items.push({ listing_id: cartItem.listing_id, quantity: 1 });
-      }
+      items.push({
+        listing_id: cartItem.listing_id,
+        quantity: cartItem.qty  // ✅ Отправляем полное количество, не разворачиваем
+      });
     }
     
     // Один запрос — создаём сделки для всех товаров из корзины
@@ -4283,7 +4283,7 @@ function renderCart() {
         </div>`;
       }).join('')}
     </div>
-    <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" style="margin:18px 18px 0;width:calc(100% - 36px)">
+    <button class="pay-btn-main" id="payBtn" onclick="checkout()" style="margin:18px 18px 0;width:calc(100% - 36px)">
       Оплатить выбранное
     </button>
     <div style="height:20px"></div>
