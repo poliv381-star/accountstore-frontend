@@ -3902,6 +3902,61 @@ async function markItemSent(dealId) {
 // ══════════════════════════════════════════════════════════
 let curChatDealId = null;
 
+// Отделённая функция для рендера сообщений
+async function renderChatMessages(messages) {
+  if (!messages.length) {
+    document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim);padding:20px">Нет сообщений. Начните беседу!</div>';
+    return;
+  }
+  
+  // Выводим сообщения
+  document.getElementById('chatMessages').innerHTML = messages.map(m => {
+    const mine = m.sender_id === TG_USER.id;
+    const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
+    
+    return `
+    <div style="display:flex;margin-bottom:12px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
+      <div style="max-width:75%;padding:10px 14px;border-radius:16px;background:${mine ? 'var(--gold)' : '#2a2a2a'};color:${mine ? '#000' : '#fff'}">
+        <div style="font-size:14px;line-height:1.4">${m.message}</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:6px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">
+          <span>${timeStr}</span>
+          ${mine ? `<span>${m.read ? '✓✓' : '✓'}</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  }).join('');
+  
+  // Отмечаем чужие сообщения как прочитанные в фоне
+  const unreadMessages = messages.filter(m => m.sender_id !== TG_USER.id && !m.read);
+  if (unreadMessages.length > 0) {
+    Promise.all(unreadMessages.map(m => 
+      api(`/api/deals/${curChatDealId}/messages/${m.id}/read`, { method: 'PUT' }).catch(e => 
+        console.log('Ошибка отметки сообщения:', e.message)
+      )
+    )).then(() => {
+      // Перезагружаем только сообщения чтобы обновить галочки
+      reloadChatMessages();
+    });
+  }
+  
+  // Скролим вниз
+  setTimeout(() => {
+    const el = document.getElementById('chatMessages');
+    el.scrollTop = el.scrollHeight;
+  }, 100);
+}
+
+// Функция для перезагрузки сообщений без переинициализации чата
+async function reloadChatMessages() {
+  try {
+    const { messages } = await api(`/api/deals/${curChatDealId}/messages`);
+    await renderChatMessages(messages);
+  } catch (e) {
+    console.log('Ошибка перезагрузки сообщений:', e.message);
+  }
+}
+
 async function openDealChat(dealId) {
   curChatDealId = dealId;
   document.getElementById('chatDealId').textContent = dealId;
@@ -3945,54 +4000,7 @@ async function openDealChat(dealId) {
       }
     }
     
-    if (!messages.length) {
-      document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim);padding:20px">Нет сообщений. Начните беседу!</div>';
-      return;
-    }
-    
-    // Выводим сообщения (Telegram style)
-    document.getElementById('chatMessages').innerHTML = messages.map(m => {
-      const mine = m.sender_id === TG_USER.id;
-      const time = new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-      const ticks = mine ? (m.read ? '<span style="color:#4fc3f7">✓✓</span>' : '✓') : '';
-
-      return `
-      <div style="display:flex;justify-content:${mine?'flex-end':'flex-start'};margin-bottom:12px">
-        <div style="max-width:75%;padding:10px 14px;border-radius:18px;
-        background:${mine?'var(--gold)':'rgba(255,255,255,0.08)'};
-        color:${mine?'#000':'#fff'};
-        box-shadow:0 2px 8px rgba(0,0,0,.3);
-        word-wrap:break-word;">
-        
-        <div style="font-size:14px;line-height:1.45">${m.message}</div>
-        
-        <div style="display:flex;align-items:center;gap:6px;margin-top:6px;justify-content:flex-end">
-          <div style="font-size:11px;opacity:.7">${time}</div>
-          ${mine?`<div style="font-size:11px">${ticks}</div>`:''}
-        </div>
-        
-        </div>
-      </div>`
-    }).join('');
-
-    // typing indicator
-    if(window.typingUser){
-      document.getElementById('chatMessages').innerHTML +=
-      '<div style="color:var(--sub);font-size:12px;margin:6px">печатает…</div>';
-    }
-
-    // Отмечаем чужие сообщения как прочитанными
-    messages.forEach(m=>{
-      if(m.sender_id!==TG_USER.id && !m.read){
-        api(`/api/deals/${curChatDealId}/messages/${m.id}/read`,{method:'PUT'})
-      }
-    });
-
-    // Скролим вниз
-    setTimeout(() => {
-      const el = document.getElementById('chatMessages');
-      el.scrollTop = el.scrollHeight;
-    }, 100);
+    await renderChatMessages(messages);
   } catch (e) {
     document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--red);padding:20px">❌ ${e.message}</div>`;
   }
@@ -4021,11 +4029,8 @@ async function sendDealMessage() {
     input.value = '';
     toast('✅ Сообщение отправлено');
     
-    // НЕ добавляем уведомление для своего же сообщения - ты и так об этом знаешь!
-    // Уведомление добавится на сервере и придёт второй стороне
-    
-    // Перезагружаем чат
-    setTimeout(() => openDealChat(curChatDealId), 300);
+    // Перезагружаем только сообщения вместо полной переинициализации чата
+    setTimeout(() => reloadChatMessages(), 300);
   } catch (e) {
     toast(`❌ ${e.message}`);
   } finally {
@@ -4313,31 +4318,3 @@ function haptic(type) {
 </div>
 </body>
 </html>
-
-
-// автообновление сообщений
-let chatPoll=null;
-
-function startChatPolling(){
- if(chatPoll) clearInterval(chatPoll);
- chatPoll=setInterval(()=>{
-   if(curChatDealId){
-     openDealChat(curChatDealId);
-   }
- },2000);
-}
-
-// typing detection
-let typingTimeout;
-const chatInputEl=document.getElementById('chatInput');
-if(chatInputEl){
- chatInputEl.addEventListener('input',()=>{
-   window.typingUser=true;
-   clearTimeout(typingTimeout);
-   typingTimeout=setTimeout(()=>{
-     window.typingUser=false;
-   },1500);
- });
-}
-
-startChatPolling();
