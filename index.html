@@ -2203,7 +2203,7 @@ async function api(path, opts = {}) {
 // ══════════════════════════════════════════════════════════
 let allProducts  = [];
 let cart         = JSON.parse(localStorage.getItem('as_cart') || '[]');
-let notifications = JSON.parse(localStorage.getItem('as_notifs') || '[]'); // Уведомления
+let notifications = [];  // Всегда загружаем с сервера, не из localStorage
 let curProduct   = null;
 let curQty       = 1;
 let curPayUrl    = null;
@@ -2686,45 +2686,29 @@ function syncBadge() {
 // УВЕДОМЛЕНИЯ
 // ══════════════════════════════════════════════════════════
 
+// ❌ НЕ используется больше - уведомления создаются только на сервере!
+// Эта функция оставлена для совместимости, но ничего не делает
 function addNotification(dealId, message, type = 'deal') {
-  const notif = {
-    id: Date.now(),
-    dealId,
-    message,
-    type, // 'deal', 'message', 'status'
-    timestamp: new Date().toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
-    createdAt: Date.now(), // Время создания для очистки старых
-    read: false
-  };
-  
-  notifications.unshift(notif); // Добавляем в начало
-  
-  // Ограничиваем до 50 последних уведомлений
-  if (notifications.length > 50) {
-    notifications = notifications.slice(0, 50);
-  }
-  
-  localStorage.setItem('as_notifs', JSON.stringify(notifications));
-  updateNotifBadge();
-  renderNotifications();
+  // Уведомления теперь создаются только на сервере через API
+  console.log('[Deprecated] addNotification вызвана локально (deprecated). Используйте серверные API.');
+  // Ничего не делаем - сервер создаст уведомление
 }
 
 async function removeNotification(notifId) {
   try {
     // Удаляем с сервера
     await api(`/api/notifications/${notifId}`, { method: 'DELETE' });
+    
+    // Удаляем локально (ID теперь всегда серверные)
+    notifications = notifications.filter(n => n.id !== notifId);
+    
+    // Обновляем бейдж и рендер
+    updateNotifBadge();
+    renderNotifications();
   } catch (e) {
-    console.log('Ошибка удаления уведомления:', e.message);
+    console.error('Ошибка удаления уведомления:', e.message);
+    toast('❌ Ошибка удаления уведомления');
   }
-  
-  // Удаляем локально
-  notifications = notifications.filter(n => n.id !== notifId);
-  localStorage.setItem('as_notifs', JSON.stringify(notifications));
-  
-  // Синхронизируем бейдж с сервером (очень важно!)
-  await syncNotifBadgeWithServer();
-  
-  renderNotifications();
 }
 
 function clearAllNotifications() {
@@ -2736,23 +2720,15 @@ function clearAllNotifications() {
     
     // Очищаем локально
     notifications = [];
-    localStorage.setItem('as_notifs', JSON.stringify(notifications));
     
-    // Синхронизируем бейдж с сервером
-    syncNotifBadgeWithServer();
-    
+    // Обновляем UI
+    updateNotifBadge();
     renderNotifications();
     toast('✅ Все уведомления очищены');
   }
 }
 
-// Автоматически удаляем уведомления старше 7 дней при загрузке
-function cleanOldNotifications() {
-  const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-  notifications = notifications.filter(n => (n.createdAt || n.id) > sevenDaysAgo);
-  localStorage.setItem('as_notifs', JSON.stringify(notifications));
-  updateNotifBadge();
-}
+// ❌ Удалено - сервер сам управляет старыми уведомлениями
 
 function updateNotifBadge() {
   const unread = notifications.filter(n => !n.read).length;
@@ -2855,8 +2831,8 @@ async function openNotifs() {
       // Обновляем локально
       notifications = notifications.map(n => ({ ...n, read: true }));
       
-      // Синхронизируем бейдж
-      await syncNotifBadgeWithServer();
+      // Обновляем бейдж
+      updateNotifBadge();
     }
   } catch (e) {
     console.log('Ошибка загрузки уведомлений:', e.message);
@@ -2922,10 +2898,8 @@ async function checkout() {
 
     cart = []; saveCart(); syncBadge(); renderCart();
 
-    // Добавляем уведомления для каждой созданной сделки
-    deals.forEach(deal => {
-      addNotification(deal.id, `Сделка создана. Откройте чат с ${deal.my_role === 'buyer' ? 'продавцом' : 'покупателем'}`, 'deal');
-    });
+    // Добавляем уведомления для каждой созданной сделки (создаёт сервер)
+    // addNotification удалена - сервер автоматически создаст уведомления
 
     // Обновляем баланс
     document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
@@ -3519,7 +3493,7 @@ async function buyListing() {
     
     // Добавляем уведомление о создании сделки
     if (deal) {
-      addNotification(deal.id, `Сделка создана. Откройте чат с продавцом`, 'deal');
+      // Уведомление создаст сервер
     }
     
     closeOverlay('listingOverlay');
@@ -3851,7 +3825,7 @@ async function submitSellerReview() {
       review_score: reviewScore,
       review_text:  document.getElementById('sellerReviewText').value.trim()
     })});
-    addNotification(curDealId, `Товар отправлен. Ожидаем подтверждения получения от покупателя.`, 'status');
+    // Уведомление создаст сервер
     closeOverlay('sellerReviewOverlay');
     toast('✅ Отзыв отправлен!');
     haptic('success');
@@ -3874,7 +3848,7 @@ async function submitReview() {
       review_score: reviewScore,
       review_text:  document.getElementById('reviewText').value.trim()
     })});
-    addNotification(curDealId, `Сделка завершена! Товар получен. Благодарим за покупку.`, 'status');
+    // Уведомление создаст сервер
     closeOverlay('reviewOverlay');
     toast('✅ Сделка завершена! Деньги переведены продавцу.');
     haptic('success');
@@ -3888,7 +3862,7 @@ async function submitReview() {
 async function acceptDeal(dealId) {
   try {
     await api(`/api/deals/${dealId}/seller-accept`, { method:'POST' });
-    addNotification(dealId, `Продавец подтвердил сделку. Товар готовится к отправке.`, 'status');
+    // Уведомление создаст сервер
     toast('✅ Сделка подтверждена! Начните подготовку товара.');
     haptic('success');
     openMyDeals();
@@ -3898,7 +3872,7 @@ async function acceptDeal(dealId) {
 async function cancelDeal(dealId) {
   try {
     await api(`/api/deals/${dealId}/cancel`, { method:'POST' });
-    addNotification(dealId, `Сделка отменена. Средства возвращены.`, 'status');
+    // Уведомление создаст сервер
     toast('↩️ Сделка отменена, средства возвращены');
     openMyDeals();
     loadBalance();
