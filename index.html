@@ -2112,8 +2112,21 @@ body::after {
     <!-- Сообщения -->
     <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px"></div>
     <!-- Форма отправки -->
-    <div style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:8px">
-      <input id="chatInput" type="text" placeholder="Сообщение..." style="flex:1;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px">
+    <div style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end">
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <!-- Превью загруженного фото -->
+        <div id="chatPhotoPreview" style="display:none;position:relative;width:80px;height:80px;background:var(--s2);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+          <img id="chatPhotoPreviewImg" style="width:100%;height:100%;object-fit:cover">
+          <button onclick="clearChatPhoto()" style="position:absolute;top:2px;right:2px;width:22px;height:22px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">✕</button>
+        </div>
+        <!-- Input для текста и кнопка загрузки -->
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="chatInput" type="text" placeholder="Сообщение..." style="flex:1;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px">
+          <!-- Скрытый input для файлов -->
+          <input id="chatPhotoInput" type="file" accept="image/*" style="display:none" onchange="handleChatPhotoSelect(event)">
+          <button onclick="document.getElementById('chatPhotoInput').click()" style="padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:16px">📷</button>
+        </div>
+      </div>
       <button onclick="sendDealMessage()" style="padding:10px 16px;background:var(--gold);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">📤</button>
     </div>
   </div>
@@ -3915,7 +3928,8 @@ async function renderChatMessages(messages) {
     id: m.id,
     sender_id: m.sender_id,
     sender_id_type: typeof m.sender_id,
-    message: m.message.substring(0, 20),
+    message: m.message ? m.message.substring(0, 20) : '(фото)',
+    image_url: m.image_url ? 'есть' : 'нет',
     read: m.read
   })));
   
@@ -3925,13 +3939,26 @@ async function renderChatMessages(messages) {
     const mine = Number(m.sender_id) === Number(TG_USER.id);
     const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
     
-    console.log(`Message #${m.id}: sender=${m.sender_id}, mine=${mine}, read=${m.read}`);
+    console.log(`Message #${m.id}: sender=${m.sender_id}, mine=${mine}, read=${m.read}, image=${m.image_url ? 'yes' : 'no'}`);
+    
+    // Построение HTML фото
+    const photoHtml = m.image_url ? `
+      <div style="margin:6px 0 0 0">
+        <img src="${m.image_url}" 
+             class="chat-image"
+             onclick="openChatImage('${m.image_url}')" 
+             style="max-width:100%;max-height:300px;border-radius:8px;cursor:pointer;display:block;transition:opacity 0.2s"
+             onmouseover="this.style.opacity='0.85'"
+             onmouseout="this.style.opacity='1'">
+      </div>
+    ` : '';
     
     return `
     <div style="display:flex;margin-bottom:12px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
-      <div style="max-width:75%;padding:10px 14px;border-radius:16px;background:${mine ? 'var(--gold)' : '#2a2a2a'};color:${mine ? '#000' : '#fff'}">
-        <div style="font-size:14px;line-height:1.4">${m.message}</div>
-        <div style="display:flex;align-items:center;gap:4px;margin-top:6px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">
+      <div style="max-width:75%;padding:${m.image_url ? '0' : '10px 14px'};border-radius:16px;background:${mine ? 'var(--gold)' : '#2a2a2a'};color:${mine ? '#000' : '#fff'}">
+        ${m.image_url ? `<div style="padding:10px 14px;padding-bottom:0">${m.message ? `<div style="font-size:14px;line-height:1.4;margin-bottom:6px">${m.message}</div>` : ''}</div>` : ''}
+        ${photoHtml}
+        <div style="padding:${m.image_url ? '6px 14px 10px' : '0'};display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">
           <span>${timeStr}</span>
           ${mine ? `<span>${m.read ? '✓✓' : '✓'}</span>` : ''}
         </div>
@@ -3975,6 +4002,7 @@ async function reloadChatMessages() {
 
 async function openDealChat(dealId) {
   curChatDealId = dealId;
+  clearChatPhoto(); // Очищаем старое фото
   document.getElementById('chatDealId').textContent = dealId;
   document.getElementById('chatInput').value = '';
   document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim)">Загружаем сообщения...</div>';
@@ -4025,6 +4053,70 @@ async function openDealChat(dealId) {
   }
 }
 
+// Глобальная переменная для хранения выбранного фото
+let chatSelectedPhoto = null;
+
+// Функция для обработки выбора фото
+function handleChatPhotoSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Проверяем тип файла
+  if (!file.type.startsWith('image/')) {
+    toast('❌ Это не изображение');
+    return;
+  }
+  
+  // Проверяем размер (5MB max)
+  if (file.size > 5 * 1024 * 1024) {
+    toast('❌ Файл слишком большой (макс 5MB)');
+    document.getElementById('chatPhotoInput').value = '';
+    return;
+  }
+  
+  chatSelectedPhoto = file;
+  
+  // Показываем превью
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.getElementById('chatPhotoPreview');
+    const previewImg = document.getElementById('chatPhotoPreviewImg');
+    previewImg.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// Функция для очистки выбранного фото
+function clearChatPhoto() {
+  chatSelectedPhoto = null;
+  document.getElementById('chatPhotoInput').value = '';
+  document.getElementById('chatPhotoPreview').style.display = 'none';
+  document.getElementById('chatPhotoPreviewImg').src = '';
+}
+
+// Функция для открытия фото в большом размере
+function openChatImage(src) {
+  const viewer = document.getElementById('chatImageViewer');
+  const img = document.getElementById('chatViewerImg');
+  img.src = src;
+  viewer.style.display = 'flex';
+  console.log('📸 Открыл фото:', src);
+}
+
+// Функция для закрытия viewer
+function closeChatImage() {
+  const viewer = document.getElementById('chatImageViewer');
+  viewer.style.display = 'none';
+}
+
+// Закрытие по ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeChatImage();
+  }
+});
+
 async function sendDealMessage() {
   const input = document.getElementById('chatInput');
   
@@ -4036,21 +4128,47 @@ async function sendDealMessage() {
   
   const msg = input.value.trim();
   
-  if (!msg) return;
+  // Проверяем что есть текст или фото
+  if (!msg && !chatSelectedPhoto) {
+    toast('❌ Напишите сообщение или загрузьте фото');
+    return;
+  }
   
   input.disabled = true;
   try {
-    await api(`/api/deals/${curChatDealId}/messages`, {
-      method: 'POST',
-      body: JSON.stringify({ message: msg })
-    });
+    // Если есть фото, используем FormData
+    if (chatSelectedPhoto) {
+      const formData = new FormData();
+      formData.append('message', msg);
+      formData.append('image', chatSelectedPhoto);
+      
+      // Используем fetch вместо api() так как нужно передать FormData
+      const response = await fetch(`/api/deals/${curChatDealId}/messages`, {
+        method: 'POST',
+        body: formData
+        // НЕ устанавливаем Content-Type, браузер установит правильный multipart/form-data
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Ошибка отправки');
+      }
+    } else {
+      // Если только текст, используем обычный запрос
+      await api(`/api/deals/${curChatDealId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify({ message: msg })
+      });
+    }
     
     input.value = '';
+    clearChatPhoto();
     toast('✅ Сообщение отправлено');
     
     // Перезагружаем только сообщения вместо полной переинициализации чата
     setTimeout(() => reloadChatMessages(), 300);
   } catch (e) {
+    console.error('❌ Ошибка отправки сообщения:', e);
     toast(`❌ ${e.message}`);
   } finally {
     input.disabled = false;
@@ -4302,6 +4420,12 @@ function haptic(type) {
   <div class="ld-fullscreen-track" id="ldFsTrack"></div>
   <div class="ld-fs-counter" id="ldFsCounter" style="display:none"></div>
   <div class="ld-fs-dots" id="ldFsDots"></div>
+</div>
+
+<!-- ══ CHAT IMAGE VIEWER ════════════════════ -->
+<div id="chatImageViewer" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px" onclick="if(event.target===this) closeChatImage()">
+  <button onclick="closeChatImage()" style="position:absolute;top:16px;right:16px;width:40px;height:40px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:50%;color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+  <img id="chatViewerImg" style="max-width:90%;max-height:90%;object-fit:contain;border-radius:12px">
 </div>
 
 <!-- ══ CART CONFIRM SHEET ════════════════════ -->
