@@ -1652,6 +1652,15 @@ body::after {
       <div class="m-txt">История баланса</div>
       <div class="m-arr">›</div>
     </div>
+    <div class="mrow" onclick="openDealHistory()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <div class="m-txt">История сделок</div>
+      <div class="m-arr">›</div>
+    </div>
     <div class="mrow" id="supportBtn">
       <div class="m-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1693,7 +1702,7 @@ body::after {
       <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
       <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
     </svg>
-    <span>Каталог</span>
+    <span>Поиск</span>
   </div>
   <div class="nt" id="nt-cart" onclick="switchPage('cart',this)" style="position:relative">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -1846,6 +1855,17 @@ body::after {
     <div style="padding:0 20px 24px">
       <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 История транзакций</div>
       <div id="txList"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DEAL HISTORY SHEET ════════════════════════ -->
+<div class="overlay" id="dealHistoryOverlay" onclick="closeOverlayByBg(event,'dealHistoryOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">История сделок</div>
+      <div id="dealHistoryList"><div class="spin-wrap"><div class="spin"></div></div></div>
     </div>
   </div>
 </div>
@@ -2566,13 +2586,19 @@ function toggleWish(id) {
   id = String(id);
   const p = allProducts.find(x => String(x.id) === id);
   if (!p) return;
+  // Запрет добавлять свой товар в избранное
+  if (TG_USER && p.listing && String(p.listing.seller_id) === String(TG_USER.id)) {
+    toast('❌ Вы не можете добавить свой товар в избранное');
+    haptic('error');
+    return;
+  }
   const idx = wishlist.findIndex(x => String(x.id) === id);
   if (idx >= 0) {
     wishlist.splice(idx, 1);
     toast('Убрано из избранного');
   } else {
     wishlist.push({ id: p.id, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, stock: p.stock });
-    toast('❤️ Добавлено в избранное');
+    toast('Добавлено в избранное');
     haptic('light');
   }
   saveWish();
@@ -3509,8 +3535,10 @@ async function loadDealsPage() {
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
     const { deals } = await api('/api/deals/my');
-    if (!deals.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Сделок нет</div><div class="empty-sub">Купите товар через эскроу</div></div>';
+    // Фильтруем только активные сделки (не завершённые и не отменённые)
+    const activeDeal = (deals || []).filter(d => d.status !== 'completed' && d.status !== 'cancelled');
+    if (!activeDeal.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Активных сделок нет</div><div class="empty-sub">История доступна в профиле</div></div>';
       return;
     }
     const sMap = {
@@ -3571,8 +3599,8 @@ async function loadDealsPage() {
         (canDisputeSeller ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
         // Отмена (для frozen и accepted статусов)
         (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">Отменить</button>' : '') +
-        // Чат - всегда доступен
-        '<button class="deal-btn" onclick="openDealChat(' + d.id + ')" style="background:rgba(102,187,106,0.2);border:1px solid rgba(102,187,106,0.3);color:#66bb6a">Чат</button>';
+        // Чат - только для активных сделок
+        (d.status !== 'completed' && d.status !== 'cancelled' ? '<button class="deal-btn" onclick="openDealChat(' + d.id + ')" style="background:rgba(102,187,106,0.2);border:1px solid rgba(102,187,106,0.3);color:#66bb6a">Чат</button>' : '');
 
       const party = isBuyer
         ? 'Продавец: @' + (d.seller_username || 'скрыт')
@@ -3623,7 +3651,7 @@ async function openMyDeals() {
       cancelled: '❌ Отменено',
       refunded: '↩️ Возврат'
     };
-    el.innerHTML = deals.map(d => {
+    el.innerHTML = activeDeal.map(d => {
       const isBuyer = d.my_role === 'buyer';
       const isSeller = !isBuyer;
       const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
@@ -4442,6 +4470,41 @@ function toast(msg) {
   t.textContent = msg; t.classList.add('on');
   clearTimeout(toastTmr);
   toastTmr = setTimeout(() => t.classList.remove('on'), 2500);
+}
+
+// История сделок (завершённые и отменённые)
+async function openDealHistory() {
+  openOverlay('dealHistoryOverlay');
+  const el = document.getElementById('dealHistoryList');
+  if (!el) return;
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { deals } = await api('/api/deals/my');
+    const history = (deals || []).filter(d => d.status === 'completed' || d.status === 'cancelled');
+    if (!history.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ttl">История пуста</div><div class="empty-sub">Завершённые и отменённые сделки появятся здесь</div></div>';
+      return;
+    }
+    el.innerHTML = history.map(d => {
+      const isBuyer = String(d.buyer_id) === String(TG_USER.id);
+      const party = isBuyer ? 'Продавец: @' + (d.seller_username || 'скрыт') : 'Покупатель: @' + (d.buyer_username || 'скрыт');
+      const statusLabel = d.status === 'completed' ? '✅ Завершена' : '❌ Отменена';
+      const date = new Date(d.created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
+      return `<div class="deal-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+          <div><div style="font-size:14px;font-weight:700;color:var(--text)">${d.listing_title || 'Товар'}</div></div>
+          <div style="font-size:12px;color:var(--gold)">$${Number(d.amount).toFixed(2)}</div>
+        </div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${party}</div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)">
+          <span>${statusLabel}</span>
+          <span>${date}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+  }
 }
 
 function haptic(type) {
