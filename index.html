@@ -3909,10 +3909,23 @@ async function renderChatMessages(messages) {
     return;
   }
   
+  // Дебаг логирование
+  console.log('TG_USER.id:', TG_USER.id, 'type:', typeof TG_USER.id);
+  console.log('Messages:', messages.map(m => ({
+    id: m.id,
+    sender_id: m.sender_id,
+    sender_id_type: typeof m.sender_id,
+    message: m.message.substring(0, 20),
+    read: m.read
+  })));
+  
   // Выводим сообщения
   document.getElementById('chatMessages').innerHTML = messages.map(m => {
-    const mine = m.sender_id === TG_USER.id;
+    // ИСПРАВЛЕНИЕ: сравниваем после преобразования в Number
+    const mine = Number(m.sender_id) === Number(TG_USER.id);
     const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
+    
+    console.log(`Message #${m.id}: sender=${m.sender_id}, mine=${mine}, read=${m.read}`);
     
     return `
     <div style="display:flex;margin-bottom:12px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
@@ -3928,13 +3941,16 @@ async function renderChatMessages(messages) {
   }).join('');
   
   // Отмечаем чужие сообщения как прочитанные в фоне
-  const unreadMessages = messages.filter(m => m.sender_id !== TG_USER.id && !m.read);
+  const unreadMessages = messages.filter(m => Number(m.sender_id) !== Number(TG_USER.id) && !m.read);
+  console.log('Unread messages to mark:', unreadMessages.length);
+  
   if (unreadMessages.length > 0) {
     Promise.all(unreadMessages.map(m => 
       api(`/api/deals/${curChatDealId}/messages/${m.id}/read`, { method: 'PUT' }).catch(e => 
         console.log('Ошибка отметки сообщения:', e.message)
       )
     )).then(() => {
+      console.log('Все сообщения отмечены как прочитанные, перезагружаем...');
       // Перезагружаем только сообщения чтобы обновить галочки
       reloadChatMessages();
     });
@@ -3967,7 +3983,9 @@ async function openDealChat(dealId) {
   
   try {
     // Получаем сообщения и ищем статус сделки
+    console.log('🔄 Загружаю сообщения для сделки #' + dealId);
     const { messages } = await api(`/api/deals/${dealId}/messages`);
+    console.log('✅ Получил сообщения:', messages);
     
     // Получаем данные сделки для проверки статуса
     const { deals } = await api(`/api/deals/my`);
@@ -4002,6 +4020,7 @@ async function openDealChat(dealId) {
     
     await renderChatMessages(messages);
   } catch (e) {
+    console.error('❌ Ошибка открытия чата:', e);
     document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--red);padding:20px">❌ ${e.message}</div>`;
   }
 }
