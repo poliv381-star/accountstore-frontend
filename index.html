@@ -3950,36 +3950,44 @@ async function openDealChat(dealId) {
       return;
     }
     
-    // Выводим сообщения
+    // Выводим сообщения (Telegram style)
     document.getElementById('chatMessages').innerHTML = messages.map(m => {
-      const isOwn = m.sender_id === TG_USER.id;
-      const readStatus = m.read ? '✓✓' : '✓';  // Двойная галочка если прочитано, одинарная если нет
-      const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
-      
+      const mine = m.sender_id === TG_USER.id;
+      const time = new Date(m.created_at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+      const ticks = mine ? (m.read ? '<span style="color:#4fc3f7">✓✓</span>' : '✓') : '';
+
       return `
-      <div style="display:flex;gap:8px;margin-bottom:12px;${isOwn ? 'justify-content:flex-end' : 'justify-content:flex-start'}">
-        <div style="max-width:75%">
-          <div style="padding:10px 14px;background:${isOwn ? 'var(--gold)' : 'rgba(255,255,255,0.1)'};border-radius:18px;word-wrap:break-word;color:${isOwn ? '#000' : '#fff'}">
-            <div style="font-size:14px;line-height:1.4">${m.message}</div>
-            <div style="display:flex;align-items:center;gap:4px;margin-top:6px;${isOwn ? 'justify-content:flex-end' : 'justify-content:flex-start'}">
-              <div style="font-size:11px;color:${isOwn ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">${timeStr}</div>
-              ${isOwn ? `<div style="font-size:11px;color:${m.read ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.4)'};font-weight:700">${readStatus}</div>` : ''}
-            </div>
-          </div>
+      <div style="display:flex;justify-content:${mine?'flex-end':'flex-start'};margin-bottom:12px">
+        <div style="max-width:75%;padding:10px 14px;border-radius:18px;
+        background:${mine?'var(--gold)':'rgba(255,255,255,0.08)'};
+        color:${mine?'#000':'#fff'};
+        box-shadow:0 2px 8px rgba(0,0,0,.3);
+        word-wrap:break-word;">
+        
+        <div style="font-size:14px;line-height:1.45">${m.message}</div>
+        
+        <div style="display:flex;align-items:center;gap:6px;margin-top:6px;justify-content:flex-end">
+          <div style="font-size:11px;opacity:.7">${time}</div>
+          ${mine?`<div style="font-size:11px">${ticks}</div>`:''}
         </div>
-      </div>
-    `;
+        
+        </div>
+      </div>`
     }).join('');
-    
-    // Отмечаем чужие сообщения как прочитанные в фоне
-    messages.forEach(m => {
-      if (m.sender_id !== TG_USER.id && !m.read) {
-        api(`/api/deals/${curChatDealId}/messages/${m.id}/read`, { method: 'PUT' }).catch(e => 
-          console.log('Ошибка отметки сообщения:', e.message)
-        );
+
+    // typing indicator
+    if(window.typingUser){
+      document.getElementById('chatMessages').innerHTML +=
+      '<div style="color:var(--sub);font-size:12px;margin:6px">печатает…</div>';
+    }
+
+    // Отмечаем чужие сообщения как прочитанными
+    messages.forEach(m=>{
+      if(m.sender_id!==TG_USER.id && !m.read){
+        api(`/api/deals/${curChatDealId}/messages/${m.id}/read`,{method:'PUT'})
       }
     });
-    
+
     // Скролим вниз
     setTimeout(() => {
       const el = document.getElementById('chatMessages');
@@ -4305,3 +4313,31 @@ function haptic(type) {
 </div>
 </body>
 </html>
+
+
+// автообновление сообщений
+let chatPoll=null;
+
+function startChatPolling(){
+ if(chatPoll) clearInterval(chatPoll);
+ chatPoll=setInterval(()=>{
+   if(curChatDealId){
+     openDealChat(curChatDealId);
+   }
+ },2000);
+}
+
+// typing detection
+let typingTimeout;
+const chatInputEl=document.getElementById('chatInput');
+if(chatInputEl){
+ chatInputEl.addEventListener('input',()=>{
+   window.typingUser=true;
+   clearTimeout(typingTimeout);
+   typingTimeout=setTimeout(()=>{
+     window.typingUser=false;
+   },1500);
+ });
+}
+
+startChatPolling();
