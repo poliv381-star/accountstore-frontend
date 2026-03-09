@@ -2303,7 +2303,8 @@ function getVisible() {
     const q = searchQ.toLowerCase();
     list = list.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q)
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.cat_name || '').toLowerCase().includes(q)  // Поиск по категории
     );
   }
   return list;
@@ -3272,6 +3273,7 @@ function openListing(id, listingObj) {
     </div>
     <div style="font-size:19px;font-weight:900;margin-bottom:6px">${l.title}</div>
     <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:12px">$${Number(l.price).toFixed(2)}</div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:12px">📂 Категория: <b style="color:var(--text)">${l.category || 'не указана'}</b></div>
     <div style="font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:14px">${l.description || ''}</div>
     <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px">
       <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">📅 Условия выдачи</div>
@@ -3535,8 +3537,8 @@ async function loadDealsPage() {
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
     const { deals } = await api('/api/deals/my');
-    // Фильтруем только активные сделки (не завершённые и не отменённые)
-    const activeDeal = (deals || []).filter(d => d.status !== 'completed' && d.status !== 'cancelled');
+    // Фильтруем только активные сделки (frozen, accepted, waiting_confirmation)
+    const activeDeal = (deals || []).filter(d => ['frozen', 'accepted', 'waiting_confirmation'].includes(d.status));
     if (!activeDeal.length) {
       el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Активных сделок нет</div><div class="empty-sub">История доступна в профиле</div></div>';
       return;
@@ -4472,7 +4474,7 @@ function toast(msg) {
   toastTmr = setTimeout(() => t.classList.remove('on'), 2500);
 }
 
-// История сделок (завершённые и отменённые)
+// История сделок (завершённые, отменённые, спорные)
 async function openDealHistory() {
   openOverlay('dealHistoryOverlay');
   const el = document.getElementById('dealHistoryList');
@@ -4480,15 +4482,23 @@ async function openDealHistory() {
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
     const { deals } = await api('/api/deals/my');
-    const history = (deals || []).filter(d => d.status === 'completed' || d.status === 'cancelled');
+    // История = всё кроме активных (frozen, accepted, waiting_confirmation)
+    const history = (deals || []).filter(d => !['frozen', 'accepted', 'waiting_confirmation'].includes(d.status));
     if (!history.length) {
       el.innerHTML = '<div class="empty"><div class="empty-ttl">История пуста</div><div class="empty-sub">Завершённые и отменённые сделки появятся здесь</div></div>';
       return;
     }
+    const statusMap = {
+      completed: '✅ Завершена',
+      cancelled: '❌ Отменена',
+      dispute: '⚠️ Спор',
+      refunded: '↩️ Возврат',
+      auto_completed: '✅ Авто-завершена'
+    };
     el.innerHTML = history.map(d => {
       const isBuyer = String(d.buyer_id) === String(TG_USER.id);
       const party = isBuyer ? 'Продавец: @' + (d.seller_username || 'скрыт') : 'Покупатель: @' + (d.buyer_username || 'скрыт');
-      const statusLabel = d.status === 'completed' ? '✅ Завершена' : '❌ Отменена';
+      const statusLabel = statusMap[d.status] || d.status;
       const date = new Date(d.created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
       return `<div class="deal-card">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
