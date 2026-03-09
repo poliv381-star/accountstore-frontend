@@ -3956,9 +3956,9 @@ async function renderChatMessages(messages) {
     return `
     <div style="display:flex;margin-bottom:12px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
       <div style="max-width:75%;padding:${m.image_url ? '0' : '10px 14px'};border-radius:16px;background:${mine ? 'var(--gold)' : '#2a2a2a'};color:${mine ? '#000' : '#fff'}">
-        ${m.image_url ? `<div style="padding:10px 14px;padding-bottom:0">${m.message ? `<div style="font-size:14px;line-height:1.4;margin-bottom:6px">${m.message}</div>` : ''}</div>` : ''}
+        ${m.message ? `<div style="padding:${m.image_url ? '10px 14px' : '0'};padding-bottom:${m.image_url ? '0' : '0'}">${m.message}</div>` : ''}
         ${photoHtml}
-        <div style="padding:${m.image_url ? '6px 14px 10px' : '0'};display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">
+        <div style="padding:${m.image_url && m.message ? '6px 14px 10px' : (m.image_url ? '10px 14px' : '0')};display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">
           <span>${timeStr}</span>
           ${mine ? `<span>${m.read ? '✓✓' : '✓'}</span>` : ''}
         </div>
@@ -4171,7 +4171,7 @@ async function sendDealMessage() {
     const response = await api(`/api/deals/${curChatDealId}/messages`, {
       method: 'POST',
       body: JSON.stringify({ 
-        message: msg || null,
+        message: msg && msg.length > 0 ? msg : null,
         image_url: imageUrl || null
       })
     });
