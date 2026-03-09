@@ -4149,15 +4149,20 @@ async function sendDealMessage() {
       const formData = new FormData();
       formData.append('image', chatSelectedPhoto);
       
-      const uploadResponse = await fetch('/api/upload', {
+      // Используем fetch напрямую для FormData (api() добавляет Content-Type: application/json)
+      const uploadResponse = await fetch(API_BASE + '/api/upload', {
         method: 'POST',
+        headers: {
+          'X-Init-Data': INIT_DATA,
+          // НЕ устанавливаем Content-Type, браузер установит правильный multipart/form-data
+        },
         body: formData
-        // НЕ устанавливаем Content-Type, браузер установит правильный multipart/form-data
       });
       
       if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json();
-        throw new Error(errorData.error || 'Ошибка загрузки фото');
+        const errorText = await uploadResponse.text();
+        console.error('❌ Upload response:', errorText);
+        throw new Error('Ошибка загрузки фото: ' + uploadResponse.status);
       }
       
       const uploadData = await uploadResponse.json();
