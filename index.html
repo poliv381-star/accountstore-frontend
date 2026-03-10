@@ -3263,52 +3263,13 @@ function setQty(id, d) {
 // CHECKOUT
 // ══════════════════════════════════════════════════════════
 async function checkout() {
-  if (!cart.length) return;
-  const btn = document.getElementById('payBtn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Замораживаем средства...'; }
-  haptic('medium');
-
-  try {
-    // Преобразуем корзину в формат для API
-    const items = [];
-    for (const cartItem of cart) {
-      items.push({
-        listing_id: cartItem.listing_id,
-        quantity: cartItem.qty  // ✅ Отправляем полное количество, не разворачиваем
-      });
-    }
-    
-    // Один запрос — создаём сделки для всех товаров из корзины
-    const { deals, total, balance } = await api('/api/deals/cart', {
-      method: 'POST',
-      body: JSON.stringify({ items }),
-    });
-
-    cart = []; saveCart(); syncBadge(); renderCart();
-
-    // Добавляем уведомления для каждой созданной сделки (создаёт сервер)
-    // addNotification удалена - сервер автоматически создаст уведомления
-
-    // Обновляем баланс
-    document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
-    const cba = document.getElementById('cartBalanceAmt');
-    if (cba) cba.textContent = Number(balance).toFixed(2);
-
-    toast(`❄️ Заморожено $${Number(total).toFixed(2)}! Продавцы уведомлены.`);
-    haptic('success');
-
-    // Переходим в сделки
-    setTimeout(() => {
-      switchPage('deals');
-      openMyDeals();
-    }, 800);
-
-  } catch (e) {
-    toast(`❌ ${e.message}`);
+  // For now we only support paying for a selected item; the pay button is labeled accordingly
+  if (selectedCartItemId === null) {
+    toast('⚠️ Выберите товар');
     haptic('error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '❄️ Заморозить и оплатить'; }
+    return;
   }
+  openCartConfirmSheet();
 }
 
 function openCryptoBot() {} // legacy
@@ -4745,7 +4706,7 @@ function renderCart() {
         </div>`;
       }).join('')}
     </div>
-    <button class="pay-btn-main" id="payBtn" onclick="checkout()" style="margin:18px 18px 0;width:calc(100% - 36px)">
+    <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" style="margin:18px 18px 0;width:calc(100% - 36px)">
       Оплатить выбранное
     </button>
     <div style="height:20px"></div>
@@ -4832,7 +4793,11 @@ async function confirmCartPay() {
   
   // Проверка 3: товар выбран
   const item = cart.find(x => String(x.id) === String(selectedCartItemId));
-  if (!item) return;
+  if (!item) {
+    toast('⚠️ Выберите товар');
+    haptic('error');
+    return;
+  }
   
   // Проверка 4: количество больше 0
   if (!item.qty || item.qty <= 0) {
