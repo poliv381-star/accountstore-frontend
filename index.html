@@ -1524,6 +1524,206 @@ body::after {
   background: rgba(255,255,255,.35); transition: all .2s;
 }
 .ld-fs-dot.on { background: var(--gold); width: 18px; border-radius: 3px; }
+
+/* ═══ КАРТОЧКА ОБЪЯВЛЕНИЯ ═══ */
+.listing-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--s1);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.listing-photo {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: var(--s2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.listing-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.listing-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.listing-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+.listing-price {
+  font-size: 13px;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.listing-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.listing-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.listing-buttons button {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Manrope', sans-serif;
+  border: 1px solid;
+}
+
+.btn-pause {
+  flex: 1;
+  background: rgba(232, 200, 74, 0.15);
+  border-color: rgba(232, 200, 74, 0.3);
+  color: var(--gold);
+}
+
+.btn-pause:hover {
+  background: rgba(232, 200, 74, 0.25);
+}
+
+.btn-delete {
+  flex: 1;
+  background: rgba(220, 53, 69, 0.15);
+  border-color: rgba(220, 53, 69, 0.3);
+  color: #dc3545;
+}
+
+.btn-delete:hover {
+  background: rgba(220, 53, 69, 0.25);
+}
+
+/* ══════════════════════════════════════════
+   LISTING CARD - карточки в разделе "Добавить"
+══════════════════════════════════════════ */
+.listing-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--s1);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.listing-photo {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: var(--s2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.listing-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.listing-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.listing-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.listing-price {
+  font-size: 13px;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.listing-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+/* ══════════════════════════════════════════
+   LISTING BUTTONS - кнопки в разделе "Добавить"
+══════════════════════════════════════════ */
+.listing-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.listing-buttons button {
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'Manrope', sans-serif;
+  border: 1px solid;
+}
+
+.btn-pause {
+  flex: 1;
+  background: rgba(232, 200, 74, 0.15);
+  border-color: rgba(232, 200, 74, 0.3);
+  color: var(--gold);
+}
+
+.btn-pause:hover {
+  background: rgba(232, 200, 74, 0.25);
+}
+
+.btn-delete {
+  flex: 0.8;
+  background: rgba(220, 53, 69, 0.15);
+  border-color: rgba(220, 53, 69, 0.3);
+  color: #dc3545;
+}
+
+.btn-delete:hover {
+  background: rgba(220, 53, 69, 0.25);
+}
 </style>
 </head>
 <body>
@@ -3849,49 +4049,34 @@ async function loadMyListingsInline() {
     el.innerHTML = activeListings.map(l => {
       const catName_val = { accounts:'Аккаунты', games:'Игры', software:'Софт', other:'Другое' }[l.category] || l.category;
       const mainImg = l.image_url || (l.images && l.images[0]);
-      const inStock = l.quantity > 0;
       const stockColor = l.quantity > 5 ? 'var(--green)' : l.quantity > 0 ? 'var(--orange)' : 'var(--red)';
       
-      return `<div class="deal-card" id="listing-${l.id}" style="display:flex;gap:12px;padding:12px;background:var(--s1);border-radius:12px;border:1px solid var(--border);margin-bottom:16px">
+      return `<div class="listing-card" id="listing-${l.id}">
         <!-- ФОТО -->
-        <div style="flex-shrink:0;width:80px;height:80px;background:var(--s2);border-radius:10px;overflow:hidden">
+        <div class="listing-photo">
           ${mainImg 
-            ? `<img src="${mainImg}" style="width:100%;height:100%;object-fit:cover;cursor:pointer" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})" alt="">`
+            ? `<img src="${mainImg}" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})" alt="">`
             : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:32px">📦</div>`
           }
         </div>
         
         <!-- ИНФО -->
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="listing-info">
           <div>
-            <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:4px;cursor:pointer" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}</div>
-            <div style="font-size:13px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700;margin-bottom:6px">$${Number(l.price).toFixed(2)}</div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim)">
+            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}</div>
+            <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
+            <div class="listing-meta">
               <span>${catName_val}</span>
               <span style="color:${stockColor};font-weight:700">${l.quantity} шт</span>
             </div>
           </div>
+          
+          <!-- КНОПКИ ВНУТРИ КАРТОЧКИ -->
+          <div class="listing-buttons">
+            <button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">⏸️ Пауза</button>
+            <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">🗑️ Удалить</button>
+          </div>
         </div>
-      </div>
-      
-      <!-- КНОПКИ -->
-      <div style="display:flex;gap:6px;margin-top:10px">
-        <button 
-          class="deal-btn" 
-          style="flex:1;padding:10px;background:rgba(232,200,74,0.15);border:1px solid rgba(232,200,74,0.3);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;transition:.2s;font-family:'Manrope',sans-serif"
-          onmouseover="this.style.background='rgba(232,200,74,0.25)'"
-          onmouseout="this.style.background='rgba(232,200,74,0.15)'"
-          onclick="changeListingStatus(${l.id},'paused')">
-          ⏸️ Пауза
-        </button>
-        <button 
-          class="deal-btn" 
-          style="flex:0.8;padding:10px;background:rgba(220,53,69,0.15);border:1px solid rgba(220,53,69,0.3);border-radius:10px;color:#dc3545;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;font-family:'Manrope',sans-serif"
-          onmouseover="this.style.background='rgba(220,53,69,0.25)'"
-          onmouseout="this.style.background='rgba(220,53,69,0.15)'"
-          onclick="changeListingStatus(${l.id},'deleted')">
-          🗑️ Удалить
-        </button>
       </div>`
     }).join('');
   } catch (e) {
