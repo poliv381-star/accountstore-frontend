@@ -2555,6 +2555,9 @@ function selectCategory(slug) {
     await loadListings();
     renderGrid();
     
+    // Загружаем уведомления при старте
+    await loadNotifications();
+    
     // Автоматическое обновление каталога каждые 10 секунд
     // Проверяем новые объявления каждые 5 секунд (без полной перерисовки)
     setInterval(async () => {
@@ -2564,6 +2567,15 @@ function selectCategory(slug) {
         console.log('ℹ️ Ошибка проверки новых объявлений:', e.message);
       }
     }, 5000); // каждые 5 секунд
+    
+    // Периодическая синхронизация уведомлений каждые 30 секунд
+    setInterval(async () => {
+      try {
+        await loadNotifications();
+      } catch (e) {
+        console.log('ℹ️ Ошибка синхронизации уведомлений:', e.message);
+      }
+    }, 30000); // каждые 30 секунд
   } catch (e) {
     document.getElementById('grid').innerHTML =
       `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)">
@@ -3092,6 +3104,25 @@ async function syncNotifBadgeWithServer() {
   }
 }
 
+// Загружаем уведомления с сервера (для инициализации)
+async function loadNotifications() {
+  try {
+    const { notifications: serverNotifs } = await api('/api/notifications');
+    notifications = serverNotifs.map(n => ({
+      id: n.id,
+      dealId: n.deal_id,
+      message: n.message,
+      type: n.type,
+      timestamp: new Date(n.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
+      createdAt: new Date(n.created_at).getTime(),
+      read: n.read
+    }));
+    updateNotifBadge();
+  } catch (e) {
+    console.log('Ошибка загрузки уведомлений при старте:', e.message);
+  }
+}
+
 function renderNotifications() {
   const container = document.getElementById('notifList');
   
@@ -3139,38 +3170,21 @@ async function openNotifs() {
   openOverlay('notifOverlay');
   haptic('light');
   
-  // Загружаем уведомления с сервера
-  try {
-    const { notifications: serverNotifs } = await api('/api/notifications');
-    // Обновляем локальные уведомления из сервера
-    notifications = serverNotifs.map(n => ({
-      id: n.id,
-      dealId: n.deal_id,
-      message: n.message,
-      type: n.type,
-      timestamp: new Date(n.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
-      createdAt: new Date(n.created_at).getTime(),
-      read: n.read
-    }));
+  // Уведомления уже загружены при старте, просто отмечаем непрочитанные как прочитанные
+  const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
+  if (unreadIds.length > 0) {
+    // Отправляем на сервер в фоне
+    unreadIds.forEach(id => {
+      api(`/api/notifications/${id}/read`, { method: 'PUT' }).catch(e => 
+        console.log('Ошибка отметки как прочитанного:', e.message)
+      );
+    });
     
-    // Отмечаем все непрочитанные как прочитанные
-    const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
-    if (unreadIds.length > 0) {
-      // Отправляем на сервер в фоне
-      unreadIds.forEach(id => {
-        api(`/api/notifications/${id}/read`, { method: 'PUT' }).catch(e => 
-          console.log('Ошибка отметки как прочитанного:', e.message)
-        );
-      });
-      
-      // Обновляем локально
-      notifications = notifications.map(n => ({ ...n, read: true }));
-      
-      // Обновляем бейдж
-      updateNotifBadge();
-    }
-  } catch (e) {
-    console.log('Ошибка загрузки уведомлений:', e.message);
+    // Обновляем локально
+    notifications = notifications.map(n => ({ ...n, read: true }));
+    
+    // Обновляем бейдж
+    updateNotifBadge();
   }
   
   renderNotifications();
