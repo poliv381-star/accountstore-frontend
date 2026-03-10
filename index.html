@@ -2351,6 +2351,10 @@ function renderGrid() {
       ? `<img src="${mainImg}" alt="${p.name}" class="pc-img">`
       : `<div class="pc-img-placeholder">${p.cat_emoji || '📦'}</div>`;
 
+    // Проверка: это свой товар?
+    const isMine = TG_USER && Number(p.listing?.seller_id) === Number(TG_USER.id);
+    const inStock = p.stock > 0;
+
     return `
       <div class="pc" onclick="openProduct('${p.id}')">
         <div style="position:relative">
@@ -2368,12 +2372,13 @@ function renderGrid() {
           <div class="pc-desc">${p.description || ''}</div>
           <div class="pc-foot">
             <div class="pc-price">$${Number(p.price).toFixed(2)}</div>
+            ${!isMine && inStock ? `
             <div class="pc-add" onclick="event.stopPropagation();quickAdd('${p.id}')">
               <svg viewBox="0 0 24 24" fill="none">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
-            </div>
+            </div>` : ''}
           </div>
         </div>
       </div>`;
