@@ -1780,7 +1780,7 @@ body::after {
     <div class="hero-sub">Доска объявлений с оплатой криптой. Быстро, анонимно, без посредников.</div>
     <div class="trust-chips">
       <div class="chip">⚡ Быстро</div>
-      <div class="chip">🔒 Анонимно</div>
+      <div class="chip">Анонимно</div>
       <div class="chip">💎 Эскроу</div>
     </div>
   </div>
@@ -2001,6 +2001,7 @@ body::after {
       <div class="pd-desc" id="pdDesc"></div>
       <div class="pd-specs-title" id="pdSpecsTitle" style="display:none">Характеристики</div>
       <div class="pd-specs" id="pdSpecs"></div>
+      <div id="sellerReviews"></div>
       <div class="qty-row">
         <div class="q-btn" onclick="chQty(-1)">−</div>
         <div class="q-val" id="pdQtyVal">1</div>
@@ -2039,7 +2040,7 @@ body::after {
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 20px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:18px">🔔 Уведомления</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:18px">Уведомления</div>
       <div id="notifList">
         <div style="text-align:center;padding:40px 0;color:var(--sub)">
           <div style="font-size:36px;margin-bottom:10px">🔕</div>
@@ -2105,7 +2106,7 @@ body::after {
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 24px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 История транзакций</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">История транзакций</div>
       <div id="txList"><div class="spin-wrap"><div class="spin"></div></div></div>
     </div>
   </div>
@@ -2157,14 +2158,14 @@ body::after {
         </div>
         <div class="about-chips">
           <div class="about-chip">⚡ Мгновенная доставка</div>
-          <div class="about-chip">🔒 Безопасно</div>
+          <div class="about-chip">Безопасно</div>
           <div class="about-chip">💎 Гарантия качества</div>
           <div class="about-chip">🌍 Работаем 24/7</div>
         </div>
       </div>
       <div style="height:1px;background:var(--border);margin:16px 0"></div>
       <div style="font-size:13px;color:var(--sub);line-height:1.7">
-        <div style="margin-bottom:8px">📦 <b style="color:var(--text)">Гарантия</b> — если аккаунт не работает, заменим или вернём деньги</div>
+        <div style="margin-bottom:8px"><b style="color:var(--text)">Гарантия</b> — если аккаунт не работает, заменим или вернём деньги</div>
         <div style="margin-bottom:8px">💳 <b style="color:var(--text)">Оплата</b> — TON, USDT, BTC, ETH через CryptoBot</div>
         <div>🆘 <b style="color:var(--text)">Поддержка</b> — пишите нам, ответим быстро</div>
       </div>
@@ -2324,7 +2325,7 @@ body::after {
   <div class="sheet" style="max-height:90vh;overflow-y:auto">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 24px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:16px">📋 Мои сделки</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">Мои сделки</div>
       <div id="myDealsList"><div class="spin-wrap"><div class="spin"></div></div></div>
     </div>
   </div>
@@ -2346,14 +2347,14 @@ body::after {
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:6px">⭐ Отзыв о продавце</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">Отзыв о продавце</div>
       <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Оставьте отзыв о продавце</div>
       <div style="display:flex;gap:10px;margin-bottom:14px">
-        <button id="revGood" class="deal-btn confirm" style="flex:1" onclick="setReview(1)">👍 Хорошо</button>
-        <button id="revBad"  class="deal-btn cancel"  style="flex:1" onclick="setReview(-1)">👎 Плохо</button>
+        <button id="revGood" class="deal-btn confirm" style="flex:1" onclick="setReview(1)">Хорошо</button>
+        <button id="revBad"  class="deal-btn cancel"  style="flex:1" onclick="setReview(-1)">Плохо</button>
       </div>
       <textarea class="form-input form-textarea" id="reviewText" placeholder="Комментарий (необязательно)..."></textarea>
-      <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">✅ Подтвердить получение</button>
+      <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">Подтвердить получение</button>
       <button class="pay-btn-main" onclick="skipReview()" style="margin-top:8px;background:var(--s2);color:var(--sub);font-size:14px">Пропустить отзыв</button>
     </div>
   </div>
@@ -2364,14 +2365,14 @@ body::after {
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:6px">📤 Отправить товар</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">Отправить товар</div>
       <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Товар отправлен? Оцените вашего покупателя</div>
       <div style="display:flex;gap:10px;margin-bottom:14px">
-        <button id="sellerRevGood" class="deal-btn confirm" style="flex:1" onclick="setSellerReview(1)">👍 Хорошо</button>
-        <button id="sellerRevBad"  class="deal-btn cancel"  style="flex:1" onclick="setSellerReview(-1)">👎 Плохо</button>
+        <button id="sellerRevGood" class="deal-btn confirm" style="flex:1" onclick="setSellerReview(1)">Хорошо</button>
+        <button id="sellerRevBad"  class="deal-btn cancel"  style="flex:1" onclick="setSellerReview(-1)">Плохо</button>
       </div>
       <textarea class="form-input form-textarea" id="sellerReviewText" placeholder="Комментарий (необязательно)..."></textarea>
-      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">📤 Отправить товар</button>
+      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">Отправить товар</button>
       <button class="pay-btn-main" onclick="skipSellerReview()" style="margin-top:8px;background:var(--s2);color:var(--sub);font-size:14px">Пропустить отзыв</button>
     </div>
   </div>
@@ -2384,7 +2385,7 @@ body::after {
   <div class="sheet" style="height:70vh;display:flex;flex-direction:column">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 16px;border-bottom:1px solid var(--border)">
-      <div style="font-size:18px;font-weight:900">💬 Чат сделки #<span id="chatDealId">—</span></div>
+      <div style="font-size:18px;font-weight:900">Чат сделки #<span id="chatDealId">—</span></div>
     </div>
     <!-- Сообщения -->
     <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px"></div>
@@ -2404,7 +2405,7 @@ body::after {
           <button onclick="document.getElementById('chatPhotoInput').click()" style="padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:16px">📷</button>
         </div>
       </div>
-      <button onclick="sendDealMessage()" style="padding:10px 16px;background:var(--gold);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">📤</button>
+      <button onclick="sendDealMessage()" style="padding:10px 16px;background:var(--gold);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">Отправить</button>
     </div>
   </div>
 </div>
@@ -2413,10 +2414,10 @@ body::after {
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:6px">⚠️ Открыть спор</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">Открыть спор</div>
       <div style="font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.55">Деньги останутся заморожены. Администратор рассмотрит спор и вынесет решение в течение 24 часов.</div>
       <textarea class="form-input form-textarea" id="disputeReason" placeholder="Опишите проблему подробно: что не так, что обещал продавец, что получили..."></textarea>
-      <button class="pay-btn-main" onclick="submitDispute()" style="margin-top:12px" id="submitDisputeBtn">⚠️ Открыть спор</button>
+      <button class="pay-btn-main" onclick="submitDispute()" style="margin-top:12px" id="submitDisputeBtn">Открыть спор</button>
       <button onclick="closeOverlay('disputeOverlay')" style="width:100%;margin-top:10px;padding:13px;background:transparent;border:1px solid var(--border2);border-radius:13px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Отмена</button>
     </div>
   </div>
@@ -2611,7 +2612,7 @@ function selectCategory(slug) {
   } catch (e) {
     document.getElementById('grid').innerHTML =
       `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)">
-        ❌ Ошибка загрузки<br><small>${e.message}</small>
+        Ошибка загрузки<br><small>${e.message}</small>
        </div>`;
   }
   syncBadge();
@@ -2619,7 +2620,7 @@ function selectCategory(slug) {
 })();
 
 function catEmoji(cat) {
-  return { accounts:'👤', games:'🎮', software:'💻', other:'📦' }[cat] || '📦';
+  return '';
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2629,16 +2630,16 @@ function buildCats() {
   const row = document.getElementById('catsRow');
 
   const cats = [
-    { slug: 'all', name: 'Все', emoji: '🌐' },
-    { slug: 'accounts', name: 'Аккаунты', emoji: '👤' },
-    { slug: 'games', name: 'Игры', emoji: '🎮' },
-    { slug: 'software', name: 'Софт', emoji: '💻' },
-    { slug: 'other', name: 'Другое', emoji: '📦' }
+    { slug: 'all', name: 'Все' },
+    { slug: 'accounts', name: 'Аккаунты' },
+    { slug: 'games', name: 'Игры' },
+    { slug: 'software', name: 'Софт' },
+    { slug: 'other', name: 'Другое' }
   ];
 
   row.innerHTML = cats.map(c =>
     `<div class="cat ${filterSlug === c.slug ? 'on' : ''}" onclick="filterCat('${c.slug}', this)">
-      ${c.emoji} ${c.name}
+      ${c.name}
     </div>`
   ).join('');
 }
@@ -2679,8 +2680,8 @@ function stockLabel(n) {
 
 function imgOrPh(url, emoji, cls = '') {
   if (url) return `<img class="${cls || 'pc-img'}" src="${url}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-    <div class="${cls ? cls + '-placeholder' : 'pc-img-placeholder'}" style="display:none">${emoji || '📦'}</div>`;
-  return `<div class="${cls ? cls + '-placeholder' : 'pc-img-placeholder'}">${emoji || '📦'}</div>`;
+    <div class="${cls ? cls + '-placeholder' : 'pc-img-placeholder'}" style="display:none">${emoji || ''}</div>`;
+  return `<div class="${cls ? cls + '-placeholder' : 'pc-img-placeholder'}">${emoji || ''}</div>`;
 }
 
 function renderGrid() {
@@ -2690,21 +2691,21 @@ function renderGrid() {
   if (filterSlug !== 'all') {
     // Массив категорий (статический)
     const categories = [
-      { slug: 'all', name: 'Все', emoji: '🌐' },
-      { slug: 'accounts', name: 'Аккаунты', emoji: '👤' },
-      { slug: 'games', name: 'Игры', emoji: '🎮' },
-      { slug: 'software', name: 'Софт', emoji: '💻' },
-      { slug: 'other', name: 'Другое', emoji: '📦' }
+      { slug: 'all', name: 'Все' },
+      { slug: 'accounts', name: 'Аккаунты' },
+      { slug: 'games', name: 'Игры' },
+      { slug: 'software', name: 'Софт' },
+      { slug: 'other', name: 'Другое' }
     ];
     const c = categories.find(x => x.slug === filterSlug);
-    label.textContent = c ? `${c.emoji} ${c.name}` : 'Товары';
+    label.textContent = c ? `${c.name}` : 'Товары';
   } else {
     label.textContent = `Все объявления`;
   }
 
   if (!list.length) {
     document.getElementById('grid').innerHTML =
-      `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)"><div style="font-size:48px;margin-bottom:12px">📭</div>Объявлений нет.<br>Будьте первым — нажмите «+»</div>`;
+      `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)"><div style="font-size:48px;margin-bottom:12px"></div>Объявлений нет.<br>Будьте первым — нажмите «+»</div>`;
     return;
   }
 
@@ -2714,7 +2715,7 @@ function renderGrid() {
     const mainImg = p.images && p.images.length ? p.images[0] : p.image_url;
     const imgHtml = mainImg
       ? `<img src="${mainImg}" alt="${p.name}" class="pc-img">`
-      : `<div class="pc-img-placeholder">${p.cat_emoji || '📦'}</div>`;
+      : `<div class="pc-img-placeholder">${p.cat_emoji || ''}</div>`;
 
     // Проверка: это свой товар?
     const isMine = TG_USER && Number(p.listing?.seller_id) === Number(TG_USER.id);
@@ -2809,7 +2810,7 @@ function openProduct(id) {
 
   const wrap = document.getElementById('pdImgWrap');
   if (imgs.length === 0) {
-    wrap.innerHTML = `<div class="pd-img-placeholder">${p.cat_emoji || '📦'}</div>`;
+    wrap.innerHTML = `<div class="pd-img-placeholder">${p.cat_emoji || ''}</div>`;
   } else if (imgs.length === 1) {
     wrap.innerHTML = `
       <div class="carousel">
@@ -2879,6 +2880,27 @@ function openProduct(id) {
     specsEl.innerHTML = '';
   }
 
+  // Load seller reviews
+  try {
+    const { reviews } = await api(`/api/seller-reviews/${curProduct.listing.seller_id}`);
+    const el = document.getElementById('sellerReviews');
+    if (reviews.length) {
+      el.innerHTML = '<div style="font-size:18px;font-weight:900;margin-bottom:12px">Отзывы о продавце</div>' +
+        reviews.map(r => `<div style="margin-bottom:12px;padding:12px;background:var(--s2);border-radius:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span>${r.buyer_review_score === 1 ? '👍' : '👎'}</span>
+            <span style="font-weight:700">${r.buyer_username}</span>
+            <span style="font-size:12px;color:var(--dim)">${new Date(r.created_at).toLocaleDateString()}</span>
+          </div>
+          ${r.buyer_review_text ? `<div>${r.buyer_review_text}</div>` : ''}
+        </div>`).join('');
+    } else {
+      el.innerHTML = '<div style="font-size:14px;color:var(--dim);text-align:center;padding:20px">Отзывов о продавце пока нет</div>';
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки отзывов:', e);
+  }
+
   openOverlay('pdOverlay');
   haptic('medium');
 
@@ -2923,13 +2945,13 @@ function chQty(d) {
   const maxQty = curProduct?.stock || 99;
   curQty = Math.max(1, Math.min(maxQty, curQty + d));
   document.getElementById('pdQtyVal').textContent = curQty;
-  if (curQty >= maxQty && d > 0) toast(`⚠️ Максимум ${maxQty} шт`);
+  if (curQty >= maxQty && d > 0) toast(`Максимум ${maxQty} шт`);
   haptic('light');
 }
 
 function addFromSheet() {
   if (!curProduct || !curProduct.stock || curProduct.stock <= 0) {
-    toast('❌ Нет в наличии'); return;
+    toast('Нет в наличии'); return;
   }
   closeOverlay('pdOverlay');
   addToCart(curProduct, curQty);
@@ -2938,7 +2960,7 @@ function addFromSheet() {
 function quickAdd(id) {
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
-  if (!p.stock || p.stock <= 0) { toast('❌ Нет в наличии'); haptic('error'); return; }
+  if (!p.stock || p.stock <= 0) { toast('Нет в наличии'); haptic('error'); return; }
   addToCart(p, 1);
   haptic('success');
 }
@@ -2957,7 +2979,7 @@ function toggleWish(id) {
   if (!p) return;
   // Запрет добавлять свой товар в избранное
   if (TG_USER && p.listing && String(p.listing.seller_id) === String(TG_USER.id)) {
-    toast('❌ Вы не можете добавить свой товар в избранное');
+    toast('Вы не можете добавить свой товар в избранное');
     haptic('error');
     return;
   }
@@ -3014,15 +3036,15 @@ function renderWish() {
   const el = document.getElementById('wishContent');
   syncWishCount();
   if (!wishlist.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">🤍</div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары в избранное</div></div>`;
+    el.innerHTML = `<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Список желаний пуст</div><div class="empty-sub">Добавляйте товары в избранное</div></div>`;
     return;
   }
   el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
     const inStock = item.stock > 0;
     return `<div class="wi">
       ${item.image_url
-        ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||'📦'}</div>'">`
-        : `<div class="wi-img-ph">${item.cat_emoji||'📦'}</div>`}
+        ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||''}</div>'">`
+        : `<div class="wi-img-ph">${item.cat_emoji||''}</div>`}
       <div class="wi-body">
         <div>
           <div class="wi-name">${item.name}</div>
@@ -3045,7 +3067,7 @@ function addWishToCart(id) {
   const p = allProducts.find(x => String(x.id) === id) || wishlist.find(x => String(x.id) === id);
   if (!p) return;
   const fresh = allProducts.find(x => String(x.id) === id);
-  if (!fresh || fresh.stock <= 0) { toast('❌ Нет в наличии'); return; }
+  if (!fresh || fresh.stock <= 0) { toast('Нет в наличии'); return; }
   addToCart(fresh, 1);
   switchCartTab('cart');
 }
@@ -3070,7 +3092,7 @@ function syncBadge() {
 // УВЕДОМЛЕНИЯ
 // ══════════════════════════════════════════════════════════
 
-// ❌ НЕ используется больше - уведомления создаются только на сервере!
+// НЕ используется больше - уведомления создаются только на сервере!
 // Эта функция оставлена для совместимости, но ничего не делает
 function addNotification(dealId, message, type = 'deal') {
   // Уведомления теперь создаются только на сервере через API
@@ -3091,7 +3113,7 @@ async function removeNotification(notifId) {
     renderNotifications();
   } catch (e) {
     console.error('Ошибка удаления уведомления:', e.message);
-    toast('❌ Ошибка удаления уведомления');
+    toast('Ошибка удаления уведомления');
   }
 }
 
@@ -3108,11 +3130,11 @@ function clearAllNotifications() {
     // Обновляем UI
     updateNotifBadge();
     renderNotifications();
-    toast('✅ Все уведомления очищены');
+    toast('Все уведомления очищены');
   }
 }
 
-// ❌ Удалено - сервер сам управляет старыми уведомлениями
+// Удалено - сервер сам управляет старыми уведомлениями
 
 function updateNotifBadge() {
   const unread = notifications.filter(n => !n.read).length;
@@ -3233,19 +3255,19 @@ async function openNotifs() {
 
 function addToCart(p, qty) {
   // Block if out of stock
-  if (!p.stock || p.stock <= 0) { toast('❌ Нет в наличии'); haptic('error'); return; }
+  if (!p.stock || p.stock <= 0) { toast('Нет в наличии'); haptic('error'); return; }
   const i = cart.findIndex(x => x.id === p.id);
   const maxQty = p.stock;
   if (i >= 0) {
     const newQty = cart[i].qty + qty;
-    if (newQty > maxQty) { toast(`⚠️ Максимум ${maxQty} шт`); cart[i].qty = maxQty; }
+    if (newQty > maxQty) { toast(`Максимум ${maxQty} шт`); cart[i].qty = maxQty; }
     else cart[i].qty = newQty;
   } else {
     cart.push({ id: p.id, listing_id: p.listing_id || null, name: p.name, price: Number(p.price), image_url: p.image_url, cat_emoji: p.cat_emoji, qty: Math.min(qty, maxQty), stock: p.stock });
   }
   saveCart();
   syncBadge();
-  toast(`✅ ${p.name}`);
+  toast(`${p.name}`);
   haptic('success');
 }
 
@@ -3267,7 +3289,7 @@ function setQty(id, d) {
 async function checkout() {
   // For now we only support paying for a selected item; the pay button is labeled accordingly
   if (selectedCartItemId === null) {
-    toast('⚠️ Выберите товар');
+    toast('Выберите товар');
     haptic('error');
     return;
   }
@@ -3295,10 +3317,10 @@ async function loadOrders() {
     }
 
     const STG = {
-      pending:   ['s-p', '⏳ Ожидание'],
-      paid:      ['s-pa', '✅ Оплачен'],
-      delivered: ['s-d', '📦 Доставлен'],
-      cancelled: ['s-c', '❌ Отменён'],
+      pending:   ['s-p', 'Ожидание'],
+      paid:      ['s-pa', 'Оплачен'],
+      delivered: ['s-d', 'Доставлен'],
+      cancelled: ['s-c', 'Отменён'],
     };
 
     el.innerHTML = `<div class="ord-list">${orders.map(o => {
@@ -3319,7 +3341,7 @@ async function loadOrders() {
                 <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-right:12px">
                   ${it.image_url
                     ? `<img class="o-item-thumb" src="${it.image_url}" alt="">`
-                    : `<div class="o-item-ph">📦</div>`}
+                    : `<div class="o-item-ph"></div>`}
                   <div class="o-item-info">
                     <div class="o-item-name">${it.name || '—'}</div>
                     <div class="o-item-qty">${it.quantity} шт · $${Number(it.unit_price||0).toFixed(2)}</div>
@@ -3333,7 +3355,7 @@ async function loadOrders() {
         </div>`;
     }).join('')}</div><div class="gap"></div>`;
   } catch (e) {
-    el.innerHTML = `<div style="padding:40px;text-align:center;color:var(--sub)">❌ ${e.message}</div>`;
+    el.innerHTML = `<div style="padding:40px;text-align:center;color:var(--sub)">${e.message}</div>`;
   }
 }
 
@@ -3349,7 +3371,7 @@ async function loadProfile() {
     console.log('📊 Stats:', stats);
     
     if (!stats) {
-      console.error('❌ Stats не получены!');
+      console.error('Stats не получены!');
       return;
     }
 
@@ -3378,7 +3400,7 @@ async function loadProfile() {
     const dealsAmountEl = document.getElementById('dealsAmount');
     if (dealsAmountEl) dealsAmountEl.textContent = Number(stats.total_deals_amount || 0).toFixed(2);
   } catch (e) {
-    console.error('❌ Ошибка loadProfile:', e);
+    console.error('Ошибка loadProfile:', e);
   }
   loadBalance();
 }
@@ -3417,7 +3439,7 @@ function setWithdrawAmount(n) {
   }
   async function doWithdraw() {
     const amount = Number(document.getElementById('withdrawInput').value);
-    if (!amount || amount < 1) { toast('⚠️ Введите сумму от $1'); return; }
+    if (!amount || amount < 1) { toast('Введите сумму от $1'); return; }
     const btn = document.getElementById('withdrawBtn');
     btn.disabled = true; btn.textContent = 'Выводим...';
     try {
@@ -3429,7 +3451,7 @@ function setWithdrawAmount(n) {
       haptic('success');
       document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
     } catch (e) {
-      toast('❌ ' + e.message);
+      toast(e.message);
     } finally {
       btn.disabled = false; btn.textContent = 'Вывести через CryptoBot';
     }
@@ -3492,7 +3514,7 @@ function setWithdrawAmount(n) {
       setTimeout(() => clearInterval(pollInterval), 120000);
     }
   } catch (e) {
-    toast(`❌ ${e.message}`);
+    toast(`${e.message}`);
   } finally {
     btn.disabled = false; btn.textContent = 'Пополнить через CryptoBot';
   }
@@ -3507,7 +3529,7 @@ async function openTxHistory() {
     const { balance, transactions } = await api('/api/balance');
     document.getElementById('balanceAmt').textContent = Number(balance).toFixed(2);
     if (!transactions.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><div class="empty-ttl">Нет транзакций</div><div class="empty-sub">История пополнений и списаний появится здесь</div></div>';
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Нет транзакций</div><div class="empty-sub">История пополнений и списаний появится здесь</div></div>';
       return;
     }
     el.innerHTML = transactions.map(tx => {
@@ -3544,7 +3566,7 @@ async function openTxHistory() {
       </div>`;
     }).join('');
   } catch (e) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">❌</div><div class="empty-ttl">Ошибка загрузки</div></div>`;
+    el.innerHTML = `<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Ошибка загрузки</div></div>`;
   }
 }
 
@@ -3833,7 +3855,7 @@ function openListing(id, listingObj) {
     if (!curListing) return;
     // Проверяем что это не свой товар
     if (TG_USER && String(curListing.seller_id) === String(TG_USER.id)) {
-      toast('❌ Вы не можете купить свой товар');
+      toast('Вы не можете купить свой товар');
       haptic('error');
       return;
     }
@@ -3882,7 +3904,7 @@ async function buyListing() {
     // Переходим в сделки
     setTimeout(() => openMyDeals(), 400);
   } catch (e) {
-    toast(`❌ ${e.message}`);
+    toast(`${e.message}`);
     btn.disabled = false;
     btn.textContent = `❄️ Купить · заморозить $${Number(curListing.price).toFixed(2)}`;
   }
@@ -3904,7 +3926,7 @@ async function loadDealsPage() {
       return false;
     });
     if (!activeDeal.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Активных сделок нет</div><div class="empty-sub">История доступна в профиле</div></div>';
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Активных сделок нет</div><div class="empty-sub">История доступна в профиле</div></div>'; 
       return;
     }
     const sMap = {
@@ -3996,7 +4018,7 @@ async function loadDealsPage() {
       activeDeal.map(buildDealCard).join('') +
     '</div>';
   } catch(e) {
-    el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--sub)">❌ ' + e.message + '</div>';
+    el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--sub)">' + e.message + '</div>';
   }
 }
 
@@ -4011,18 +4033,18 @@ async function openMyDeals() {
   try {
     const { deals } = await api('/api/deals/my');
     if (!deals.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Сделок нет</div></div>';
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Сделок нет</div></div>'; 
       return;
     }
     const sMap = {
-      frozen: '❄️ Ожидание подтверждения',
-      accepted: '📦 Принято, готовка',
-      waiting_confirmation: '📤 Товар отправлен',
-      dispute: '⚠️ Спор',
-      completed: '✅ Завершено',
-      auto_completed: '✅ Авто-завершено',
-      cancelled: '❌ Отменено',
-      refunded: '↩️ Возврат'
+      frozen: 'Ожидание подтверждения',
+      accepted: 'Принято, готовка',
+      waiting_confirmation: 'Товар отправлен',
+      dispute: 'Спор',
+      completed: 'Завершено',
+      auto_completed: 'Авто-завершено',
+      cancelled: 'Отменено',
+      refunded: 'Возврат'
     };
     el.innerHTML = activeDeal.map(d => {
       const isBuyer = d.my_role === 'buyer';
@@ -4043,7 +4065,7 @@ async function openMyDeals() {
           <div style="font-size:11px;color:var(--dim)">#${d.id}</div>
         </div>
         <div style="font-size:14px;font-weight:800;margin-bottom:4px">${d.title}</div>
-        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? '🛒 Покупка' : '📦 Продажа'} · <b style="color:var(--gold)">$${Number(d.amount).toFixed(2)}</b></div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? 'Покупка' : 'Продажа'} · <b style="color:var(--gold)">$${Number(d.amount).toFixed(2)}</b></div>
         ${(d.status === 'frozen' || d.status === 'accepted' || d.status === 'waiting_confirmation' || d.status === 'dispute') ? `
           <div style="background:rgba(0,207,232,.08);border:1px solid rgba(0,207,232,.2);border-radius:10px;padding:10px;font-size:12px;margin-bottom:8px">
             ${isBuyer
@@ -4055,11 +4077,11 @@ async function openMyDeals() {
         ${canReceive ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар</button>` : ''}
         ${canLeaveReview ? `<button class="deal-btn confirm" onclick="${isBuyer ? 'openReview' : 'openSellerReview'}(${d.id})">⭐ Оставить отзыв</button>` : ''}
         ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
-        ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">❌ Отменить</button>` : ''}
+        ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить</button>` : ''}
       </div>`;
     }).join('');
   } catch (e) {
-    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">${e.message}</div>`;
   }
 }
 
@@ -4070,7 +4092,7 @@ async function openMyListings() {
   try {
     const { listings } = await api('/api/listings/my');
     if (!listings.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">📌</div><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Нажмите «+ Продать»</div></div>';
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Нажмите «+ Продать»</div></div>'; 
       return;
     }
     const sMap = { active:'🟢 Активно', paused:'⏸ Пауза', sold:'✅ Продано', deleted:'🗑 Удалено' };
@@ -4265,7 +4287,7 @@ async function sendItem(dealId) {
   // seller confirms shipment without leaving a review yet
   try {
     await api(`/api/deals/${dealId}/seller-confirm`, { method:'POST', body: JSON.stringify({}) });
-    toast('📦 Отметили отправку, дождитесь подтверждения покупателя');
+    toast('Отметили отправку, дождитесь подтверждения покупателя');
     haptic('success');
     openMyDeals();
   } catch(e) {
@@ -4511,7 +4533,7 @@ async function openDealChat(dealId) {
     
     // Если сделка завершена - чат недоступен (сообщения удаляются)
     if (isCompleted) {
-      document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--dim);padding:40px"><div style="font-size:36px;margin-bottom:12px">🔒</div><div style="font-size:14px">Чат закрыт</div><div style="font-size:12px;margin-top:6px;color:var(--dim)">Сделка завершена - история сообщений удалена</div></div>`;
+      document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--dim);padding:40px"><div style="font-size:36px;margin-bottom:12px"></div><div style="font-size:14px">Чат закрыт</div><div style="font-size:12px;margin-top:6px;color:var(--dim)">Сделка завершена - история сообщений удалена</div></div>`;
       const chatInput = document.getElementById('chatInput');
       chatInput.disabled = true;
       chatInput.placeholder = 'Чат удален';
@@ -4730,7 +4752,7 @@ function renderCart() {
     selectedCartItemId = null;
     el.innerHTML = `
       <div class="empty">
-        <div class="empty-ico">🛒</div>
+        <div class="empty-ico"></div>
         <div class="empty-ttl">Корзина пуста</div>
         <div class="empty-sub">Добавьте товары из каталога</div>
       </div>`;
@@ -4977,7 +4999,7 @@ async function openListingHistory() {
     const statusMap = {
       deleted: '🗑️ Удалено',
       sold: '✅ Продано',
-      archived: '📦 Архивировано',
+      archived: 'Архивировано',
       paused: '⏸️ На паузе'
     };
     el.innerHTML = history.map(l => {
@@ -5052,7 +5074,7 @@ async function openMyReviews() {
   try {
     const { reviews } = await api('/api/reviews/my');
     if (!reviews || !reviews.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">💬</div><div class="empty-ttl">Отзывов пока нет</div><div class="empty-sub">Отзывы от других пользователей появятся здесь</div></div>';
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Отзывов пока нет</div><div class="empty-sub">Отзывы от других пользователей появятся здесь</div></div>'; 
       return;
     }
     el.innerHTML = reviews.map(r => {
