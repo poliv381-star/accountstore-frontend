@@ -3947,8 +3947,8 @@ async function loadDealsPage() {
       const ico = sm[0], label = sm[1], color = sm[2];
       const isSeller = d.my_role === 'seller';
       const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
-      const canSendItem = isSeller && (d.status === 'completed' || d.status === 'auto_completed'); // Продавец отправляет
-      const canReceive  = isBuyer && (d.status === 'completed' || d.status === 'auto_completed'); // Покупатель получил
+      const canSendItem = isSeller && d.status === 'accepted';            // Продавец отправляет
+      const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
       const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
       const canDisputeSeller = isSeller && d.status === 'waiting_confirmation'; // Продавец спор (после отправки)
       const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller); // Отменить
@@ -4048,10 +4048,12 @@ async function openMyDeals() {
       const isBuyer = d.my_role === 'buyer';
       const isSeller = !isBuyer;
       const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
-      const canSendItem = isSeller && (d.status === 'completed' || d.status === 'auto_completed'); // Продавец отправляет
-      const canReceive  = isBuyer && (d.status === 'completed' || d.status === 'auto_completed'); // Покупатель получил
+      const canSendItem = isSeller && d.status === 'accepted';            // Продавец отправляет
+      const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
       const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
       const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller);
+      const canLeaveReview = (d.status === 'completed' || d.status === 'auto_completed') && 
+                            ((isBuyer && !d.buyer_review_score) || (isSeller && !d.seller_review_score)); // Можно оставить отзыв
       const canLeaveReview = (d.status === 'completed' || d.status === 'auto_completed') && 
                             ((isBuyer && !d.buyer_review_score) || (isSeller && !d.seller_review_score)); // Можно оставить отзыв
 
