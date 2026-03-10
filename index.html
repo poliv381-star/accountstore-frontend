@@ -1558,7 +1558,7 @@ body::after {
   </div>
 
   <div class="cats" id="catsRow">
-    <div class="cat on" onclick="filterCat('all',this)">🌐 Все</div>
+    <div class="cat on" onclick="filterCat('all',this)">Все</div>
   </div>
 
   <div class="sec-label" id="gridLabel">Все объявления</div>
@@ -2288,8 +2288,8 @@ function catEmoji(cat) {
 function buildCats() {
   const row = document.getElementById('catsRow');
   const cats = [...new Set(allProducts.map(p => p.cat_slug))];
-  row.innerHTML = `<div class="cat on" onclick="filterCat('all',this)">🌐 Все</div>` +
-    cats.map(slug => `<div class="cat" onclick="filterCat('${slug}',this)">${catEmoji(slug)} ${catName(slug)}</div>`).join('');
+  row.innerHTML = `<div class="cat on" onclick="filterCat('all',this)">Все</div>` +
+    cats.map(slug => `<div class="cat" onclick="filterCat('${slug}',this)">${catName(slug)}</div>`).join('');
 }
 
 function catName(cat) {
@@ -3284,7 +3284,7 @@ function openListing(id, listingObj) {
       
       <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
         <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Категория</div>
-        <div style="font-size:13px;color:var(--text)">${l.category || 'не указана'}</div>
+        <div style="font-size:13px;color:var(--text)">${catName(l.category) || 'не указана'}</div>
       </div>
       
       <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
