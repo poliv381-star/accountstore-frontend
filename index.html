@@ -1537,12 +1537,6 @@ body::after {
   margin-bottom: 16px;
 }
 
-/* паузу затемняем ВСЕ, кроме кнопок */
-.listing-card.paused .listing-photo,
-.listing-card.paused .listing-info > div {
-  opacity: 0.5;
-}
-
 .listing-photo {
   flex-shrink: 0;
   width: 80px;
@@ -4095,10 +4089,10 @@ async function loadMyListingsInline() {
         <!-- КНОПКИ СПРАВА -->
         <div class="listing-buttons">
           ${isPaused
-            ? `<button class="btn-pause highlight" onclick="changeListingStatus(${l.id},'active')">Активировать</button>`
+            ? `<button class="btn-pause" onclick="changeListingStatus(${l.id},'active')">Активировать</button>`
             : `<button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">Пауза</button>`
           }
-          <button class="btn-delete${isPaused ? ' highlight' : ''}" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
+          <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
         </div>
       </div>`
     }).join('');
