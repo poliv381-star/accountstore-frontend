@@ -1693,6 +1693,11 @@ body::after {
   margin-top: 8px;
 }
 
+/* paused собственные объявления становятся более бледными */
+.listing-card.paused {
+  opacity: 0.5;
+}
+
 .listing-buttons button {
   padding: 10px;
   border-radius: 10px;
@@ -4038,20 +4043,21 @@ async function loadMyListingsInline() {
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
     const { listings } = await api('/api/listings/my');
-    // ТОЛЬКО активные объявления для раздела "Добавить"
-    const activeListings = (listings || []).filter(l => l.status === 'active');
-    
-    if (!activeListings.length) {
-      el.innerHTML = '<div class="empty" style="padding:40px 0"><div class="empty-ttl">Активных объявлений нет</div><div class="empty-sub">Создайте первое, нажав «+ Новое»</div></div>';
+    // Показываем собственные объявления (active и paused) на вкладке "Добавить"
+    const ownListings = listings || [];
+
+    if (!ownListings.length) {
+      el.innerHTML = '<div class="empty" style="padding:40px 0"><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Создайте первое, нажав «+ Новое»</div></div>';
       return;
     }
-    
-    el.innerHTML = activeListings.map(l => {
+
+    el.innerHTML = ownListings.map(l => {
       const catName_val = { accounts:'Аккаунты', games:'Игры', software:'Софт', other:'Другое' }[l.category] || l.category;
       const mainImg = l.image_url || (l.images && l.images[0]);
       const stockColor = l.quantity > 5 ? 'var(--green)' : l.quantity > 0 ? 'var(--orange)' : 'var(--red)';
-      
-      return `<div class="listing-card" id="listing-${l.id}">
+      const isPaused = l.status !== 'active';
+
+      return `<div class="listing-card${isPaused ? ' paused' : ''}" id="listing-${l.id}">
         <!-- ФОТО -->
         <div class="listing-photo">
           ${mainImg 
@@ -4063,7 +4069,7 @@ async function loadMyListingsInline() {
         <!-- ИНФО -->
         <div class="listing-info">
           <div>
-            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}</div>
+            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}${isPaused ? ' <span style="font-size:11px;color:var(--dim)">(пауза)</span>' : ''}</div>
             <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
             <div class="listing-meta">
               <span>${catName_val}</span>
@@ -4073,7 +4079,10 @@ async function loadMyListingsInline() {
           
           <!-- КНОПКИ ВНУТРИ КАРТОЧКИ -->
           <div class="listing-buttons">
-            <button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">Пауза</button>
+            ${isPaused
+              ? `<button class="btn-pause" onclick="changeListingStatus(${l.id},'active')">▶️ Активировать</button>`
+              : `<button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">⏸ Пауза</button>`
+            }
             <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
           </div>
         </div>
