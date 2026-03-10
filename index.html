@@ -238,10 +238,16 @@ body::after {
 
 /* ── CATEGORIES ── */
 .cats {
-  display:flex; gap:8px; overflow-x:auto;
-  padding: 0 18px 18px; scrollbar-width:none;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 18px 18px;
+  scroll-behavior: smooth;
+  white-space: nowrap;
+  scrollbar-width: none;
 }
-.cats::-webkit-scrollbar { display:none; }
+.cats::-webkit-scrollbar { display: none; }
 
 .cat {
   flex-shrink:0; display:flex; align-items:center; gap:6px;
@@ -2212,14 +2218,17 @@ let curPayUrl    = null;
 let curMiniUrl   = null;
 let filterSlug   = 'all';
 let searchQ      = '';
+let lastListingId = 0;  // Отслеживание новых объявлений
 
 // Загрузка товаров с фильтрацией по категории и поиску
 async function loadListings() {
   let url = '/api/listings';
   const params = [];
 
-  // Загружаем ВСЕ товары (без фильтра по категориям)
-  // Фильтр по категориям будет на фронте (мгновенно)
+  if (filterSlug !== 'all') {
+    params.push(`category=${encodeURIComponent(filterSlug)}`);
+  }
+
   if (searchQ) {
     params.push(`search=${encodeURIComponent(searchQ)}`);
   }
@@ -2248,7 +2257,46 @@ async function loadListings() {
     listing:     l,
   }));
 
+  // Сохраняем ID первого (самого нового) объявления
+  if (allProducts.length > 0) {
+    lastListingId = allProducts[0].listing_id;
+  }
+
   buildCats();
+  renderGrid();
+}
+
+// Проверка новых объявлений (без полной перерисовки)
+async function checkNewListings() {
+  if (lastListingId === 0) return; // Если ещё ничего не загружалось
+  
+  const { listings } = await api(`/api/listings?after=${lastListingId}`).catch(() => ({ listings: [] }));
+  
+  if (!listings || listings.length === 0) return; // Новых нет
+  
+  // Добавляем новые объявления в начало
+  const newProducts = listings.map(l => ({
+    id:          `l_${l.id}`,
+    listing_id:  l.id,
+    name:        l.title,
+    description: l.description || '',
+    price:       l.price,
+    image_url:   l.image_url,
+    images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
+    cat_name:    l.category,
+    cat_emoji:   catEmoji(l.category),
+    cat_slug:    l.category,
+    stock:       l.quantity || 1,
+    badge:       null,
+    specs:       [],
+    source:      'listing',
+    listing:     l,
+  }));
+  
+  allProducts = [...newProducts, ...allProducts];
+  lastListingId = newProducts[0].listing_id;
+  
+  // Только перерисовываем сетку, не трогаем категории
   renderGrid();
 }
 
@@ -2270,13 +2318,14 @@ function selectCategory(slug) {
     renderGrid();
     
     // Автоматическое обновление каталога каждые 10 секунд
+    // Проверяем новые объявления каждые 5 секунд (без полной перерисовки)
     setInterval(async () => {
       try {
-        await loadListings();
+        await checkNewListings();
       } catch (e) {
-        console.log('ℹ️ Ошибка обновления каталога:', e.message);
+        console.log('ℹ️ Ошибка проверки новых объявлений:', e.message);
       }
-    }, 10000); // каждые 10 секунд
+    }, 5000); // каждые 5 секунд
   } catch (e) {
     document.getElementById('grid').innerHTML =
       `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)">
@@ -2297,17 +2346,19 @@ function catEmoji(cat) {
 // ══════════════════════════════════════════════════════════
 function buildCats() {
   const row = document.getElementById('catsRow');
-  
+
   const cats = [
-    { slug: 'all', name: 'Все' },
-    { slug: 'accounts', name: 'Аккаунты' },
-    { slug: 'games', name: 'Игры' },
-    { slug: 'software', name: 'Софт' },
-    { slug: 'other', name: 'Другое' }
+    { slug: 'all', name: 'Все', emoji: '🌐' },
+    { slug: 'accounts', name: 'Аккаунты', emoji: '👤' },
+    { slug: 'games', name: 'Игры', emoji: '🎮' },
+    { slug: 'software', name: 'Софт', emoji: '💻' },
+    { slug: 'other', name: 'Другое', emoji: '📦' }
   ];
-  
+
   row.innerHTML = cats.map(c =>
-    `<div class="cat ${filterSlug === c.slug ? 'on' : ''}" onclick="selectCategory('${c.slug}')">${c.name}</div>`
+    `<div class="cat ${filterSlug === c.slug ? 'on' : ''}" onclick="filterCat('${c.slug}', this)">
+      ${c.emoji} ${c.name}
+    </div>`
   ).join('');
 }
 
@@ -2317,7 +2368,7 @@ function catName(cat) {
 
 function getVisible() {
   let list = allProducts;
-  if (filterSlug !== 'all') list = list.filter(p => p.cat_slug === filterSlug);
+  if (filterSlug !== 'all') list = list.filter(p => (p.cat_slug || '').toLowerCase() === filterSlug.toLowerCase());
   if (searchQ) {
     const q = searchQ.toLowerCase();
     list = list.filter(p =>
