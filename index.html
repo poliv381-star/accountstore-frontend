@@ -2333,7 +2333,6 @@ function selectCategory(slug) {
        </div>`;
   }
   syncBadge();
-  cleanOldNotifications(); // Очищаем уведомления старше 7 дней
   updateNotifBadge(); // Инициализируем бейдж уведомлений
 })();
 
@@ -2569,7 +2568,7 @@ function openProduct(id) {
   }
 
   // Meta
-  document.getElementById('pdCat').innerHTML = `<span>${p.cat_emoji||''}</span> ${p.cat_name||''}`;
+  document.getElementById('pdCat').innerHTML = `<span>${p.cat_emoji||''}</span> ${catName(p.cat_slug)||''}`;
   document.getElementById('pdName').textContent  = p.name;
   document.getElementById('pdPrice').textContent = `$${Number(p.price).toFixed(2)}`;
   document.getElementById('pdDesc').textContent  = p.description || '';
