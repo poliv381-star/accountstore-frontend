@@ -2347,13 +2347,14 @@ body::after {
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
       <div style="font-size:18px;font-weight:900;margin-bottom:6px">⭐ Отзыв о продавце</div>
-      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Подтвердите получение и оцените продавца</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Оставьте отзыв о продавце</div>
       <div style="display:flex;gap:10px;margin-bottom:14px">
         <button id="revGood" class="deal-btn confirm" style="flex:1" onclick="setReview(1)">👍 Хорошо</button>
         <button id="revBad"  class="deal-btn cancel"  style="flex:1" onclick="setReview(-1)">👎 Плохо</button>
       </div>
       <textarea class="form-input form-textarea" id="reviewText" placeholder="Комментарий (необязательно)..."></textarea>
       <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">✅ Подтвердить получение</button>
+      <button class="pay-btn-main" onclick="skipReview()" style="margin-top:8px;background:var(--s2);color:var(--sub);font-size:14px">Пропустить отзыв</button>
     </div>
   </div>
 </div>
@@ -2371,6 +2372,7 @@ body::after {
       </div>
       <textarea class="form-input form-textarea" id="sellerReviewText" placeholder="Комментарий (необязательно)..."></textarea>
       <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">📤 Отправить товар</button>
+      <button class="pay-btn-main" onclick="skipSellerReview()" style="margin-top:8px;background:var(--s2);color:var(--sub);font-size:14px">Пропустить отзыв</button>
     </div>
   </div>
 </div>
@@ -3892,7 +3894,15 @@ async function loadDealsPage() {
   try {
     const { deals } = await api('/api/deals/my');
     // Фильтруем только активные сделки (frozen, accepted, waiting_confirmation)
-    const activeDeal = (deals || []).filter(d => ['frozen', 'accepted', 'waiting_confirmation'].includes(d.status));
+    const activeDeal = (deals || []).filter(d => {
+      if (['frozen', 'accepted', 'waiting_confirmation'].includes(d.status)) return true;
+      if ((d.status === 'completed' || d.status === 'auto_completed')) {
+        // keep deal visible if the current user hasn't left a review and didn't explicitly skip
+        if (d.my_role === 'buyer' && !d.buyer_review_score && !d.buyer_skipped_review) return true;
+        if (d.my_role === 'seller' && !d.seller_review_score && !d.seller_skipped_review) return true;
+      }
+      return false;
+    });
     if (!activeDeal.length) {
       el.innerHTML = '<div class="empty"><div class="empty-ico">🤝</div><div class="empty-ttl">Активных сделок нет</div><div class="empty-sub">История доступна в профиле</div></div>';
       return;
@@ -3944,6 +3954,9 @@ async function loadDealsPage() {
         } else {
           statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(255,167,38,0.1);border-radius:8px">Товар в пути - проверьте и подтвердите получение</div>';
         }
+      } else if ((d.status === 'completed' || d.status === 'auto_completed') && ((isBuyer && !d.buyer_review_score && !d.buyer_skipped_review) || (isSeller && !d.seller_review_score && !d.seller_skipped_review))) {
+        // Deal finished but review still pending
+        statusInfo = '<div style="font-size:12px;color:var(--dim);margin-bottom:10px;padding:8px;background:rgba(102,187,106,0.1);border-radius:8px">Сделка завершена – оставьте отзыв</div>';
       }
 
       const btns =
@@ -3952,7 +3965,7 @@ async function loadDealsPage() {
         // СТАТУС: accepted (продавец принял, отправляет товар)
         (canSendItem ? '<button class="deal-btn confirm" onclick="openSellerReview(' + d.id + ')">Отправил товар</button>' : '') +
         // СТАТУС: waiting_confirmation (ждём подтверждения покупателя)
-        (canReceive  ? '<button class="deal-btn confirm" onclick="openReview(' + d.id + ')">Получил товар</button>' : '') +
+        (canReceive  ? '<button class="deal-btn confirm" onclick="receiveDeal(' + d.id + ')">Получил товар</button>' : '') +
         (canDispute  ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
         (canDisputeSeller ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
         // Отмена (для frozen и accepted статусов)
@@ -4289,7 +4302,7 @@ async function submitReview() {
   const btn = document.getElementById('submitReviewBtn');
   btn.disabled = true; btn.textContent = 'Отправляем...';
   try {
-    // Подтверждаем получение товара и оставляем отзыв (или просто оставляем отзыв для завершенной сделки)
+    // Отправляем подтверждение + отзыв (если это первая завершение сделки, произойдёт тоже payout)
     await api(`/api/deals/${curDealId}/confirm`, { method:'POST', body: JSON.stringify({
       review_score: reviewScore,
       review_text:  document.getElementById('reviewText').value.trim()
@@ -4303,6 +4316,52 @@ async function submitReview() {
   } catch(e) {
     toast(`❌ ${e.message}`);
     btn.disabled = false; btn.textContent = '✅ Подтвердить получение';
+  }
+}
+
+async function receiveDeal(dealId) {
+  try {
+    await api(`/api/deals/${dealId}/confirm`, { method:'POST', body: JSON.stringify({}) });
+    toast('✅ Получено! Оставьте отзыв позже');
+    haptic('success');
+    openMyDeals();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+    haptic('error');
+  }
+}
+
+async function skipReview() {
+  const btn = document.getElementById('submitReviewBtn');
+  if (btn) { btn.disabled = true; }
+  try {
+    await api(`/api/deals/${curDealId}/confirm`, { method:'POST', body: JSON.stringify({ skip_review: true }) });
+    closeOverlay('reviewOverlay');
+    toast('✅ Пропущено');
+    haptic('success');
+    openMyDeals();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+    haptic('error');
+  } finally {
+    if (btn) { btn.disabled = false; }
+  }
+}
+
+async function skipSellerReview() {
+  const btn = document.getElementById('submitSellerReviewBtn');
+  if (btn) { btn.disabled = true; }
+  try {
+    await api(`/api/deals/${curDealId}/seller-confirm`, { method:'POST', body: JSON.stringify({ skip_review: true }) });
+    closeOverlay('sellerReviewOverlay');
+    toast('✅ Пропущено');
+    haptic('success');
+    openMyDeals();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+    haptic('error');
+  } finally {
+    if (btn) { btn.disabled = false; }
   }
 }
 async function acceptDeal(dealId) {
