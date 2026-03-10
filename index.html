@@ -2213,56 +2213,68 @@ let curMiniUrl   = null;
 let filterSlug   = 'all';
 let searchQ      = '';
 
+// Загрузка товаров с фильтрацией по категории и поиску
+async function loadListings() {
+  let url = '/api/listings';
+  const params = [];
+
+  if (filterSlug !== 'all') {
+    params.push(`category=${encodeURIComponent(filterSlug)}`);
+  }
+
+  if (searchQ) {
+    params.push(`search=${encodeURIComponent(searchQ)}`);
+  }
+
+  if (params.length) {
+    url += '?' + params.join('&');
+  }
+
+  const { listings } = await api(url).catch(() => ({ listings: [] }));
+
+  allProducts = (listings || []).map(l => ({
+    id:          `l_${l.id}`,
+    listing_id:  l.id,
+    name:        l.title,
+    description: l.description || '',
+    price:       l.price,
+    image_url:   l.image_url,
+    images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
+    cat_name:    l.category,
+    cat_emoji:   catEmoji(l.category),
+    cat_slug:    l.category,
+    stock:       l.quantity || 1,
+    badge:       null,
+    specs:       [],
+    source:      'listing',
+    listing:     l,
+  }));
+
+  buildCats();
+  renderGrid();
+}
+
+// Выбор категории и загрузка
+function selectCategory(slug) {
+  filterSlug = slug;
+  searchQ = '';
+  document.getElementById('searchInput').value = '';
+  loadListings();
+}
+
 // ══════════════════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════════════════
 (async () => {
   renderSkeleton();
   try {
-    const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
-    allProducts = (listings || []).map(l => ({
-      id:          `l_${l.id}`,
-      listing_id:  l.id,
-      name:        l.title,
-      description: l.description || '',
-      price:       l.price,
-      image_url:   l.image_url,
-      images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
-      cat_name:    l.category,
-      cat_emoji:   catEmoji(l.category),
-      cat_slug:    l.category,
-      stock:       l.quantity || 1,
-      badge:       null,
-      specs:       [],
-      source:      'listing',
-      listing:     l,
-    }));
-    buildCats();
+    await loadListings();
     renderGrid();
     
     // Автоматическое обновление каталога каждые 10 секунд
     setInterval(async () => {
       try {
-        const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
-        allProducts = (listings || []).map(l => ({
-          id:          `l_${l.id}`,
-          listing_id:  l.id,
-          name:        l.title,
-          description: l.description || '',
-          price:       l.price,
-          image_url:   l.image_url,
-          images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
-          cat_name:    l.category,
-          cat_emoji:   catEmoji(l.category),
-          cat_slug:    l.category,
-          stock:       l.quantity || 1,
-          badge:       null,
-          specs:       [],
-          source:      'listing',
-          listing:     l,
-        }));
-        buildCats();
-        renderGrid();
+        await loadListings();
       } catch (e) {
         console.log('ℹ️ Ошибка обновления каталога:', e.message);
       }
@@ -2288,8 +2300,8 @@ function catEmoji(cat) {
 function buildCats() {
   const row = document.getElementById('catsRow');
   const cats = [...new Set(allProducts.map(p => p.cat_slug))];
-  row.innerHTML = `<div class="cat on" onclick="filterCat('all',this)">Все</div>` +
-    cats.map(slug => `<div class="cat" onclick="filterCat('${slug}',this)">${catName(slug)}</div>`).join('');
+  row.innerHTML = `<div class="cat on" onclick="selectCategory('all')">Все</div>` +
+    cats.map(slug => `<div class="cat" onclick="selectCategory('${slug}')">${catName(slug)}</div>`).join('');
 }
 
 function catName(cat) {
@@ -2413,10 +2425,8 @@ function onSearch(v) {
   searchQ = v.trim();
   if (searchQ) {
     filterSlug = 'all';  // При поиске показываем все категории
-    document.querySelectorAll('.cat').forEach(c => c.classList.remove('on'));
-    document.querySelector('.cat[onclick*=\"all\"]').classList.add('on');
   }
-  renderGrid();
+  loadListings();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3837,16 +3847,7 @@ async function submitListing() {
     toast('✅ Объявление опубликовано!');
     haptic('success');
     // Обновляем каталог
-    const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
-    allProducts = (listings || []).map(l => ({
-      id: `l_${l.id}`, listing_id: l.id, name: l.title, description: l.description || '',
-      price: l.price, image_url: l.image_url,
-      images: l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
-      cat_name: l.category, cat_emoji: catEmoji(l.category), cat_slug: l.category,
-      stock: l.quantity || 1, badge: null, specs: [], source: 'listing', listing: l,
-    }));
-    buildCats();
-    renderGrid();
+    await loadListings();
     // Сбрасываем форму
     ['lTitle','lDesc','lDealTerms','lPrice'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('lQuantity').value = '1';
@@ -3948,16 +3949,7 @@ async function cancelDeal(dealId) {
     // Уведомление создаст сервер
     toast('↩️ Сделка отменена, средства возвращены');
     // Перезагружаем каталог чтобы обновить остатки товара
-    const { listings } = await api('/api/listings').catch(() => ({ listings: [] }));
-    allProducts = (listings || []).map(l => ({
-      id: `l_${l.id}`, listing_id: l.id, name: l.title, description: l.description || '',
-      price: l.price, image_url: l.image_url,
-      images: l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
-      cat_name: l.category, cat_emoji: catEmoji(l.category), cat_slug: l.category,
-      stock: l.quantity || 1, badge: null, specs: [], source: 'listing', listing: l,
-    }));
-    buildCats();
-    renderGrid();
+    await loadListings();
     openMyDeals();
     loadBalance();
   } catch(e) { toast(`❌ ${e.message}`); }
