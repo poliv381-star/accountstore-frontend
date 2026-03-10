@@ -2368,15 +2368,17 @@ function catName(cat) {
 
 function getVisible() {
   let list = allProducts;
-  if (filterSlug !== 'all') list = list.filter(p => (p.cat_slug || '').toLowerCase() === filterSlug.toLowerCase());
+  
+  // Фильтр по категориям уже происходит на сервере в loadListings()
+  // Здесь фильтруем только по поиску
   if (searchQ) {
     const q = searchQ.toLowerCase();
     list = list.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q) ||
-      (p.cat_name || '').toLowerCase().includes(q)  // Поиск по категории
+      (p.description || '').toLowerCase().includes(q)
     );
   }
+  
   return list;
 }
 
@@ -2401,7 +2403,15 @@ function renderGrid() {
   const label = document.getElementById('gridLabel');
 
   if (filterSlug !== 'all') {
-    const c = catalog.find(x => x.slug === filterSlug);
+    // Массив категорий (статический)
+    const categories = [
+      { slug: 'all', name: 'Все', emoji: '🌐' },
+      { slug: 'accounts', name: 'Аккаунты', emoji: '👤' },
+      { slug: 'games', name: 'Игры', emoji: '🎮' },
+      { slug: 'software', name: 'Софт', emoji: '💻' },
+      { slug: 'other', name: 'Другое', emoji: '📦' }
+    ];
+    const c = categories.find(x => x.slug === filterSlug);
     label.textContent = c ? `${c.emoji} ${c.name}` : 'Товары';
   } else {
     label.textContent = `Все объявления`;
