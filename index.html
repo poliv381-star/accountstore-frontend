@@ -1126,12 +1126,14 @@ body::after {
 }
 .tx-ico.in  { background: rgba(0,224,128,.1); }
 .tx-ico.out { background: rgba(255,77,90,.1); }
+.tx-ico.pending { background: rgba(232,200,74,.1); }
 .tx-info { flex: 1; min-width: 0; }
 .tx-desc { font-size: 13px; font-weight: 700; }
 .tx-date { font-size: 11px; color: var(--sub); margin-top: 2px; }
 .tx-amt { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
 .tx-amt.in  { color: var(--green); }
 .tx-amt.out { color: var(--red); }
+.tx-amt.pending { color: var(--gold); }
 
 /* TOPUP INPUT */
 .topup-amounts { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
@@ -1230,6 +1232,13 @@ body::after {
 .form-textarea { resize:none; height:80px; line-height:1.5; }
 .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .deal-card {
+  background:linear-gradient(135deg, rgba(19,19,24,0.8) 0%, rgba(26,26,34,0.6) 100%);
+  border:1px solid rgba(232,200,74,0.15);
+  border-radius:16px; padding:16px; margin-bottom:12px;
+  backdrop-filter:blur(10px);
+  transition:.2s;
+}
+.review-card {
   background:linear-gradient(135deg, rgba(19,19,24,0.8) 0%, rgba(26,26,34,0.6) 100%);
   border:1px solid rgba(232,200,74,0.15);
   border-radius:16px; padding:16px; margin-bottom:12px;
@@ -1557,7 +1566,7 @@ body::after {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .listing-title {
@@ -1573,7 +1582,7 @@ body::after {
   color: var(--gold);
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .listing-meta {
@@ -1586,18 +1595,21 @@ body::after {
 
 .listing-buttons {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  width: auto;
 }
 
 .listing-buttons button {
-  padding: 10px;
+  padding: 8px 12px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Manrope', sans-serif;
+  border: 1px solid;
   border: 1px solid;
 }
 
@@ -1623,9 +1635,17 @@ body::after {
   background: rgba(220, 53, 69, 0.25);
 }
 
-/* ══════════════════════════════════════════
-   LISTING CARD - карточки в разделе "Добавить"
-══════════════════════════════════════════ */
+/* выделенные кнопки (активировать/удалить для паузы) */
+.btn-pause.highlight,
+.btn-delete.highlight {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+.btn-pause.highlight:hover,
+.btn-delete.highlight:hover {
+  background: var(--gold2);
+}
 .listing-card {
   display: flex;
   gap: 12px;
@@ -1691,6 +1711,11 @@ body::after {
   display: flex;
   gap: 8px;
   margin-top: 8px;
+}
+
+/* paused собственные объявления становятся более бледными */
+.listing-card.paused {
+  opacity: 0.5;
 }
 
 .listing-buttons button {
@@ -1877,6 +1902,15 @@ body::after {
         </svg>
       </div>
       <div class="m-txt">История сделок</div>
+      <div class="m-arr">›</div>
+    </div>
+    <div class="mrow" onclick="openMyReviews()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+      </div>
+      <div class="m-txt">Мои отзывы</div>
       <div class="m-arr">›</div>
     </div>
     <div class="mrow" id="supportBtn">
@@ -2094,6 +2128,17 @@ body::after {
     <div style="padding:0 20px 24px">
       <div style="font-size:18px;font-weight:900;margin-bottom:16px">История сделок</div>
       <div id="dealHistoryList"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MY REVIEWS SHEET ════════════════════════════ -->
+<div class="overlay" id="myReviewsOverlay" onclick="closeOverlayByBg(event,'myReviewsOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:16px">Мои отзывы</div>
+      <div id="myReviewsList"><div class="spin-wrap"><div class="spin"></div></div></div>
     </div>
   </div>
 </div>
@@ -2539,6 +2584,9 @@ function selectCategory(slug) {
     await loadListings();
     renderGrid();
     
+    // Загружаем уведомления при старте
+    await loadNotifications();
+    
     // Автоматическое обновление каталога каждые 10 секунд
     // Проверяем новые объявления каждые 5 секунд (без полной перерисовки)
     setInterval(async () => {
@@ -2548,6 +2596,15 @@ function selectCategory(slug) {
         console.log('ℹ️ Ошибка проверки новых объявлений:', e.message);
       }
     }, 5000); // каждые 5 секунд
+    
+    // Периодическая синхронизация уведомлений каждые 30 секунд
+    setInterval(async () => {
+      try {
+        await loadNotifications();
+      } catch (e) {
+        console.log('ℹ️ Ошибка синхронизации уведомлений:', e.message);
+      }
+    }, 30000); // каждые 30 секунд
   } catch (e) {
     document.getElementById('grid').innerHTML =
       `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--sub)">
@@ -2706,15 +2763,14 @@ function filterCat(slug, el) {
   document.getElementById('searchInput').value = '';  // Очищаем input
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
-  renderGrid();
+  // перезагружаем список с учётом выбранной категории
+  loadListings().then(renderGrid).catch(e => console.warn('Ошибка загрузки после смены категории', e.message));
   haptic('light');
 }
 
 function onSearch(v) {
   searchQ = v.trim();
-  if (searchQ) {
-    filterSlug = 'all';  // При поиске показываем все категории
-  }
+  // не сбрасываем filterSlug, чтобы поисковый запрос применялся в рамках выбранной категории
   loadListings();
 }
 
@@ -3077,6 +3133,25 @@ async function syncNotifBadgeWithServer() {
   }
 }
 
+// Загружаем уведомления с сервера (для инициализации)
+async function loadNotifications() {
+  try {
+    const { notifications: serverNotifs } = await api('/api/notifications');
+    notifications = serverNotifs.map(n => ({
+      id: n.id,
+      dealId: n.deal_id,
+      message: n.message,
+      type: n.type,
+      timestamp: new Date(n.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
+      createdAt: new Date(n.created_at).getTime(),
+      read: n.read
+    }));
+    updateNotifBadge();
+  } catch (e) {
+    console.log('Ошибка загрузки уведомлений при старте:', e.message);
+  }
+}
+
 function renderNotifications() {
   const container = document.getElementById('notifList');
   
@@ -3109,53 +3184,40 @@ function renderNotifications() {
     </div>
     ${notifHtml}`;
   
-  // Добавляем обработчики событий для кнопок удаления
-  document.querySelectorAll('.notif-remove-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const notifId = parseInt(btn.getAttribute('data-notif-id'));
-      await removeNotification(notifId);
+  // Используем делегирование событий вместо добавления обработчиков к каждой кнопке
+  // Обработчик добавляется один раз к контейнеру
+  if (!container.hasEventListener) {
+    container.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('notif-remove-btn')) {
+        e.preventDefault();
+        e.stopPropagation();
+        const notifId = parseInt(e.target.getAttribute('data-notif-id'));
+        await removeNotification(notifId);
+      }
     });
-  });
+    container.hasEventListener = true; // Флаг, чтобы не добавлять повторно
+  }
 }
 
 async function openNotifs() {
   openOverlay('notifOverlay');
   haptic('light');
   
-  // Загружаем уведомления с сервера
-  try {
-    const { notifications: serverNotifs } = await api('/api/notifications');
-    // Обновляем локальные уведомления из сервера
-    notifications = serverNotifs.map(n => ({
-      id: n.id,
-      dealId: n.deal_id,
-      message: n.message,
-      type: n.type,
-      timestamp: new Date(n.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}),
-      createdAt: new Date(n.created_at).getTime(),
-      read: n.read
-    }));
+  // Уведомления уже загружены при старте, просто отмечаем непрочитанные как прочитанные
+  const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
+  if (unreadIds.length > 0) {
+    // Отправляем на сервер в фоне
+    unreadIds.forEach(id => {
+      api(`/api/notifications/${id}/read`, { method: 'PUT' }).catch(e => 
+        console.log('Ошибка отметки как прочитанного:', e.message)
+      );
+    });
     
-    // Отмечаем все непрочитанные как прочитанные
-    const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
-    if (unreadIds.length > 0) {
-      // Отправляем на сервер в фоне
-      unreadIds.forEach(id => {
-        api(`/api/notifications/${id}/read`, { method: 'PUT' }).catch(e => 
-          console.log('Ошибка отметки как прочитанного:', e.message)
-        );
-      });
-      
-      // Обновляем локально
-      notifications = notifications.map(n => ({ ...n, read: true }));
-      
-      // Обновляем бейдж
-      updateNotifBadge();
-    }
-  } catch (e) {
-    console.log('Ошибка загрузки уведомлений:', e.message);
+    // Обновляем локально
+    notifications = notifications.map(n => ({ ...n, read: true }));
+    
+    // Обновляем бейдж
+    updateNotifBadge();
   }
   
   renderNotifications();
@@ -3424,30 +3486,36 @@ function setWithdrawAmount(n) {
       tg ? tg.openLink(invoiceUrl) : window.open(invoiceUrl, '_blank');
       toast('💳 Проверяем платёж...');
       
-      // Полинг: проверяем баланс каждые 2 секунды в течение 2 минут
+      // Полинг: проверяем статус транзакции каждые 2 секунды в течение 2 минут
       let checked = 0;
       const pollInterval = setInterval(async () => {
         checked++;
         try {
-          const { balance: newBalance } = await api('/api/balance');
-          const currentBalance = Number(newBalance);
+          const { transactions } = await api('/api/balance');
           
-          // Если баланс увеличился - платёж прошёл!
-          if (currentBalance > oldBalance) {
+          // Ищем completed транзакцию типа topup с нужной суммой, созданную недавно
+          const recentCompletedTopup = transactions.find(tx => 
+            tx.type === 'topup' && 
+            tx.status === 'completed' && 
+            Number(tx.amount) === amount &&
+            (Date.now() - new Date(tx.created_at).getTime()) < 5 * 60 * 1000 // не старше 5 минут
+          );
+          
+          if (recentCompletedTopup) {
             clearInterval(pollInterval);
-            toast(`✅ Пополнено на $${(currentBalance - oldBalance).toFixed(2)}`);
+            toast(`✅ Пополнено на $${amount.toFixed(2)}`);
             loadBalance();
             loadProfile();
             return;
           }
           
-          // Если проверили 60 раз (2 минуты) и баланс не изменился - отменили
+          // Если проверили 60 раз (2 минуты) и транзакция не найдена - отменили
           if (checked >= 60) {
             clearInterval(pollInterval);
             toast('⚠️ Платёж не подтвержден');
           }
         } catch (e) {
-          console.log('ℹ️ Ошибка проверки баланса:', e.message);
+          console.log('ℹ️ Ошибка проверки транзакций:', e.message);
         }
       }, 2000); // каждые 2 секунды
       
@@ -3474,29 +3542,36 @@ async function openTxHistory() {
       return;
     }
     el.innerHTML = transactions.map(tx => {
-      // ПРИХОД: пополнение, возврат, выплата за сделку
-      const isIn = tx.type === 'topup' || tx.type === 'refund' || tx.type === 'deal_payout';
+      // ПРИХОД: пополнение, возврат, выплата за сделку (кроме pending topup)
+      const isIn = (tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout';
+      const isPending = tx.type === 'topup' && tx.status === 'pending';
       
-      // Описание
-      const desc = tx.description || {
-        'topup': 'Пополнение',
-        'deal_payout': 'Выплата за сделку',
-        'refund': 'Возврат',
-        'payment': 'Списание',
-        'withdraw': 'Вывод',
-        'topup_error': 'Ошибка пополнения',
-        'withdraw_error': 'Ошибка вывода'
-      }[tx.type] || 'Транзакция';
+      // Описание с учётом статуса
+      let desc = tx.description;
+      if (!desc) {
+        if (tx.type === 'topup') {
+          desc = tx.status === 'pending' ? '⏳ Ожидание оплаты' : 'Пополнение';
+        } else {
+          desc = {
+            'deal_payout': 'Выплата за сделку',
+            'refund': 'Возврат',
+            'payment': 'Списание',
+            'withdraw': 'Вывод',
+            'topup_error': 'Ошибка пополнения',
+            'withdraw_error': 'Ошибка вывода'
+          }[tx.type] || 'Транзакция';
+        }
+      }
       
       const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
       
       return `<div class="tx-item">
-        <div class="tx-ico ${isIn?'in':'out'}"></div>
+        <div class="tx-ico ${isIn?'in':isPending?'pending':'out'}"></div>
         <div class="tx-info">
           <div class="tx-desc">${desc}</div>
           <div class="tx-date">${date}</div>
         </div>
-        <div class="tx-amt ${isIn?'in':'out'}">${isIn?'+':'-'}$${Number(tx.amount).toFixed(2)}</div>
+        <div class="tx-amt ${isIn?'in':isPending?'pending':'out'}">${isIn?'+':isPending?'⏳':'-'}$${Number(tx.amount).toFixed(2)}</div>
       </div>`;
     }).join('');
   } catch (e) {
@@ -3877,6 +3952,8 @@ async function loadDealsPage() {
       const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
       const canDisputeSeller = isSeller && d.status === 'waiting_confirmation'; // Продавец спор (после отправки)
       const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller); // Отменить
+      const canLeaveReview = (d.status === 'completed' || d.status === 'auto_completed') && 
+                            ((isBuyer && !d.buyer_review_score) || (isSeller && !d.seller_review_score)); // Можно оставить отзыв
 
       let timerHtml = '';
       
@@ -3914,7 +3991,9 @@ async function loadDealsPage() {
         // Отмена (для frozen и accepted статусов)
         (canCancel   ? '<button class="deal-btn cancel" onclick="cancelDeal(' + d.id + ')">Отменить</button>' : '') +
         // Чат - только для активных сделок
-        (d.status !== 'completed' && d.status !== 'cancelled' ? '<button class="deal-btn" onclick="openDealChat(' + d.id + ')" style="background:rgba(102,187,106,0.2);border:1px solid rgba(102,187,106,0.3);color:#66bb6a">Чат</button>' : '');
+        (d.status !== 'completed' && d.status !== 'cancelled' ? '<button class="deal-btn" onclick="openDealChat(' + d.id + ')" style="background:rgba(102,187,106,0.2);border:1px solid rgba(102,187,106,0.3);color:#66bb6a">Чат</button>' : '') +
+        // Отзыв - только для завершенных сделок, если не оставлен
+        (canLeaveReview ? '<button class="deal-btn confirm" onclick="' + (isBuyer ? 'openReview' : 'openSellerReview') + '(' + d.id + ')">Оставить отзыв</button>' : '');
 
       const party = isBuyer
         ? 'Продавец: @' + (d.seller_username || 'скрыт')
@@ -3973,6 +4052,8 @@ async function openMyDeals() {
       const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
       const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
       const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller);
+      const canLeaveReview = (d.status === 'completed' || d.status === 'auto_completed') && 
+                            ((isBuyer && !d.buyer_review_score) || (isSeller && !d.seller_review_score)); // Можно оставить отзыв
 
       let timerHtml = '';
 
@@ -3992,6 +4073,7 @@ async function openMyDeals() {
         ${canAccept ? `<button class="deal-btn confirm" onclick="acceptDeal(${d.id})">✅ Подтвердить сделку</button>` : ''}
         ${canSendItem ? `<button class="deal-btn confirm" onclick="openSellerReview(${d.id})">📤 Отправил товар</button>` : ''}
         ${canReceive ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар</button>` : ''}
+        ${canLeaveReview ? `<button class="deal-btn confirm" onclick="${isBuyer ? 'openReview' : 'openSellerReview'}(${d.id})">⭐ Оставить отзыв</button>` : ''}
         ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
         ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">❌ Отменить</button>` : ''}
       </div>`;
@@ -4039,20 +4121,21 @@ async function loadMyListingsInline() {
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
     const { listings } = await api('/api/listings/my');
-    // ТОЛЬКО активные объявления для раздела "Добавить"
-    const activeListings = (listings || []).filter(l => l.status === 'active');
-    
-    if (!activeListings.length) {
-      el.innerHTML = '<div class="empty" style="padding:40px 0"><div class="empty-ttl">Активных объявлений нет</div><div class="empty-sub">Создайте первое, нажав «+ Новое»</div></div>';
+    // Показываем собственные объявления (active и paused) на вкладке "Добавить"
+    const ownListings = listings || [];
+
+    if (!ownListings.length) {
+      el.innerHTML = '<div class="empty" style="padding:40px 0"><div class="empty-ttl">Объявлений нет</div><div class="empty-sub">Создайте первое, нажав «+ Новое»</div></div>';
       return;
     }
-    
-    el.innerHTML = activeListings.map(l => {
+
+    el.innerHTML = ownListings.map(l => {
       const catName_val = { accounts:'Аккаунты', games:'Игры', software:'Софт', other:'Другое' }[l.category] || l.category;
       const mainImg = l.image_url || (l.images && l.images[0]);
       const stockColor = l.quantity > 5 ? 'var(--green)' : l.quantity > 0 ? 'var(--orange)' : 'var(--red)';
-      
-      return `<div class="listing-card" id="listing-${l.id}">
+      const isPaused = l.status !== 'active';
+
+      return `<div class="listing-card${isPaused ? ' paused' : ''}" id="listing-${l.id}">
         <!-- ФОТО -->
         <div class="listing-photo">
           ${mainImg 
@@ -4064,19 +4147,19 @@ async function loadMyListingsInline() {
         <!-- ИНФО -->
         <div class="listing-info">
           <div>
-            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}</div>
+            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}${isPaused ? ' <span style="font-size:11px;color:var(--dim)">(пауза)</span>' : ''}</div>
             <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
-            <div class="listing-meta">
-              <span>${catName_val}</span>
-              <span style="color:${stockColor};font-weight:700">${l.quantity} шт</span>
-            </div>
+            <div style="font-size:12px;color:${stockColor};font-weight:700">${l.quantity} шт</div>
           </div>
-          
-          <!-- КНОПКИ ВНУТРИ КАРТОЧКИ -->
-          <div class="listing-buttons">
-            <button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">Пауза</button>
-            <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
-          </div>
+        </div>
+        
+        <!-- КНОПКИ СПРАВА -->
+        <div class="listing-buttons">
+          ${isPaused
+            ? `<button class="btn-pause" onclick="changeListingStatus(${l.id},'active')">Активировать</button>`
+            : `<button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">Пауза</button>`
+          }
+          <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
         </div>
       </div>`
     }).join('');
@@ -4239,15 +4322,14 @@ async function submitReview() {
   const btn = document.getElementById('submitReviewBtn');
   btn.disabled = true; btn.textContent = 'Отправляем...';
   try {
-    // После подтверждения получения - сделка становится completed (на бэкенде)
-    // Отзыв автоматически опубликуется при запросе истории сделок
+    // Подтверждаем получение товара и оставляем отзыв (или просто оставляем отзыв для завершенной сделки)
     await api(`/api/deals/${curDealId}/confirm`, { method:'POST', body: JSON.stringify({
       review_score: reviewScore,
       review_text:  document.getElementById('reviewText').value.trim()
     })});
     // Уведомление создаст сервер
     closeOverlay('reviewOverlay');
-    toast('✅ Сделка завершена! Отзыв опубликован.');
+    toast('✅ Отзыв опубликован!');
     haptic('success');
     openMyDeals();
     loadBalance();
@@ -4910,6 +4992,45 @@ async function openDealHistory() {
   }
 }
 
+// ── MY REVIEWS ────────────────────────────────────────────
+async function openMyReviews() {
+  openOverlay('myReviewsOverlay');
+  const el = document.getElementById('myReviewsList');
+  if (!el) return;
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { reviews } = await api('/api/reviews/my');
+    if (!reviews || !reviews.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico">💬</div><div class="empty-ttl">Отзывов пока нет</div><div class="empty-sub">Отзывы от других пользователей появятся здесь</div></div>';
+      return;
+    }
+    el.innerHTML = reviews.map(r => {
+      const scoreIcon = r.review_score > 0 ? '👍' : '👎';
+      const scoreColor = r.review_score > 0 ? 'var(--green)' : 'var(--red)';
+      const reviewer = r.reviewer_username ? '@' + r.reviewer_username : (r.reviewer_name || 'Пользователь');
+      const date = new Date(r.completed_at || r.created_at).toLocaleDateString('ru', { 
+        day: '2-digit', month: '2-digit', year: '2-digit' 
+      });
+      
+      return `<div class="review-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:16px">${scoreIcon}</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text)">${reviewer}</div>
+              <div style="font-size:12px;color:var(--sub)">${r.listing_title || 'Товар'}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--dim)">${date}</div>
+        </div>
+        ${r.review_text ? `<div style="font-size:13px;color:var(--text);line-height:1.4;padding:8px;background:rgba(232,200,74,0.05);border-radius:8px;border-left:3px solid ${scoreColor}">${r.review_text}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
+  }
+}
+
 function haptic(type) {
   if (!tg?.HapticFeedback) return;
   if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
@@ -4964,5 +5085,39 @@ function haptic(type) {
     Отмена
   </button>
 </div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+// ══════════════════════════════════════════════════════════
+(async function BOOT() {
+  try {
+    console.log('🚀 Запуск приложения...');
+    
+    // Загружаем каталог
+    await loadListings();
+    
+    // Показываем каталог по умолчанию
+    switchPage('catalog', document.getElementById('nt-catalog'));
+    
+    // Загружаем профиль
+    loadProfile();
+    
+    // Стартуем периодическую проверку новых объявлений
+    setInterval(async () => {
+      try {
+        await checkNewListings();
+      } catch (e) {
+        console.log('ℹ️ Ошибка проверки новых объявлений:', e.message);
+      }
+    }, 5000); // каждые 5 секунд
+    
+    console.log('✅ Приложение загружено');
+  } catch (e) {
+    console.error('❌ Ошибка загрузки:', e);
+    alert('Ошибка: ' + e.message);
+  }
+})();
+</script>
 </body>
 </html>
