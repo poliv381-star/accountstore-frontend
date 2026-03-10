@@ -3852,7 +3852,7 @@ async function loadMyListingsInline() {
       const inStock = l.quantity > 0;
       const stockColor = l.quantity > 5 ? 'var(--green)' : l.quantity > 0 ? 'var(--orange)' : 'var(--red)';
       
-      return `<div class="deal-card" style="display:flex;gap:12px;padding:12px;background:var(--s1);border-radius:12px;border:1px solid var(--border)">
+      return `<div class="deal-card" id="listing-${l.id}" style="display:flex;gap:12px;padding:12px;background:var(--s1);border-radius:12px;border:1px solid var(--border);margin-bottom:16px">
         <!-- ФОТО -->
         <div style="flex-shrink:0;width:80px;height:80px;background:var(--s2);border-radius:10px;overflow:hidden">
           ${mainImg 
@@ -3902,8 +3902,22 @@ async function loadMyListingsInline() {
 async function changeListingStatus(id, status) {
   try {
     await api(`/api/listings/${id}/status`, { method:'PUT', body: JSON.stringify({ status }) });
-    openMyListings();
-  } catch(e) { toast(`❌ ${e.message}`); }
+    
+    // Если удаляем - сразу удаляем карточку с DOM
+    if (status === 'deleted') {
+      const card = document.getElementById(`listing-${id}`);
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => card.remove(), 200);
+      }
+    } else {
+      // Для других операций (пауза) просто обновляем
+      loadMyListingsInline();
+    }
+  } catch(e) {
+    console.log(e.message);
+  }
 }
 
 function previewListingImg(input) {} // legacy
