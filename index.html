@@ -1623,6 +1623,18 @@ body::after {
   background: rgba(220, 53, 69, 0.25);
 }
 
+/* выделенные кнопки (активировать/удалить для паузы) */
+.btn-pause.highlight,
+.btn-delete.highlight {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #000;
+}
+.btn-pause.highlight:hover,
+.btn-delete.highlight:hover {
+  background: var(--gold2);
+}
+
 /* ══════════════════════════════════════════
    LISTING CARD - карточки в разделе "Добавить"
 ══════════════════════════════════════════ */
@@ -4071,19 +4083,19 @@ async function loadMyListingsInline() {
           <div>
             <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}${isPaused ? ' <span style="font-size:11px;color:var(--dim)">(пауза)</span>' : ''}</div>
             <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
+            <div style="font-size:11px;color:${stockColor};font-weight:700;margin-bottom:6px">${l.quantity} шт</div>
             <div class="listing-meta">
               <span>${catName_val}</span>
-              <span style="color:${stockColor};font-weight:700">${l.quantity} шт</span>
             </div>
           </div>
           
-          <!-- КНОПКИ ВНУТРИ КАРТОЧКИ -->
-          <div class="listing-buttons">
+          <!-- КНОПКИ ВНУТРИ КАРТОЧКИ (вертикально) -->
+          <div class="listing-buttons" style="flex-direction:column">
             ${isPaused
-              ? `<button class="btn-pause" onclick="changeListingStatus(${l.id},'active')">▶️ Активировать</button>`
-              : `<button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">⏸ Пауза</button>`
+              ? `<button class="btn-pause highlight" onclick="changeListingStatus(${l.id},'active')" style="margin-bottom:8px">Активировать</button>`
+              : `<button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')" style="margin-bottom:8px">Пауза</button>`
             }
-            <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
+            <button class="btn-delete${isPaused ? ' highlight' : ''}" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
           </div>
         </div>
       </div>`
