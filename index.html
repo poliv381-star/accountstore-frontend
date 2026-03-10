@@ -3271,18 +3271,18 @@ function openListing(id, listingObj) {
         </div>
       </div>
     </div>
-    <div style="font-size:19px;font-weight:900;margin-bottom:6px">${l.title}</div>
+    <div style="font-size:38px;font-weight:900;margin-bottom:6px;line-height:1.2">${l.title}</div>
     <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:12px">$${Number(l.price).toFixed(2)}</div>
-    <div style="font-size:12px;color:var(--dim);margin-bottom:12px">📂 Категория: <b style="color:var(--text)">${l.category || 'не указана'}</b></div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:12px">Категория: <b style="color:var(--text)">${l.category || 'не указана'}</b></div>
     <div style="font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:14px">${l.description || ''}</div>
     <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px">
-      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">📅 Условия выдачи</div>
-      <div style="font-size:13px;margin-bottom:4px">🕐 Доступен: <b>${timeText}</b></div>
-      <div style="font-size:13px;margin-bottom:4px">⏱ Выдаст в течение: <b>${l.delivery_minutes} минут</b> после оплаты</div>
-      <div style="font-size:13px;margin-bottom:${l.terms ? '12px' : '0'}">📦 В наличии: <b>${l.quantity || 1} шт</b></div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Условия выдачи</div>
+      <div style="font-size:13px;margin-bottom:4px">Доступен: <b>${timeText}</b></div>
+      <div style="font-size:13px;margin-bottom:4px">Выдаст в течение: <b>${l.delivery_minutes} минут</b> после оплаты</div>
+      <div style="font-size:13px;margin-bottom:${l.terms ? '12px' : '0'}">В наличии: <b>${l.quantity || 1} шт</b></div>
       ${l.terms ? `
         <div style="border-top:1px solid var(--border);padding-top:12px">
-          <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">⚖️ Условия сделки</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Условия сделки</div>
           <div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap">${l.terms}</div>
         </div>
       ` : ''}
@@ -3296,7 +3296,7 @@ function openListing(id, listingObj) {
         </div>
         <div style="display:flex;gap:10px;margin-bottom:20px">
           <button class="add-btn" onclick="addListingToCart()" style="flex:1">
-            🛒 В корзину
+            В корзину
           </button>
           <button class="add-btn" id="ldWishBtn" onclick="toggleWishListing()" style="flex:0 0 52px;background:transparent;border:1px solid var(--border2);color:var(--text)">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" id="ldWishIco">
@@ -3622,7 +3622,7 @@ async function loadDealsPage() {
     }
 
     el.innerHTML = '<div style="padding:0 18px 80px;display:flex;flex-direction:column;gap:12px;margin-top:4px">' +
-      deals.map(buildDealCard).join('') +
+      activeDeal.map(buildDealCard).join('') +
     '</div>';
   } catch(e) {
     el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--sub)">❌ ' + e.message + '</div>';
