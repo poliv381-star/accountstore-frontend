@@ -2483,7 +2483,7 @@ let curProduct   = null;
 let curQty       = 1;
 let curPayUrl    = null;
 let curMiniUrl   = null;
-let filterSlug   = 'all';
+let filterSlug   = localStorage.getItem('as_filter') || 'all';
 let searchQ      = '';
 let lastListingId = 0;  // Отслеживание новых объявлений
 
@@ -2570,6 +2570,7 @@ async function checkNewListings() {
 // Выбор категории и загрузка
 function selectCategory(slug) {
   filterSlug = slug;
+  localStorage.setItem('as_filter', slug);
   searchQ = '';
   document.getElementById('searchInput').value = '';
   loadListings();
@@ -2647,8 +2648,12 @@ function catName(cat) {
 function getVisible() {
   let list = allProducts;
   
-  // Фильтр по категориям уже происходит на сервере в loadListings()
-  // Здесь фильтруем только по поиску
+  // Дополнительная защита: фильтрация по категории на клиенте
+  if (filterSlug && filterSlug !== 'all') {
+    list = list.filter(p => p.cat_slug === filterSlug);
+  }
+  
+  // Поисковый фильтр
   if (searchQ) {
     const q = searchQ.toLowerCase();
     list = list.filter(p =>
@@ -2759,6 +2764,7 @@ function renderSkeleton() {
 
 function filterCat(slug, el) {
   filterSlug = slug;
+  localStorage.setItem('as_filter', slug);
   searchQ = '';  // Очищаем поиск при смене категории
   document.getElementById('searchInput').value = '';  // Очищаем input
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('on'));
@@ -4894,7 +4900,15 @@ const pcIdxMap = {};
 // OVERLAYS
 // ══════════════════════════════════════════════════════════
 function openOverlay(id)  { document.getElementById(id).classList.add('on'); }
-function closeOverlay(id) { document.getElementById(id).classList.remove('on'); }
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('on');
+  // if we're closing a product/detail overlay, make sure catalog stays filtered
+  if (id === 'pdOverlay' || id === 'listingOverlay') {
+    // reapply current category filter and rebuild headers just in case
+    renderGrid();
+    buildCats();
+  }
+}
 function closeOverlayByBg(e, id) { if (e.target === document.getElementById(id)) closeOverlay(id); }
 
 // ══════════════════════════════════════════════════════════
