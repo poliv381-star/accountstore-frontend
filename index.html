@@ -636,6 +636,7 @@ body::after {
   z-index: 10;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
 }
 
 /* CART TABS */
@@ -1907,7 +1908,7 @@ body::after {
 <div class="pg" id="pg-p2p">
   <div class="pg-head" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px">
     Мои объявления
-    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">+ Новое</button>
+    <button onclick="openOverlay('createListingOverlay')" style="background:linear-gradient(135deg,var(--gold),var(--orange));border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:'Manrope',sans-serif">Новое</button>
   </div>
   <div id="myListingsContent" style="padding:0 18px;display:flex;flex-direction:column;gap:8px"></div>
   <div class="gap"></div>
@@ -4073,8 +4074,8 @@ async function loadMyListingsInline() {
           
           <!-- КНОПКИ ВНУТРИ КАРТОЧКИ -->
           <div class="listing-buttons">
-            <button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">⏸️ Пауза</button>
-            <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">🗑️ Удалить</button>
+            <button class="btn-pause" onclick="changeListingStatus(${l.id},'paused')">Пауза</button>
+            <button class="btn-delete" onclick="changeListingStatus(${l.id},'deleted')">Удалить</button>
           </div>
         </div>
       </div>`
@@ -4729,11 +4730,28 @@ function closeCartConfirmSheet() {
 }
 
 async function confirmCartPay() {
+  // Проверка 1: корзина не пуста
+  if (!cart || cart.length === 0) {
+    toast('⚠️ Выберите хотя бы один товар');
+    haptic('error');
+    return;
+  }
+  
+  // Проверка 2: согласие с условиями
   if (!document.getElementById('cartConfirmAgree').checked) {
     toast('⚠️ Подтвердите согласие с условиями'); haptic('error'); return;
   }
+  
+  // Проверка 3: товар выбран
   const item = cart.find(x => String(x.id) === String(selectedCartItemId));
   if (!item) return;
+  
+  // Проверка 4: количество больше 0
+  if (!item.qty || item.qty <= 0) {
+    toast('⚠️ Выберите корректное количество товара');
+    haptic('error');
+    return;
+  }
 
   // Проверяем лимит активных сделок
   try {
