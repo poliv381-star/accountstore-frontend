@@ -1126,12 +1126,14 @@ body::after {
 }
 .tx-ico.in  { background: rgba(0,224,128,.1); }
 .tx-ico.out { background: rgba(255,77,90,.1); }
+.tx-ico.pending { background: rgba(232,200,74,.1); }
 .tx-info { flex: 1; min-width: 0; }
 .tx-desc { font-size: 13px; font-weight: 700; }
 .tx-date { font-size: 11px; color: var(--sub); margin-top: 2px; }
 .tx-amt { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
 .tx-amt.in  { color: var(--green); }
 .tx-amt.out { color: var(--red); }
+.tx-amt.pending { color: var(--gold); }
 
 /* TOPUP INPUT */
 .topup-amounts { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
@@ -3155,15 +3157,19 @@ function renderNotifications() {
     </div>
     ${notifHtml}`;
   
-  // Добавляем обработчики событий для кнопок удаления
-  document.querySelectorAll('.notif-remove-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const notifId = parseInt(btn.getAttribute('data-notif-id'));
-      await removeNotification(notifId);
+  // Используем делегирование событий вместо добавления обработчиков к каждой кнопке
+  // Обработчик добавляется один раз к контейнеру
+  if (!container.hasEventListener) {
+    container.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('notif-remove-btn')) {
+        e.preventDefault();
+        e.stopPropagation();
+        const notifId = parseInt(e.target.getAttribute('data-notif-id'));
+        await removeNotification(notifId);
+      }
     });
-  });
+    container.hasEventListener = true; // Флаг, чтобы не добавлять повторно
+  }
 }
 
 async function openNotifs() {
@@ -3453,30 +3459,36 @@ function setWithdrawAmount(n) {
       tg ? tg.openLink(invoiceUrl) : window.open(invoiceUrl, '_blank');
       toast('💳 Проверяем платёж...');
       
-      // Полинг: проверяем баланс каждые 2 секунды в течение 2 минут
+      // Полинг: проверяем статус транзакции каждые 2 секунды в течение 2 минут
       let checked = 0;
       const pollInterval = setInterval(async () => {
         checked++;
         try {
-          const { balance: newBalance } = await api('/api/balance');
-          const currentBalance = Number(newBalance);
+          const { transactions } = await api('/api/balance');
           
-          // Если баланс увеличился - платёж прошёл!
-          if (currentBalance > oldBalance) {
+          // Ищем completed транзакцию типа topup с нужной суммой, созданную недавно
+          const recentCompletedTopup = transactions.find(tx => 
+            tx.type === 'topup' && 
+            tx.status === 'completed' && 
+            Number(tx.amount) === amount &&
+            (Date.now() - new Date(tx.created_at).getTime()) < 5 * 60 * 1000 // не старше 5 минут
+          );
+          
+          if (recentCompletedTopup) {
             clearInterval(pollInterval);
-            toast(`✅ Пополнено на $${(currentBalance - oldBalance).toFixed(2)}`);
+            toast(`✅ Пополнено на $${amount.toFixed(2)}`);
             loadBalance();
             loadProfile();
             return;
           }
           
-          // Если проверили 60 раз (2 минуты) и баланс не изменился - отменили
+          // Если проверили 60 раз (2 минуты) и транзакция не найдена - отменили
           if (checked >= 60) {
             clearInterval(pollInterval);
             toast('⚠️ Платёж не подтвержден');
           }
         } catch (e) {
-          console.log('ℹ️ Ошибка проверки баланса:', e.message);
+          console.log('ℹ️ Ошибка проверки транзакций:', e.message);
         }
       }, 2000); // каждые 2 секунды
       
@@ -3503,29 +3515,36 @@ async function openTxHistory() {
       return;
     }
     el.innerHTML = transactions.map(tx => {
-      // ПРИХОД: пополнение, возврат, выплата за сделку
-      const isIn = tx.type === 'topup' || tx.type === 'refund' || tx.type === 'deal_payout';
+      // ПРИХОД: пополнение, возврат, выплата за сделку (кроме pending topup)
+      const isIn = (tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout';
+      const isPending = tx.type === 'topup' && tx.status === 'pending';
       
-      // Описание
-      const desc = tx.description || {
-        'topup': 'Пополнение',
-        'deal_payout': 'Выплата за сделку',
-        'refund': 'Возврат',
-        'payment': 'Списание',
-        'withdraw': 'Вывод',
-        'topup_error': 'Ошибка пополнения',
-        'withdraw_error': 'Ошибка вывода'
-      }[tx.type] || 'Транзакция';
+      // Описание с учётом статуса
+      let desc = tx.description;
+      if (!desc) {
+        if (tx.type === 'topup') {
+          desc = tx.status === 'pending' ? '⏳ Ожидание оплаты' : 'Пополнение';
+        } else {
+          desc = {
+            'deal_payout': 'Выплата за сделку',
+            'refund': 'Возврат',
+            'payment': 'Списание',
+            'withdraw': 'Вывод',
+            'topup_error': 'Ошибка пополнения',
+            'withdraw_error': 'Ошибка вывода'
+          }[tx.type] || 'Транзакция';
+        }
+      }
       
       const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
       
       return `<div class="tx-item">
-        <div class="tx-ico ${isIn?'in':'out'}"></div>
+        <div class="tx-ico ${isIn?'in':isPending?'pending':'out'}"></div>
         <div class="tx-info">
           <div class="tx-desc">${desc}</div>
           <div class="tx-date">${date}</div>
         </div>
-        <div class="tx-amt ${isIn?'in':'out'}">${isIn?'+':'-'}$${Number(tx.amount).toFixed(2)}</div>
+        <div class="tx-amt ${isIn?'in':isPending?'pending':'out'}">${isIn?'+':isPending?'⏳':'-'}$${Number(tx.amount).toFixed(2)}</div>
       </div>`;
     }).join('');
   } catch (e) {
