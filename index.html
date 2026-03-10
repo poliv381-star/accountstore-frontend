@@ -2218,10 +2218,8 @@ async function loadListings() {
   let url = '/api/listings';
   const params = [];
 
-  if (filterSlug !== 'all') {
-    params.push(`category=${encodeURIComponent(filterSlug)}`);
-  }
-
+  // Загружаем ВСЕ товары (без фильтра по категориям)
+  // Фильтр по категориям будет на фронте (мгновенно)
   if (searchQ) {
     params.push(`search=${encodeURIComponent(searchQ)}`);
   }
@@ -2299,9 +2297,18 @@ function catEmoji(cat) {
 // ══════════════════════════════════════════════════════════
 function buildCats() {
   const row = document.getElementById('catsRow');
-  const cats = [...new Set(allProducts.map(p => p.cat_slug))];
-  row.innerHTML = `<div class="cat on" onclick="selectCategory('all')">Все</div>` +
-    cats.map(slug => `<div class="cat" onclick="selectCategory('${slug}')">${catName(slug)}</div>`).join('');
+  
+  const cats = [
+    { slug: 'all', name: 'Все' },
+    { slug: 'accounts', name: 'Аккаунты' },
+    { slug: 'games', name: 'Игры' },
+    { slug: 'software', name: 'Софт' },
+    { slug: 'other', name: 'Другое' }
+  ];
+  
+  row.innerHTML = cats.map(c =>
+    `<div class="cat ${filterSlug === c.slug ? 'on' : ''}" onclick="selectCategory('${c.slug}')">${c.name}</div>`
+  ).join('');
 }
 
 function catName(cat) {
