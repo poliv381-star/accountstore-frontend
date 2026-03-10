@@ -2706,15 +2706,14 @@ function filterCat(slug, el) {
   document.getElementById('searchInput').value = '';  // Очищаем input
   document.querySelectorAll('.cat').forEach(c => c.classList.remove('on'));
   el.classList.add('on');
-  renderGrid();
+  // перезагружаем список с учётом выбранной категории
+  loadListings().then(renderGrid).catch(e => console.warn('Ошибка загрузки после смены категории', e.message));
   haptic('light');
 }
 
 function onSearch(v) {
   searchQ = v.trim();
-  if (searchQ) {
-    filterSlug = 'all';  // При поиске показываем все категории
-  }
+  // не сбрасываем filterSlug, чтобы поисковый запрос применялся в рамках выбранной категории
   loadListings();
 }
 
