@@ -3963,7 +3963,7 @@ async function loadDealsPage() {
         // СТАТУС: frozen (ждём подтверждения продавца)
         (canAccept  ? '<button class="deal-btn confirm" onclick="acceptDeal(' + d.id + ')">Подтвердить сделку</button>' : '') +
         // СТАТУС: accepted (продавец принял, отправляет товар)
-        (canSendItem ? '<button class="deal-btn confirm" onclick="openSellerReview(' + d.id + ')">Отправил товар</button>' : '') +
+        (canSendItem ? '<button class="deal-btn confirm" onclick="sendItem(' + d.id + ')">Отправил товар</button>' : '') +
         // СТАТУС: waiting_confirmation (ждём подтверждения покупателя)
         (canReceive  ? '<button class="deal-btn confirm" onclick="receiveDeal(' + d.id + ')">Получил товар</button>' : '') +
         (canDispute  ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
@@ -4051,7 +4051,7 @@ async function openMyDeals() {
               : `👤 Покупатель: <b>@${d.other_username || d.other_name || '—'}</b>`}
           </div>` : ''}
         ${canAccept ? `<button class="deal-btn confirm" onclick="acceptDeal(${d.id})">✅ Подтвердить сделку</button>` : ''}
-        ${canSendItem ? `<button class="deal-btn confirm" onclick="openSellerReview(${d.id})">📤 Отправил товар</button>` : ''}
+        ${canSendItem ? `<button class="deal-btn confirm" onclick="sendItem(${d.id})">📤 Отправил товар</button>` : ''}
         ${canReceive ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар</button>` : ''}
         ${canLeaveReview ? `<button class="deal-btn confirm" onclick="${isBuyer ? 'openReview' : 'openSellerReview'}(${d.id})">⭐ Оставить отзыв</button>` : ''}
         ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
@@ -4259,6 +4259,19 @@ function openReview(dealId) {
   document.getElementById('revGood').style.opacity = '1';
   document.getElementById('revBad').style.opacity  = '.45';
   openOverlay('reviewOverlay');
+}
+
+async function sendItem(dealId) {
+  // seller confirms shipment without leaving a review yet
+  try {
+    await api(`/api/deals/${dealId}/seller-confirm`, { method:'POST', body: JSON.stringify({}) });
+    toast('📦 Отметили отправку, дождитесь подтверждения покупателя');
+    haptic('success');
+    openMyDeals();
+  } catch(e) {
+    toast(`❌ ${e.message}`);
+    haptic('error');
+  }
 }
 
 function openSellerReview(dealId) {
