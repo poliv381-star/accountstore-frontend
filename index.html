@@ -3895,7 +3895,7 @@ async function loadDealsPage() {
     const { deals } = await api('/api/deals/my');
     // Фильтруем только активные сделки (frozen, accepted, waiting_confirmation)
     const activeDeal = (deals || []).filter(d => {
-      if (['frozen', 'accepted', 'waiting_confirmation'].includes(d.status)) return true;
+      if (['frozen', 'accepted', 'waiting_confirmation', 'dispute'].includes(d.status)) return true;
       if ((d.status === 'completed' || d.status === 'auto_completed')) {
         // keep deal visible if the current user hasn't left a review and didn't explicitly skip
         if (d.my_role === 'buyer' && !d.buyer_review_score && !d.buyer_skipped_review) return true;
@@ -4868,7 +4868,7 @@ async function confirmCartPay() {
   // Проверяем лимит активных сделок
   try {
     const { deals } = await api('/api/deals/my');
-    const activeDeals = deals.filter(d => d.status === 'frozen' || d.status === 'waiting_confirmation');
+    const activeDeals = deals.filter(d => ['frozen','accepted','waiting_confirmation','dispute'].includes(d.status));
     if (activeDeals.length >= 3) {
       toast('❌ Максимум 3 активные сделки одновременно');
       closeCartConfirmSheet();
