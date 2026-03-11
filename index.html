@@ -1462,6 +1462,75 @@ body::after {
 .form-input:focus { border-color:rgba(232,200,74,.4); background:var(--s2); }
 .form-textarea { resize:none; height:80px; line-height:1.5; }
 .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* CREATE LISTING SHEET */
+.create-sheet {
+  max-height: 94vh;
+  overflow-y: auto;
+  border: 1px solid rgba(232,200,74,.18);
+  box-shadow: 0 18px 56px rgba(0,0,0,.45);
+  background: linear-gradient(180deg, rgba(13,13,18,.96), rgba(10,10,14,.98));
+}
+.create-wrap { padding: 0 16px 22px; }
+.create-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(13,13,18,.98), rgba(13,13,18,.84));
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(232,200,74,.14);
+  padding: 8px 4px 12px;
+  margin-bottom: 14px;
+}
+.create-title-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.create-title { font-size:21px; font-weight:900; color:var(--gold); letter-spacing:-.01em; }
+.create-sub { font-size:12px; color:var(--dim); margin-top:5px; line-height:1.5; }
+.create-close {
+  width:34px; height:34px; border-radius:10px;
+  border:1px solid var(--border2); background:var(--s2); color:var(--sub);
+  font-size:18px; cursor:pointer;
+}
+.create-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.create-card {
+  background: linear-gradient(135deg, rgba(19,19,24,.86), rgba(26,26,34,.72));
+  border: 1px solid rgba(232,200,74,.14);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.create-card-title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.create-upload-btn {
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  font-family:'Manrope',sans-serif;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+  background:var(--s1);
+  color:var(--sub);
+  border:1px dashed var(--border2);
+}
+.create-upload-btn.main {
+  border:2px dashed var(--gold);
+  color:var(--gold);
+  background:rgba(232,200,74,.05);
+}
+.create-submit {
+  width:100%;
+  padding:16px;
+  margin-top:14px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:900;
+}
 .deal-card {
   background:linear-gradient(135deg, rgba(19,19,24,0.8) 0%, rgba(26,26,34,0.6) 100%);
   border:1px solid rgba(232,200,74,0.15);
@@ -1710,6 +1779,128 @@ body::after {
 }
 .my-reviews-chip .v { font-size:15px; font-weight:900; color:var(--text); line-height:1; }
 .my-reviews-chip .l { font-size:10px; color:var(--dim); margin-top:4px; text-transform:uppercase; letter-spacing:.06em; }
+.my-reviews-sheet {
+  max-height:92vh;
+  overflow-y:auto;
+  border:1px solid rgba(232,200,74,.16);
+  box-shadow:0 16px 44px rgba(0,0,0,.42);
+}
+.my-reviews-head {
+  position:sticky;
+  top:0;
+  z-index:2;
+  padding:0 20px 14px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(13,13,18,.98), rgba(13,13,18,.84));
+  backdrop-filter:blur(10px);
+}
+.my-reviews-title { font-size:19px; font-weight:900; color:var(--gold); }
+.my-reviews-sub { font-size:12px; color:var(--dim); margin-top:4px; }
+.my-reviews-list { padding:14px 20px 24px; }
+.myr-summary {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+.myr-chip {
+  background:linear-gradient(135deg, rgba(19,19,24,.88), rgba(26,26,34,.72));
+  border:1px solid rgba(232,200,74,.14);
+  border-radius:12px;
+  padding:10px 8px;
+  text-align:center;
+}
+.myr-chip .v { font-size:16px; font-weight:900; color:var(--text); line-height:1; }
+.myr-chip .l { font-size:10px; color:var(--dim); margin-top:4px; text-transform:uppercase; letter-spacing:.06em; }
+.myr-card {
+  background:linear-gradient(135deg, rgba(19,19,24,.9), rgba(26,26,34,.75));
+  border:1px solid rgba(232,200,74,.14);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:10px;
+  box-shadow:0 10px 26px rgba(0,0,0,.2);
+}
+.myr-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
+.myr-user { display:flex; align-items:flex-start; gap:8px; min-width:0; }
+.myr-ico {
+  width:28px; height:28px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+.myr-ico.pos { background:rgba(0,224,128,.12); color:var(--green); }
+.myr-ico.neg { background:rgba(255,77,90,.12); color:var(--red); }
+.myr-name { font-size:14px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.myr-item { font-size:12px; color:var(--sub); margin-top:2px; }
+.myr-date { font-size:11px; color:var(--dim); flex-shrink:0; }
+.myr-text {
+  font-size:13px;
+  line-height:1.5;
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+  border-left:3px solid rgba(232,200,74,.35);
+}
+.myr-text.pos { border-left-color:rgba(0,224,128,.45); }
+.myr-text.neg { border-left-color:rgba(255,77,90,.45); }
+
+/* ── PROFILE STATS ── */
+.ps-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(13,13,18,.98), rgba(13,13,18,.84));
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px 14px;
+}
+.ps-title { font-size: 19px; font-weight: 900; color: var(--gold); }
+.ps-sub { font-size: 12px; color: var(--dim); margin-top: 4px; }
+.ps-wrap { padding: 14px 20px 24px; }
+.ps-filters { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; margin-bottom:12px; }
+.ps-filter {
+  border:1px solid var(--border2);
+  background:var(--s1);
+  color:var(--sub);
+  border-radius:10px;
+  padding:8px 4px;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+}
+.ps-filter.on { border-color:var(--gold); color:var(--gold); background:rgba(232,200,74,.1); }
+.ps-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-bottom:12px; }
+.ps-chip {
+  background:linear-gradient(135deg, rgba(19,19,24,.88), rgba(26,26,34,.72));
+  border:1px solid rgba(232,200,74,.14);
+  border-radius:12px;
+  padding:10px;
+}
+.ps-chip .l { font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:.06em; }
+.ps-chip .v { margin-top:5px; font-size:16px; font-weight:900; color:var(--text); }
+.ps-list { display:flex; flex-direction:column; gap:8px; }
+.ps-item {
+  background:linear-gradient(135deg, rgba(19,19,24,.9), rgba(26,26,34,.75));
+  border:1px solid rgba(232,200,74,.14);
+  border-radius:14px;
+  padding:12px;
+}
+.ps-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+.ps-name { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text); font-weight:700; }
+.ps-value { font-size:14px; font-weight:900; color:var(--gold); font-family:'JetBrains Mono',monospace; }
+.ps-bar {
+  width:100%;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+}
+.ps-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--gold), var(--orange));
+  border-radius:999px;
+}
 .review-card {
   background:linear-gradient(135deg, rgba(19,19,24,0.88) 0%, rgba(26,26,34,0.7) 100%);
   border:1px solid rgba(232,200,74,0.14);
@@ -2225,7 +2416,7 @@ body::after {
   </div>
 
   <div class="search-row">
-    <input class="search" type="text" id="searchInput" placeholder="🔍  Поиск товаров..." oninput="onSearch(this.value)">
+    <input class="search" type="text" id="searchInput" placeholder="🔍  Поиск по названию или артикулу..." oninput="onSearch(this.value)">
   </div>
 
   <div class="cats" id="catsRow">
@@ -2377,6 +2568,18 @@ body::after {
         </svg>
       </div>
       <div class="m-txt">Мои отзывы</div>
+      <div class="m-arr">›</div>
+    </div>
+    <div class="mrow" onclick="openProfileStats()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M3 3v18h18"/>
+          <rect x="7" y="12" width="2.5" height="5" rx="1"/>
+          <rect x="11" y="9" width="2.5" height="8" rx="1"/>
+          <rect x="15" y="6" width="2.5" height="11" rx="1"/>
+        </svg>
+      </div>
+      <div class="m-txt">Статистика профиля</div>
       <div class="m-arr">›</div>
     </div>
     <div class="mrow" id="supportBtn">
@@ -2578,6 +2781,27 @@ body::after {
   </div>
 </div>
 
+<!-- ══ PROFILE STATS SHEET ═══════════════════════ -->
+<div class="overlay" id="profileStatsOverlay" onclick="closeOverlayByBg(event,'profileStatsOverlay')">
+  <div class="sheet" style="max-height:92vh;overflow-y:auto;border:1px solid rgba(232,200,74,.16)">
+    <div class="sh-handle"></div>
+    <div class="ps-head">
+      <div class="ps-title">📊 Статистика профиля</div>
+      <div class="ps-sub">Метрики по сделкам и активности за выбранный период</div>
+    </div>
+    <div class="ps-wrap">
+      <div class="ps-filters">
+        <button class="ps-filter on" id="ps-day" onclick="setProfileStatsPeriod('day')">День</button>
+        <button class="ps-filter" id="ps-week" onclick="setProfileStatsPeriod('week')">Неделя</button>
+        <button class="ps-filter" id="ps-month" onclick="setProfileStatsPeriod('month')">Месяц</button>
+        <button class="ps-filter" id="ps-year" onclick="setProfileStatsPeriod('year')">Год</button>
+        <button class="ps-filter" id="ps-all" onclick="setProfileStatsPeriod('all')">Всё</button>
+      </div>
+      <div id="profileStatsContent"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ DEAL HISTORY SHEET ════════════════════════ -->
 <div class="overlay" id="listingHistoryOverlay" onclick="closeOverlayByBg(event,'listingHistoryOverlay')">
   <div class="sheet">
@@ -2601,10 +2825,13 @@ body::after {
 
 <!-- ══ MY REVIEWS SHEET ════════════════════════════ -->
 <div class="overlay" id="myReviewsOverlay" onclick="closeOverlayByBg(event,'myReviewsOverlay')">
-  <div class="sheet">
+  <div class="sheet my-reviews-sheet">
     <div class="sh-handle"></div>
-    <div style="padding:0 20px 24px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:16px">Мои отзывы</div>
+    <div class="my-reviews-head">
+      <div class="my-reviews-title">⭐ Мои отзывы</div>
+      <div class="my-reviews-sub">Отзывы о ваших сделках от других пользователей</div>
+    </div>
+    <div class="my-reviews-list">
       <div id="myReviewsList"><div class="spin-wrap"><div class="spin"></div></div></div>
     </div>
   </div>
@@ -2683,105 +2910,107 @@ body::after {
 
 <!-- ══ CREATE LISTING ════════════════════════ -->
 <div class="overlay" id="createListingOverlay" onclick="closeOverlayByBg(event,'createListingOverlay')">
-  <div class="sheet" style="max-height:92vh;overflow-y:auto">
+  <div class="sheet create-sheet">
     <div class="sh-handle"></div>
-    <div style="padding:0 20px 28px">
-      <div style="font-size:20px;font-weight:900;margin-bottom:4px;color:var(--gold)">Новое объявление</div>
-      <div style="font-size:12px;color:var(--dim);margin-bottom:20px;line-height:1.6">Заполните информацию о товаре. Объявление появится в каталоге для всех пользователей.</div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Название товара</label>
-        <input class="form-input" id="lTitle" placeholder="Netflix Premium 1 месяц" style="font-size:15px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--s1)">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Категория товара</label>
-        <select class="form-input" id="lCategory" style="appearance:none;font-size:15px;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--s1);cursor:pointer">
-          <option value="accounts">Аккаунты</option>
-          <option value="games">Игры</option>
-          <option value="software">Софт</option>
-          <option value="other">Другое</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Описание товара</label>
-        <textarea class="form-input form-textarea" id="lDesc" placeholder="Подробно опишите: что входит, какие функции, сроки действия..." style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--s1);min-height:100px;resize:vertical"></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Условия сделки</label>
-        <textarea class="form-input form-textarea" id="lDealTerms" placeholder="Без возврата • Работает 30 дней • Максимум 3 устройства" style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--s1);min-height:80px;resize:vertical"></textarea>
-      </div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
-        <div class="form-group">
-          <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Цена ($)</label>
-          <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="9.99" style="font-size:16px;font-weight:700;padding:14px;border:2px solid var(--gold);border-radius:12px;background:var(--s1);color:var(--gold)">
+    <div class="create-wrap">
+      <div class="create-head">
+        <div class="create-title-row">
+          <div class="create-title">Новое объявление</div>
+          <button class="create-close" onclick="closeOverlay('createListingOverlay')">✕</button>
         </div>
+        <div class="create-sub">Оформите карточку товара красиво и понятно — это повышает конверсию в сделку.</div>
+      </div>
+
+      <div class="create-card">
+        <div class="create-card-title">Основная информация</div>
         <div class="form-group">
-          <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Количество (шт)</label>
-          <input class="form-input" id="lQuantity" type="number" min="1" max="9999" value="1" placeholder="1" style="font-size:16px;font-weight:700;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--s1)">
+          <label class="form-label" style="color:var(--gold)">Название товара</label>
+          <input class="form-input" id="lTitle" placeholder="Netflix Premium 1 месяц" style="font-size:15px;padding:14px">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" style="color:var(--gold)">Категория товара</label>
+          <select class="form-input" id="lCategory" style="appearance:none;cursor:pointer;font-size:15px;padding:14px">
+            <option value="accounts">Аккаунты</option>
+            <option value="games">Игры</option>
+            <option value="software">Софт</option>
+            <option value="other">Другое</option>
+          </select>
         </div>
       </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:12px">Фото товара (до 3 штук)</label>
+
+      <div class="create-card">
+        <div class="create-card-title">Описание и условия</div>
+        <div class="form-group">
+          <label class="form-label" style="color:var(--gold)">Описание товара</label>
+          <textarea class="form-input form-textarea" id="lDesc" placeholder="Подробно опишите: что входит, какие функции, сроки действия..." style="min-height:100px;resize:vertical"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" style="color:var(--gold)">Условия сделки</label>
+          <textarea class="form-input form-textarea" id="lDealTerms" placeholder="Без возврата • Работает 30 дней • Максимум 3 устройства" style="min-height:84px;resize:vertical"></textarea>
+        </div>
+      </div>
+
+      <div class="create-card">
+        <div class="create-card-title">Цена и остаток</div>
+        <div class="create-grid-2">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" style="color:var(--gold)">Цена ($)</label>
+            <input class="form-input" id="lPrice" type="number" min="0.1" step="0.01" placeholder="9.99" style="font-size:16px;font-weight:800;border:2px solid var(--gold);color:var(--gold)">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" style="color:var(--gold)">Количество</label>
+            <input class="form-input" id="lQuantity" type="number" min="1" max="9999" value="1" placeholder="1" style="font-size:16px;font-weight:800">
+          </div>
+        </div>
+      </div>
+
+      <div class="create-card">
+        <div class="create-card-title">Фото товара (до 3 шт.)</div>
         <div style="margin-bottom:10px">
           <div id="lImgPreview0" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
             <img id="lImgThumb0" style="width:100%;height:140px;object-fit:contain;display:block">
           </div>
           <input type="file" id="lImageFile0" accept="image/*" style="display:none" onchange="prevImg(this,0)">
-          <button type="button" onclick="document.getElementById('lImageFile0').click()" id="lImgBtn0"
-            style="width:100%;padding:14px;background:var(--s1);border:2px dashed var(--gold);border-radius:12px;color:var(--gold);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s">
-            Загрузить фото 1 (главное)
-          </button>
+          <button type="button" onclick="document.getElementById('lImageFile0').click()" id="lImgBtn0" class="create-upload-btn main">Загрузить фото 1 (главное)</button>
         </div>
         <div style="margin-bottom:10px">
           <div id="lImgPreview1" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
             <img id="lImgThumb1" style="width:100%;height:140px;object-fit:contain;display:block">
           </div>
           <input type="file" id="lImageFile1" accept="image/*" style="display:none" onchange="prevImg(this,1)">
-          <button type="button" onclick="document.getElementById('lImageFile1').click()" id="lImgBtn1"
-            style="width:100%;padding:14px;background:var(--s1);border:1px dashed var(--border2);border-radius:12px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
-            Загрузить фото 2
-          </button>
+          <button type="button" onclick="document.getElementById('lImageFile1').click()" id="lImgBtn1" class="create-upload-btn">Загрузить фото 2</button>
         </div>
-        <div style="margin-bottom:10px">
+        <div>
           <div id="lImgPreview2" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
             <img id="lImgThumb2" style="width:100%;height:140px;object-fit:contain;display:block">
           </div>
           <input type="file" id="lImageFile2" accept="image/*" style="display:none" onchange="prevImg(this,2)">
-          <button type="button" onclick="document.getElementById('lImageFile2').click()" id="lImgBtn2"
-            style="width:100%;padding:14px;background:var(--s1);border:1px dashed var(--border2);border-radius:12px;color:var(--sub);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
-            Загрузить фото 3
-          </button>
+          <button type="button" onclick="document.getElementById('lImageFile2').click()" id="lImgBtn2" class="create-upload-btn">Загрузить фото 3</button>
         </div>
       </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:12px">Доступность (время МСК)</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+      <div class="create-card">
+        <div class="create-card-title">Доступность продавца</div>
+        <div class="create-grid-2" style="margin-bottom:12px">
           <div>
-            <label class="form-label" style="font-size:12px;color:var(--dim);margin-bottom:6px;font-weight:600">Работаю с</label>
-            <input class="form-input" id="lFrom" type="time" value="09:00" style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--s1)">
+            <label class="form-label" style="font-size:11px;font-weight:700">Работаю с</label>
+            <input class="form-input" id="lFrom" type="time" value="09:00">
           </div>
           <div>
-            <label class="form-label" style="font-size:12px;color:var(--dim);margin-bottom:6px;font-weight:600">Работаю до</label>
-            <input class="form-input" id="lTo" type="time" value="23:00" style="font-size:14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--s1)">
+            <label class="form-label" style="font-size:11px;font-weight:700">Работаю до</label>
+            <input class="form-input" id="lTo" type="time" value="23:00">
+          </div>
+        </div>
+        <div>
+          <label class="form-label" style="color:var(--gold)">Срок выдачи после принятия сделки</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input class="form-input" id="lDelivery" type="number" min="1" max="1440" value="60" style="font-size:16px;font-weight:800;flex:1">
+            <span style="color:var(--dim);font-weight:700">минут</span>
           </div>
         </div>
       </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="font-weight:700;color:var(--gold);margin-bottom:8px">Срок выдачи после принятия сделки</label>
-        <div style="display:flex;align-items:center;gap:8px">
-          <input class="form-input" id="lDelivery" type="number" min="1" max="1440" value="60" style="font-size:16px;font-weight:700;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--s1);flex:1">
-          <span style="color:var(--dim);font-weight:600">минут</span>
-        </div>
-      </div>
-      
-      <button class="pay-btn-main" onclick="submitListing()" id="submitListingBtn" style="width:100%;padding:16px;margin-top:20px;font-size:16px;font-weight:900;border-radius:14px">Опубликовать объявление</button>
+
+      <button class="pay-btn-main create-submit" onclick="submitListing()" id="submitListingBtn">Опубликовать объявление</button>
     </div>
   </div>
 </div>
@@ -2868,30 +3097,44 @@ body::after {
 
 <!-- ══ DISPUTE OVERLAY ══════════════════════ -->
 <div class="overlay" id="dealChatOverlay" onclick="closeOverlayByBg(event,'dealChatOverlay')">
-  <div class="sheet" style="height:70vh;display:flex;flex-direction:column">
+  <div class="sheet" style="height:78vh;display:flex;flex-direction:column;border:1px solid rgba(232,200,74,.18);box-shadow:0 16px 48px rgba(0,0,0,.45)">
     <div class="sh-handle"></div>
-    <div style="padding:0 20px 16px;border-bottom:1px solid var(--border)">
-      <div style="font-size:18px;font-weight:900">Чат сделки #<span id="chatDealId">—</span></div>
+    <div style="padding:0 20px 14px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(232,200,74,.08),transparent)">
+      <div style="font-size:18px;font-weight:900">💬 Чат сделки #<span id="chatDealId">—</span></div>
+      <div style="font-size:12px;color:var(--dim);margin-top:4px">Общайтесь с участником сделки и отправляйте вложения</div>
     </div>
     <!-- Сообщения -->
-    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px"></div>
+    <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px 16px 20px;display:flex;flex-direction:column;gap:10px;background:radial-gradient(circle at top,rgba(232,200,74,.06),transparent 46%)"></div>
     <!-- Форма отправки -->
-    <div style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end">
-      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+    <div style="padding:12px 14px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;background:rgba(13,13,18,.96)">
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px">
         <!-- Превью загруженного фото -->
-        <div id="chatPhotoPreview" style="display:none;position:relative;width:80px;height:80px;background:var(--s2);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+        <div id="chatPhotoPreview" style="display:none;position:relative;width:88px;height:88px;background:var(--s2);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
           <img id="chatPhotoPreviewImg" style="width:100%;height:100%;object-fit:cover">
           <button onclick="clearChatPhoto()" style="position:absolute;top:2px;right:2px;width:22px;height:22px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">✕</button>
         </div>
+        <!-- Превью файла -->
+        <div id="chatFilePreview" style="display:none;position:relative;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:10px">
+          <div style="display:flex;align-items:center;gap:8px;padding-right:22px">
+            <span style="font-size:18px">📎</span>
+            <div style="min-width:0">
+              <div id="chatFileName" style="font-size:12px;color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+              <div id="chatFileMeta" style="font-size:11px;color:var(--dim)">—</div>
+            </div>
+          </div>
+          <button onclick="clearChatFile()" style="position:absolute;top:6px;right:6px;width:20px;height:20px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">✕</button>
+        </div>
         <!-- Input для текста и кнопка загрузки -->
         <div style="display:flex;gap:8px;align-items:center">
-          <input id="chatInput" type="text" placeholder="Сообщение..." style="flex:1;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px">
+          <input id="chatInput" type="text" placeholder="Напишите сообщение..." style="flex:1;padding:11px 12px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px">
           <!-- Скрытый input для файлов -->
           <input id="chatPhotoInput" type="file" accept="image/*" style="display:none" onchange="handleChatPhotoSelect(event)">
-          <button onclick="document.getElementById('chatPhotoInput').click()" style="padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:16px">📷</button>
+          <input id="chatFileInput" type="file" style="display:none" onchange="handleChatFileSelect(event)">
+          <button id="chatAttachPhotoBtn" onclick="document.getElementById('chatPhotoInput').click()" style="padding:10px 11px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px">📷</button>
+          <button id="chatAttachFileBtn" onclick="document.getElementById('chatFileInput').click()" style="padding:10px 11px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px">📎</button>
         </div>
       </div>
-      <button onclick="sendDealMessage()" style="padding:10px 16px;background:var(--gold);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif">Отправить</button>
+      <button id="chatSendBtn" onclick="sendDealMessage()" style="padding:11px 16px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:10px;color:#000;font-weight:800;cursor:pointer;font-family:'Manrope',sans-serif">Отправить</button>
     </div>
   </div>
 </div>
@@ -2988,6 +3231,7 @@ function mapListingToProduct(l) {
   return {
     id:          `l_${l.id}`,
     listing_id:  l.id,
+    article:     l.article || `ART-${String(l.id).padStart(8, '0')}`,
     name:        l.title,
     description: l.description || '',
     price:       l.price,
@@ -3337,6 +3581,7 @@ function renderGrid() {
         </div>
         <div class="pc-body">
           <div class="pc-name">${p.name}</div>
+          <div style="font-size:11px;color:var(--dim);margin-top:2px">Артикул: ${p.article || `ART-${String(p.listing_id || '').padStart(8, '0')}`}</div>
           <div class="pc-desc">${p.description || ''}</div>
           <div class="pc-foot">
             <div class="pc-price">$${Number(p.price).toFixed(2)}</div>
@@ -3470,7 +3715,7 @@ async function openProduct(id) {
   }
 
   // Meta
-  document.getElementById('pdCat').innerHTML = `<span>${p.cat_emoji||''}</span> ${catName(p.cat_slug)||''}`;
+  document.getElementById('pdCat').innerHTML = `<span>${p.cat_emoji||''}</span> ${catName(p.cat_slug)||''} · Артикул: ${p.article || `ART-${String(p.listing_id || '').padStart(8, '0')}`}`;
   document.getElementById('pdName').textContent  = p.name;
   document.getElementById('pdPrice').textContent = `$${Number(p.price).toFixed(2)}`;
   document.getElementById('pdDesc').textContent  = p.description || '';
@@ -4231,6 +4476,71 @@ async function openTxHistory() {
   }
 }
 
+let profileStatsPeriod = 'day';
+
+function setProfileStatsPeriod(period) {
+  profileStatsPeriod = period;
+  document.querySelectorAll('.ps-filter').forEach(b => b.classList.remove('on'));
+  const active = document.getElementById(`ps-${period}`);
+  if (active) active.classList.add('on');
+  loadProfileStats(period);
+}
+
+async function openProfileStats() {
+  openOverlay('profileStatsOverlay');
+  const period = profileStatsPeriod || 'day';
+  setProfileStatsPeriod(period);
+}
+
+async function loadProfileStats(period = 'day') {
+  const el = document.getElementById('profileStatsContent');
+  if (!el) return;
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+
+  try {
+    const { stats } = await api(`/api/profile/stats?period=${encodeURIComponent(period)}`);
+    const cash = Number(stats.cash_turnover || 0);
+    const deals = Number(stats.all_deals || 0);
+    const sold = Number(stats.sold_items || 0);
+    const bought = Number(stats.bought_items || 0);
+    const listings = Number(stats.created_listings || 0);
+    const rep = Number(stats.reputation_pct || 0);
+    const reviews = Number(stats.total_reviews || 0);
+
+    const metrics = [
+      { icon: '💰', name: 'Оборот кеша', value: `$${cash.toFixed(2)}`, raw: cash },
+      { icon: '🤝', name: 'Всего общих сделок', value: `${deals}`, raw: deals },
+      { icon: '📦', name: 'Продано всего товара', value: `${sold}`, raw: sold },
+      { icon: '🛒', name: 'Куплено всего товара', value: `${bought}`, raw: bought },
+      { icon: '📝', name: 'Создано объявлений', value: `${listings}`, raw: listings },
+      { icon: '⭐', name: 'Репутация', value: `${rep}%`, raw: rep },
+    ];
+
+    const maxRaw = Math.max(1, ...metrics.map(m => m.raw));
+
+    el.innerHTML = `
+      <div class="ps-grid">
+        <div class="ps-chip"><div class="l">Период</div><div class="v">${({day:'День',week:'Неделя',month:'Месяц',year:'Год',all:'Все время'})[period] || 'День'}</div></div>
+        <div class="ps-chip"><div class="l">Отзывы</div><div class="v">${reviews}</div></div>
+      </div>
+      <div class="ps-list">
+        ${metrics.map(m => {
+          const width = m.name === 'Репутация' ? Math.max(3, Math.min(100, m.raw)) : Math.max(3, Math.min(100, Math.round((m.raw / maxRaw) * 100)));
+          return `<div class="ps-item">
+            <div class="ps-top">
+              <div class="ps-name"><span>${m.icon}</span><span>${m.name}</span></div>
+              <div class="ps-value">${m.value}</div>
+            </div>
+            <div class="ps-bar"><div class="ps-fill" style="width:${width}%"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+  } catch (e) {
+    el.innerHTML = `<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Ошибка загрузки</div><div class="empty-sub">${e.message}</div></div>`;
+  }
+}
+
 // ══════════════════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════════════════
@@ -4310,6 +4620,7 @@ function openListing(id, listingObj) {
       </div>
     </div>
     <div style="font-size:38px;font-weight:900;margin-bottom:6px;line-height:1.2">${l.title}</div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:8px;letter-spacing:.03em">Артикул: ${l.article || `ART-${String(l.id || '').padStart(8, '0')}`}</div>
     <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:16px">$${Number(l.price).toFixed(2)}</div>
     <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
       <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Описание товара</div>
@@ -5099,50 +5410,56 @@ async function markItemSent(dealId) {
 // ══════════════════════════════════════════════════════════
 let curChatDealId = null;
 
+function formatChatFileSize(bytes) {
+  const n = Number(bytes || 0);
+  if (!n) return '0 B';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 // Отделённая функция для рендера сообщений
 async function renderChatMessages(messages) {
   if (!messages.length) {
-    document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim);padding:20px">Нет сообщений. Начните беседу!</div>';
+    document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim);padding:30px">💬 Нет сообщений. Начните беседу!</div>';
     return;
   }
-  
-  // Дебаг логирование
-  console.log('TG_USER.id:', TG_USER.id, 'type:', typeof TG_USER.id);
-  console.log('Messages:', messages.map(m => ({
-    id: m.id,
-    sender_id: m.sender_id,
-    sender_id_type: typeof m.sender_id,
-    message: m.message ? m.message.substring(0, 20) : '(фото)',
-    image_url: m.image_url ? 'есть' : 'нет',
-    read: m.read
-  })));
-  
+
   // Выводим сообщения
   document.getElementById('chatMessages').innerHTML = messages.map(m => {
-    // ИСПРАВЛЕНИЕ: сравниваем после преобразования в Number
     const mine = Number(m.sender_id) === Number(TG_USER.id);
     const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
-    
-    console.log(`Message #${m.id}: sender=${m.sender_id}, mine=${mine}, read=${m.read}, image=${m.image_url ? 'yes' : 'no'}`);
-    
+
     // Построение HTML фото
     const photoHtml = m.image_url ? `
-      <div style="margin:6px 0 0 0">
+      <div style="margin:8px 0 0 0">
         <img src="${m.image_url}" 
              class="chat-image"
              onclick="openChatImage('${m.image_url}')" 
-             style="max-width:100%;max-height:300px;border-radius:8px;cursor:pointer;display:block;transition:opacity 0.2s"
+             style="max-width:100%;max-height:280px;border-radius:10px;cursor:pointer;display:block;transition:opacity 0.2s"
              onmouseover="this.style.opacity='0.85'"
              onmouseout="this.style.opacity='1'">
       </div>
     ` : '';
+
+    const fileHtml = m.file_url ? `
+      <a href="${m.file_url}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin-top:8px;background:${mine ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'};border:1px solid ${mine ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)'};border-radius:10px;text-decoration:none;color:inherit">
+        <span style="font-size:18px">📎</span>
+        <div style="min-width:0;flex:1">
+          <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.file_name || 'Вложение'}</div>
+          <div style="font-size:11px;opacity:.72">${m.file_mime || 'файл'} · ${formatChatFileSize(m.file_size)}</div>
+        </div>
+        <span style="font-size:12px;opacity:.8">Открыть</span>
+      </a>
+    ` : '';
     
     return `
-    <div style="display:flex;margin-bottom:12px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
-      <div style="max-width:75%;padding:${m.image_url ? '0' : '10px 14px'};border-radius:16px;background:${mine ? 'var(--gold)' : '#2a2a2a'};color:${mine ? '#000' : '#fff'}">
-        ${m.message && m.message.trim() ? `<div style="padding:${m.image_url ? '10px 14px' : '0'};padding-bottom:${m.image_url ? '0' : '0'}">${m.message}</div>` : ''}
+    <div style="display:flex;margin-bottom:8px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
+      <div style="max-width:78%;padding:${m.image_url ? '0' : '10px 12px'};border-radius:16px;background:${mine ? 'linear-gradient(135deg,var(--gold),var(--gold2))' : '#22222c'};color:${mine ? '#111' : '#fff'};border:${mine ? 'none' : '1px solid rgba(255,255,255,.08)'};box-shadow:0 6px 16px rgba(0,0,0,.18)">
+        ${m.message && m.message.trim() ? `<div style="padding:${m.image_url ? '10px 12px 0' : '0'};line-height:1.45;word-break:break-word">${m.message}</div>` : ''}
         ${photoHtml}
-        <div style="padding:${m.image_url && m.message && m.message.trim() ? '6px 14px 10px' : (m.image_url ? '10px 14px' : '0')};display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)'}">
+        ${fileHtml}
+        <div style="padding:${(m.image_url || m.file_url) ? '8px 12px 10px' : '4px 0 0'};display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.68)' : 'rgba(255,255,255,0.62)'}">
           <span>${timeStr}</span>
           ${mine ? `<span>${m.read ? '✓✓' : '✓'}</span>` : ''}
         </div>
@@ -5153,7 +5470,6 @@ async function renderChatMessages(messages) {
   
   // Отмечаем чужие сообщения как прочитанные в фоне
   const unreadMessages = messages.filter(m => Number(m.sender_id) !== Number(TG_USER.id) && !m.read);
-  console.log('Unread messages to mark:', unreadMessages.length);
   
   if (unreadMessages.length > 0) {
     Promise.all(unreadMessages.map(m => 
@@ -5161,7 +5477,6 @@ async function renderChatMessages(messages) {
         console.log('Ошибка отметки сообщения:', e.message)
       )
     )).then(() => {
-      console.log('Все сообщения отмечены как прочитанные, перезагружаем...');
       // Перезагружаем только сообщения чтобы обновить галочки
       reloadChatMessages();
     });
@@ -5186,7 +5501,8 @@ async function reloadChatMessages() {
 
 async function openDealChat(dealId) {
   curChatDealId = dealId;
-  clearChatPhoto(); // Очищаем старое фото
+  clearChatPhoto();
+  clearChatFile();
   document.getElementById('chatDealId').textContent = dealId;
   document.getElementById('chatInput').value = '';
   document.getElementById('chatMessages').innerHTML = '<div style="text-align:center;color:var(--dim)">Загружаем сообщения...</div>';
@@ -5203,33 +5519,34 @@ async function openDealChat(dealId) {
     if (isCompleted) {
       document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--dim);padding:40px"><div style="font-size:36px;margin-bottom:12px"></div><div style="font-size:14px">Чат закрыт</div><div style="font-size:12px;margin-top:6px;color:var(--dim)">Сделка завершена - история сообщений удалена</div></div>`;
       const chatInput = document.getElementById('chatInput');
+      const photoBtn = document.getElementById('chatAttachPhotoBtn');
+      const fileBtn = document.getElementById('chatAttachFileBtn');
+      const chatSendBtn = document.getElementById('chatSendBtn');
       chatInput.disabled = true;
       chatInput.placeholder = 'Чат удален';
       chatInput.style.opacity = '0.3';
-      const chatButton = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
-      if (chatButton) { chatButton.style.display = 'none'; }
+      if (photoBtn) photoBtn.disabled = true;
+      if (fileBtn) fileBtn.disabled = true;
+      if (chatSendBtn) chatSendBtn.style.display = 'none';
       return;
     }
     
     // Загружаем сообщения только если сделка активна
-    console.log('🔄 Загружаю сообщения для сделки #' + dealId);
     const { messages } = await api(`/api/deals/${dealId}/messages`);
-    console.log('✅ Получил сообщения:', messages);
     
     // Включаем чат для активной сделки
     const chatInput = document.getElementById('chatInput');
-    const chatButton = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const photoBtn = document.getElementById('chatAttachPhotoBtn');
+    const fileBtn = document.getElementById('chatAttachFileBtn');
     
     chatInput.disabled = false;
-    chatInput.placeholder = 'Сообщение...';
+    chatInput.placeholder = 'Напишите сообщение...';
     chatInput.style.opacity = '1';
     chatInput.style.cursor = 'text';
-    if (chatButton) {
-      chatButton.disabled = false;
-      chatButton.style.opacity = '1';
-      chatButton.style.cursor = 'pointer';
-      chatButton.style.display = 'block';
-    }
+    if (chatSendBtn) { chatSendBtn.disabled = false; chatSendBtn.style.display = 'block'; }
+    if (photoBtn) photoBtn.disabled = false;
+    if (fileBtn) fileBtn.disabled = false;
     
     await renderChatMessages(messages);
   } catch (e) {
@@ -5240,7 +5557,7 @@ async function openDealChat(dealId) {
 
 // Глобальная переменная для хранения выбранного фото
 let chatSelectedPhoto = null;
-let chatPhotoUploadedUrl = null; // URL после загрузки на сервер
+let chatSelectedFile = null;
 
 // Функция для обработки выбора фото
 function handleChatPhotoSelect(event) {
@@ -5261,6 +5578,7 @@ function handleChatPhotoSelect(event) {
   }
   
   chatSelectedPhoto = file;
+  clearChatFile();
   
   // Показываем превью
   const reader = new FileReader();
@@ -5276,10 +5594,35 @@ function handleChatPhotoSelect(event) {
 // Функция для очистки выбранного фото
 function clearChatPhoto() {
   chatSelectedPhoto = null;
-  chatPhotoUploadedUrl = null;
   document.getElementById('chatPhotoInput').value = '';
   document.getElementById('chatPhotoPreview').style.display = 'none';
   document.getElementById('chatPhotoPreviewImg').src = '';
+}
+
+function handleChatFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 10 * 1024 * 1024) {
+    toast('❌ Файл слишком большой (макс 10MB)');
+    document.getElementById('chatFileInput').value = '';
+    return;
+  }
+
+  chatSelectedFile = file;
+  clearChatPhoto();
+
+  document.getElementById('chatFileName').textContent = file.name || 'Вложение';
+  document.getElementById('chatFileMeta').textContent = `${file.type || 'файл'} · ${formatChatFileSize(file.size)}`;
+  document.getElementById('chatFilePreview').style.display = 'block';
+}
+
+function clearChatFile() {
+  chatSelectedFile = null;
+  const input = document.getElementById('chatFileInput');
+  if (input) input.value = '';
+  const preview = document.getElementById('chatFilePreview');
+  if (preview) preview.style.display = 'none';
 }
 
 // Функция для открытия фото в большом размере
@@ -5315,22 +5658,25 @@ async function sendDealMessage() {
   
   const msg = input.value.trim();
   
-  // Проверяем что есть текст или фото
-  if (!msg && !chatSelectedPhoto && !chatPhotoUploadedUrl) {
-    toast('❌ Напишите сообщение или загрузьте фото');
+  // Проверяем что есть текст или вложение
+  if (!msg && !chatSelectedPhoto && !chatSelectedFile) {
+    toast('❌ Напишите сообщение или добавьте вложение');
     return;
   }
   
   input.disabled = true;
-  const btn = document.querySelector('#dealChatOverlay button[onclick*="sendDealMessage"]');
+  const btn = document.getElementById('chatSendBtn');
   if (btn) btn.disabled = true;
   
   try {
-    let imageUrl = chatPhotoUploadedUrl;
+    let imageUrl = null;
+    let fileUrl = null;
+    let fileName = null;
+    let fileSize = null;
+    let fileMime = null;
     
     // Шаг 1: Если есть выбранное фото, загружаем его на /api/upload
-    if (chatSelectedPhoto && !chatPhotoUploadedUrl) {
-      console.log('📸 Загружаю фото на /api/upload...');
+    if (chatSelectedPhoto) {
       const formData = new FormData();
       formData.append('image', chatSelectedPhoto);
       
@@ -5352,24 +5698,50 @@ async function sendDealMessage() {
       
       const uploadData = await uploadResponse.json();
       imageUrl = uploadData.url;
-      chatPhotoUploadedUrl = imageUrl;
-      console.log('✅ Фото загружено:', imageUrl);
+    }
+
+    // Шаг 2: Если выбран файл, загружаем его на /api/upload/chat-file
+    if (chatSelectedFile) {
+      const formData = new FormData();
+      formData.append('file', chatSelectedFile);
+
+      const uploadResponse = await fetch(API_BASE + '/api/upload/chat-file', {
+        method: 'POST',
+        headers: {
+          'X-Init-Data': INIT_DATA,
+        },
+        body: formData
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Ошибка загрузки файла: ' + uploadResponse.status);
+      }
+
+      const uploadData = await uploadResponse.json();
+      fileUrl = uploadData.url;
+      fileName = uploadData.original_name || chatSelectedFile.name;
+      fileSize = uploadData.size || chatSelectedFile.size;
+      fileMime = uploadData.mime_type || chatSelectedFile.type || null;
     }
     
-    // Шаг 2: Отправляем сообщение с text + image_url (простой JSON)
-    console.log('📤 Отправляю сообщение...');
+    // Шаг 3: Отправляем сообщение
     const response = await api(`/api/deals/${curChatDealId}/messages`, {
       method: 'POST',
       body: JSON.stringify({ 
-        message: msg || '',  // Пустая строка вместо null (БД требует NOT NULL)
-        image_url: imageUrl || null
+        message: msg || '',
+        image_url: imageUrl || null,
+        file_url: fileUrl || null,
+        file_name: fileName || null,
+        file_size: fileSize || null,
+        file_mime: fileMime || null,
       })
     });
-    
+
     console.log('✅ Сообщение отправлено:', response);
     
     input.value = '';
     clearChatPhoto();
+    clearChatFile();
     toast('✅ Сообщение отправлено');
     
     // Перезагружаем только сообщения
@@ -5807,26 +6179,36 @@ async function openMyReviews() {
       el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Отзывов пока нет</div><div class="empty-sub">Отзывы от других пользователей появятся здесь</div></div>'; 
       return;
     }
-    el.innerHTML = reviews.map(r => {
-      const scoreIcon = r.review_score > 0 ? '👍' : '👎';
-      const scoreColor = r.review_score > 0 ? 'var(--green)' : 'var(--red)';
+    const positiveCount = reviews.filter(r => Number(r.review_score) > 0).length;
+    const negativeCount = reviews.filter(r => Number(r.review_score) < 0).length;
+
+    el.innerHTML = `
+      <div class="myr-summary">
+        <div class="myr-chip"><div class="v">${reviews.length}</div><div class="l">Всего</div></div>
+        <div class="myr-chip"><div class="v">${positiveCount}</div><div class="l">Положит.</div></div>
+        <div class="myr-chip"><div class="v">${negativeCount}</div><div class="l">Отрицат.</div></div>
+      </div>
+    ` + reviews.map(r => {
+      const isPositive = Number(r.review_score) > 0;
+      const scoreIcon = isPositive ? '👍' : '👎';
+      const scoreClass = isPositive ? 'pos' : 'neg';
       const reviewer = r.reviewer_username ? '@' + r.reviewer_username : (r.reviewer_name || 'Пользователь');
       const date = new Date(r.completed_at || r.created_at).toLocaleDateString('ru', { 
         day: '2-digit', month: '2-digit', year: '2-digit' 
       });
       
-      return `<div class="review-card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:16px">${scoreIcon}</span>
+      return `<div class="myr-card">
+        <div class="myr-top">
+          <div class="myr-user">
+            <span class="myr-ico ${scoreClass}">${scoreIcon}</span>
             <div>
-              <div style="font-size:14px;font-weight:700;color:var(--text)">${reviewer}</div>
-              <div style="font-size:12px;color:var(--sub)">${r.listing_title || 'Товар'}</div>
+              <div class="myr-name">${reviewer}</div>
+              <div class="myr-item">${r.listing_title || 'Товар'}</div>
             </div>
           </div>
-          <div style="font-size:12px;color:var(--dim)">${date}</div>
+          <div class="myr-date">${date}</div>
         </div>
-        ${r.review_text ? `<div style="font-size:13px;color:var(--text);line-height:1.4;padding:8px;background:rgba(232,200,74,0.05);border-radius:8px;border-left:3px solid ${scoreColor}">${r.review_text}</div>` : ''}
+        ${r.review_text ? `<div class="myr-text ${scoreClass}">${r.review_text}</div>` : ''}
       </div>`;
     }).join('');
   } catch (e) {
