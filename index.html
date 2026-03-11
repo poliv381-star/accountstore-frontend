@@ -2380,6 +2380,49 @@ body::after {
 .btn-delete:hover {
   background: rgba(220, 53, 69, 0.25);
 }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE BUTTONS (auto-fit for screens)
+══════════════════════════════════════════ */
+button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.ld-fs-close):not(.create-close):not(.notif-remove-btn):not(.ld-expand-btn):not(#chatAttachPhotoBtn):not(#chatAttachFileBtn) {
+  min-height: clamp(36px, 5.6vw, 50px);
+  max-width: 100%;
+  padding: clamp(8px, 2.2vw, 14px) clamp(10px, 3.6vw, 16px) !important;
+  font-size: clamp(11px, 3.3vw, 15px) !important;
+  line-height: 1.2;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.balance-actions,
+.listing-buttons,
+.dh-filters {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 420px) {
+  .ps-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .review-options {
+    grid-template-columns: 1fr;
+  }
+
+  .listing-buttons button {
+    flex: 1 1 calc(50% - 6px);
+  }
+}
+
+@media (max-width: 360px) {
+  .ps-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dh-filter-btn {
+    font-size: 10px !important;
+  }
+}
 </style>
 </head>
 <body>
