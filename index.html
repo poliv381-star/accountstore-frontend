@@ -270,6 +270,94 @@ body::after {
   color:var(--dim);
 }
 
+.rec-wrap { padding: 0 18px 14px; }
+.rec-head {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.rec-title {
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.rec-sub {
+  font-size:12px;
+  color:var(--sub);
+}
+.rec-row {
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+.rec-row::-webkit-scrollbar { display:none; }
+.rec-card {
+  min-width:170px;
+  max-width:170px;
+  background:linear-gradient(135deg, rgba(19,19,24,.9) 0%, rgba(26,26,34,.75) 100%);
+  border:1px solid rgba(232,200,74,.14);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 10px 28px rgba(0,0,0,.18);
+  cursor:pointer;
+  flex-shrink:0;
+}
+.rec-card:active { transform:scale(.98); }
+.rec-img {
+  width:100%;
+  aspect-ratio: 16/10;
+  object-fit:contain;
+  background:#000;
+  display:block;
+}
+.rec-ph {
+  width:100%;
+  aspect-ratio:16/10;
+  background:var(--s2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+}
+.rec-body { padding:10px 11px 12px; }
+.rec-name {
+  font-size:12px;
+  font-weight:800;
+  color:var(--text);
+  line-height:1.35;
+  min-height:32px;
+}
+.rec-meta {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+}
+.rec-price {
+  font-family:'JetBrains Mono', monospace;
+  font-size:14px;
+  font-weight:700;
+  color:var(--gold);
+}
+.rec-badge {
+  padding:3px 7px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--gold);
+  background:rgba(232,200,74,.1);
+  border:1px solid rgba(232,200,74,.22);
+}
+
 .grid {
   padding: 0 18px;
   display: grid; grid-template-columns: 1fr 1fr;
@@ -1188,6 +1276,95 @@ body::after {
 .tx-amt.in  { color: var(--green); }
 .tx-amt.out { color: var(--red); }
 .tx-amt.pending { color: var(--gold); }
+.tx-summary {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+.tx-chip {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px 8px;
+  text-align:center;
+}
+.tx-chip .v {
+  font-family:'JetBrains Mono', monospace;
+  font-size:15px;
+  font-weight:700;
+  color:var(--text);
+}
+.tx-chip .l {
+  margin-top:4px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--dim);
+}
+.tx-list {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.tx-card {
+  background:linear-gradient(135deg, rgba(19,19,24,.88) 0%, rgba(26,26,34,.72) 100%);
+  border:1px solid rgba(232,200,74,.14);
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.16);
+}
+.tx-card-top {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.tx-left {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  min-width:0;
+}
+.tx-icon-box {
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-size:16px;
+}
+.tx-icon-box.in { background:rgba(0,224,128,.1); color:var(--green); }
+.tx-icon-box.out { background:rgba(255,77,90,.1); color:var(--red); }
+.tx-icon-box.pending { background:rgba(232,200,74,.1); color:var(--gold); }
+.tx-status-badge {
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  font-size:10px;
+  font-weight:800;
+  color:var(--sub);
+  background:var(--s1);
+  margin-top:6px;
+}
+.tx-status-badge.in { color:var(--green); border-color:rgba(0,224,128,.28); background:rgba(0,224,128,.08); }
+.tx-status-badge.out { color:var(--red); border-color:rgba(255,77,90,.28); background:rgba(255,77,90,.08); }
+.tx-status-badge.pending { color:var(--gold); border-color:rgba(232,200,74,.28); background:rgba(232,200,74,.08); }
+.tx-note {
+  font-size:12px;
+  color:var(--sub);
+  line-height:1.5;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+}
 
 /* TOPUP INPUT */
 .topup-amounts { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
@@ -1385,6 +1562,68 @@ body::after {
 .deal-status.auto_completed { background:rgba(0,224,128,.1); color:var(--green); border:1px solid rgba(0,224,128,.25); }
 .deal-status.refunded { background:rgba(148,148,184,.1); color:var(--sub); border:1px solid var(--border); }
 
+/* ── REVIEW SHEET ── */
+.review-sheet-body { padding:0 20px 28px; }
+.review-title { font-size:20px; font-weight:900; margin-bottom:6px; color:var(--text); }
+.review-subtitle { font-size:13px; color:var(--sub); line-height:1.55; margin-bottom:16px; }
+.review-card-box {
+  background:linear-gradient(135deg, rgba(232,200,74,.08), rgba(255,140,66,.04));
+  border:1px solid rgba(232,200,74,.16);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:14px;
+}
+.review-label {
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin-bottom:10px;
+}
+.review-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.review-option {
+  border:1px solid var(--border2);
+  background:var(--s1);
+  border-radius:14px;
+  padding:14px 12px;
+  cursor:pointer;
+  transition:.18s;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
+}
+.review-option:active { transform:scale(.98); }
+.review-option-title { font-size:14px; font-weight:800; color:var(--text); }
+.review-option-sub { font-size:11px; color:var(--sub); }
+.review-option.active-positive {
+  border-color:rgba(0,224,128,.35);
+  background:rgba(0,224,128,.09);
+}
+.review-option.active-negative {
+  border-color:rgba(255,77,90,.35);
+  background:rgba(255,77,90,.09);
+}
+.review-textarea {
+  min-height:104px;
+  background:var(--s1);
+  border:1px solid var(--border);
+}
+.review-secondary-btn {
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  background:transparent;
+  border:1px solid var(--border2);
+  border-radius:14px;
+  color:var(--sub);
+  font-family:'Manrope',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
 /* ── PROFILE DEAL HISTORY ── */
 .dh-summary {
   display:grid;
@@ -1428,6 +1667,18 @@ body::after {
 .dh-top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:8px; }
 .dh-title { font-size:14px; font-weight:800; color:var(--text); line-height:1.35; }
 .dh-amount { font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color:var(--gold); white-space:nowrap; }
+.dh-role {
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  border:1px solid rgba(232,200,74,.2);
+  background:rgba(232,200,74,.08);
+  color:var(--gold);
+  margin-top:6px;
+}
 .dh-meta { display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--sub); margin-bottom:9px; }
 .dh-foot { display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:11px; color:var(--dim); }
 .dh-badge {
@@ -1442,6 +1693,82 @@ body::after {
 .dh-badge.auto_completed { color:var(--green); border-color:rgba(0,224,128,.35); background:rgba(0,224,128,.1); }
 .dh-badge.cancelled { color:var(--red); border-color:rgba(255,77,90,.35); background:rgba(255,77,90,.1); }
 .dh-badge.refunded { color:var(--sub); border-color:var(--border2); background:rgba(148,148,184,.12); }
+
+/* ── MY REVIEWS ── */
+.my-reviews-summary {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+.my-reviews-chip {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+}
+.my-reviews-chip .v { font-size:15px; font-weight:900; color:var(--text); line-height:1; }
+.my-reviews-chip .l { font-size:10px; color:var(--dim); margin-top:4px; text-transform:uppercase; letter-spacing:.06em; }
+.review-card {
+  background:linear-gradient(135deg, rgba(19,19,24,0.88) 0%, rgba(26,26,34,0.7) 100%);
+  border:1px solid rgba(232,200,74,0.14);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 10px 28px rgba(0,0,0,.18);
+}
+.review-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.review-user {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.review-icon {
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  flex-shrink:0;
+}
+.review-icon.pos { background:rgba(0,224,128,.12); color:var(--green); }
+.review-icon.neg { background:rgba(255,77,90,.12); color:var(--red); }
+.review-name { font-size:14px; font-weight:800; color:var(--text); }
+.review-item { font-size:12px; color:var(--sub); margin-top:2px; }
+.review-date {
+  font-size:11px;
+  color:var(--dim);
+  white-space:nowrap;
+}
+.review-text {
+  font-size:13px;
+  color:var(--text);
+  line-height:1.55;
+  padding:10px 12px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-left:3px solid transparent;
+  border-radius:10px;
+}
+.review-text.pos { border-left-color:var(--green); }
+.review-text.neg { border-left-color:var(--red); }
+.review-empty-note {
+  font-size:12px;
+  color:var(--dim);
+  padding:10px 12px;
+  background:rgba(255,255,255,.03);
+  border:1px dashed var(--border2);
+  border-radius:10px;
+}
 
 /* ══════════════════════════════════════════
    КАРУСЕЛЬ В КАРТОЧКЕ
@@ -1905,6 +2232,7 @@ body::after {
     <div class="cat on" onclick="filterCat('all',this)">Все</div>
   </div>
 
+  <div id="recSection"></div>
   <div class="sec-label" id="gridLabel">Все объявления</div>
   <div class="grid" id="grid"></div>
   <div class="gap"></div>
@@ -2484,16 +2812,26 @@ body::after {
 <div class="overlay" id="reviewOverlay" onclick="closeOverlayByBg(event,'reviewOverlay')">
   <div class="sheet">
     <div class="sh-handle"></div>
-    <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:6px">Отзыв о продавце</div>
-      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Оставьте отзыв о продавце</div>
-      <div style="display:flex;gap:10px;margin-bottom:14px">
-        <button id="revGood" class="deal-btn confirm" style="flex:1" onclick="setReview(1)">Хорошо</button>
-        <button id="revBad"  class="deal-btn cancel"  style="flex:1" onclick="setReview(-1)">Плохо</button>
+    <div class="review-sheet-body">
+      <div class="review-title">Оставить отзыв</div>
+      <div class="review-subtitle">Поделитесь впечатлением о продавце. Это поможет другим покупателям.</div>
+      <div class="review-card-box">
+        <div class="review-label">Ваша оценка</div>
+        <div class="review-options">
+          <button id="revGood" class="review-option active-positive" onclick="setReview(1)">
+            <span class="review-option-title">Хорошо</span>
+            <span class="review-option-sub">Сделка прошла нормально</span>
+          </button>
+          <button id="revBad" class="review-option" onclick="setReview(-1)">
+            <span class="review-option-title">Плохо</span>
+            <span class="review-option-sub">Были проблемы по сделке</span>
+          </button>
+        </div>
+        <div class="review-label">Комментарий</div>
+        <textarea class="form-input form-textarea review-textarea" id="reviewText" placeholder="Что понравилось или что пошло не так?"></textarea>
       </div>
-      <textarea class="form-input form-textarea" id="reviewText" placeholder="Комментарий (необязательно)..."></textarea>
-      <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">Подтвердить получение</button>
-      <button class="pay-btn-main" onclick="skipReview()" style="margin-top:8px;background:var(--s2);color:var(--sub);font-size:14px">Пропустить отзыв</button>
+      <button class="pay-btn-main" onclick="submitReview()" style="margin-top:12px" id="submitReviewBtn">Опубликовать отзыв</button>
+      <button class="review-secondary-btn" onclick="skipReview()">Пропустить отзыв</button>
     </div>
   </div>
 </div>
@@ -2502,16 +2840,26 @@ body::after {
 <div class="overlay" id="sellerReviewOverlay" onclick="closeOverlayByBg(event,'sellerReviewOverlay')">
   <div class="sheet">
     <div class="sh-handle"></div>
-    <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:6px">Отправить товар</div>
-      <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Товар отправлен? Оцените вашего покупателя</div>
-      <div style="display:flex;gap:10px;margin-bottom:14px">
-        <button id="sellerRevGood" class="deal-btn confirm" style="flex:1" onclick="setSellerReview(1)">Хорошо</button>
-        <button id="sellerRevBad"  class="deal-btn cancel"  style="flex:1" onclick="setSellerReview(-1)">Плохо</button>
+    <div class="review-sheet-body">
+      <div class="review-title">Оценка покупателя</div>
+      <div class="review-subtitle">Отметьте, как прошла сделка с покупателем, и при необходимости добавьте комментарий.</div>
+      <div class="review-card-box">
+        <div class="review-label">Ваша оценка</div>
+        <div class="review-options">
+          <button id="sellerRevGood" class="review-option active-positive" onclick="setSellerReview(1)">
+            <span class="review-option-title">Хорошо</span>
+            <span class="review-option-sub">Покупатель вел себя корректно</span>
+          </button>
+          <button id="sellerRevBad" class="review-option" onclick="setSellerReview(-1)">
+            <span class="review-option-title">Плохо</span>
+            <span class="review-option-sub">Были сложности при сделке</span>
+          </button>
+        </div>
+        <div class="review-label">Комментарий</div>
+        <textarea class="form-input form-textarea review-textarea" id="sellerReviewText" placeholder="Например: быстро ответил, затянул оплату, был вежлив"></textarea>
       </div>
-      <textarea class="form-input form-textarea" id="sellerReviewText" placeholder="Комментарий (необязательно)..."></textarea>
-      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">Отправить товар</button>
-      <button class="pay-btn-main" onclick="skipSellerReview()" style="margin-top:8px;background:var(--s2);color:var(--sub);font-size:14px">Пропустить отзыв</button>
+      <button class="pay-btn-main" onclick="submitSellerReview()" style="margin-top:12px" id="submitSellerReviewBtn">Отправить отзыв</button>
+      <button class="review-secondary-btn" onclick="skipSellerReview()">Пропустить отзыв</button>
     </div>
   </div>
 </div>
@@ -2631,6 +2979,100 @@ let privacySettings = {
   is_seller_anonymous: true,
   is_buyer_anonymous: true,
 };
+let recommendationProducts = [];
+let recommendationScores = {};
+let searchTrackTimer = null;
+let recommendationRefreshTimer = null;
+
+function mapListingToProduct(l) {
+  return {
+    id:          `l_${l.id}`,
+    listing_id:  l.id,
+    name:        l.title,
+    description: l.description || '',
+    price:       l.price,
+    image_url:   l.image_url,
+    images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
+    cat_name:    l.category,
+    cat_emoji:   catEmoji(l.category),
+    cat_slug:    l.category,
+    stock:       l.quantity || 1,
+    badge:       null,
+    specs:       [],
+    source:      'listing',
+    recommendation_score: Number(l.recommendation_score || 0),
+    listing:     l,
+  };
+}
+
+function updateRecommendationScores(listings = []) {
+  recommendationScores = {};
+  (listings || []).forEach(l => {
+    recommendationScores[`l_${l.id}`] = Number(l.recommendation_score || 0);
+  });
+}
+
+function trackBehavior(eventType, payload = {}) {
+  api('/api/recommendations/track', {
+    method: 'POST',
+    body: JSON.stringify({ event_type: eventType, ...payload })
+  }).catch(() => {});
+
+  if (eventType !== 'search') {
+    clearTimeout(recommendationRefreshTimer);
+    recommendationRefreshTimer = setTimeout(() => {
+      loadRecommendations().catch(() => {});
+    }, 1200);
+  }
+}
+
+async function loadRecommendations() {
+  try {
+    const { listings } = await api('/api/recommendations/listings?limit=60');
+    const scored = (listings || []).filter(l => Number(l.recommendation_score || 0) > 0);
+    recommendationProducts = scored.map(mapListingToProduct);
+    updateRecommendationScores(scored);
+  } catch {
+    recommendationProducts = [];
+    recommendationScores = {};
+  }
+  renderRecommendations();
+}
+
+function renderRecommendations() {
+  const el = document.getElementById('recSection');
+  if (!el) return;
+
+  if (searchQ || filterSlug !== 'all' || !recommendationProducts.length) {
+    el.innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="rec-wrap">
+      <div class="rec-head">
+        <div>
+          <div class="rec-title">Для вас</div>
+          <div class="rec-sub">Подобрано по вашим просмотрам, корзине и покупкам</div>
+        </div>
+      </div>
+      <div class="rec-row">
+        ${recommendationProducts.slice(0, 8).map(p => {
+          const img = p.images && p.images.length ? p.images[0] : p.image_url;
+          return `<div class="rec-card" onclick="openProduct('${p.id}')">
+            ${img ? `<img class="rec-img" src="${img}" alt="${p.name}">` : `<div class="rec-ph">${p.cat_emoji || ''}</div>`}
+            <div class="rec-body">
+              <div class="rec-name">${p.name}</div>
+              <div class="rec-meta">
+                <div class="rec-price">$${Number(p.price).toFixed(2)}</div>
+                <div class="rec-badge">Рекомендуем</div>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
 
 function renderPrivacySettings() {
   const sellOn = document.getElementById('sellAnonOn');
@@ -2688,23 +3130,7 @@ async function loadListings() {
 
   const { listings } = await api(url).catch(() => ({ listings: [] }));
 
-  allProducts = (listings || []).map(l => ({
-    id:          `l_${l.id}`,
-    listing_id:  l.id,
-    name:        l.title,
-    description: l.description || '',
-    price:       l.price,
-    image_url:   l.image_url,
-    images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
-    cat_name:    l.category,
-    cat_emoji:   catEmoji(l.category),
-    cat_slug:    l.category,
-    stock:       l.quantity || 1,
-    badge:       null,
-    specs:       [],
-    source:      'listing',
-    listing:     l,
-  }));
+  allProducts = (listings || []).map(mapListingToProduct);
 
   // Сохраняем ID первого (самого нового) объявления
   if (allProducts.length > 0) {
@@ -2724,23 +3150,7 @@ async function checkNewListings() {
   if (!listings || listings.length === 0) return; // Новых нет
   
   // Добавляем новые объявления в начало
-  const newProducts = listings.map(l => ({
-    id:          `l_${l.id}`,
-    listing_id:  l.id,
-    name:        l.title,
-    description: l.description || '',
-    price:       l.price,
-    image_url:   l.image_url,
-    images:      l.images ? (Array.isArray(l.images) ? l.images : JSON.parse(l.images || '[]')) : (l.image_url ? [l.image_url] : []),
-    cat_name:    l.category,
-    cat_emoji:   catEmoji(l.category),
-    cat_slug:    l.category,
-    stock:       l.quantity || 1,
-    badge:       null,
-    specs:       [],
-    source:      'listing',
-    listing:     l,
-  }));
+  const newProducts = listings.map(mapListingToProduct);
   
   allProducts = [...newProducts, ...allProducts];
   lastListingId = newProducts[0].listing_id;
@@ -2755,6 +3165,8 @@ function selectCategory(slug) {
   localStorage.setItem('as_filter', slug);
   searchQ = '';
   document.getElementById('searchInput').value = '';
+  renderRecommendations();
+  if (slug !== 'all') trackBehavior('category_view', { category: slug });
   loadListings();
 }
 
@@ -2765,6 +3177,7 @@ function selectCategory(slug) {
   renderSkeleton();
   try {
     await loadListings();
+    await loadRecommendations();
     renderGrid();
     
     // Загружаем уведомления при старте
@@ -2828,7 +3241,7 @@ function catName(cat) {
 }
 
 function getVisible() {
-  let list = allProducts;
+  let list = [...allProducts];
   
   // Дополнительная защита: фильтрация по категории на клиенте
   if (filterSlug && filterSlug !== 'all') {
@@ -2843,6 +3256,13 @@ function getVisible() {
       (p.description || '').toLowerCase().includes(q)
     );
   }
+
+  list.sort((a, b) => {
+    const scoreA = Number(recommendationScores[a.id] || a.recommendation_score || 0);
+    const scoreB = Number(recommendationScores[b.id] || b.recommendation_score || 0);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    return Number(b.listing_id || 0) - Number(a.listing_id || 0);
+  });
   
   return list;
 }
@@ -2879,7 +3299,7 @@ function renderGrid() {
     const c = categories.find(x => x.slug === filterSlug);
     label.textContent = c ? `${c.name}` : 'Товары';
   } else {
-    label.textContent = `Все объявления`;
+    label.textContent = recommendationProducts.length && !searchQ ? `Все объявления · с учетом интересов` : `Все объявления`;
   }
 
   if (!list.length) {
@@ -2953,6 +3373,8 @@ function filterCat(slug, el) {
   el.classList.add('on');
   // перезагружаем список с учётом выбранной категории
   loadListings().then(renderGrid).catch(e => console.warn('Ошибка загрузки после смены категории', e.message));
+  renderRecommendations();
+  if (slug !== 'all') trackBehavior('category_view', { category: slug });
   haptic('light');
 }
 
@@ -2960,6 +3382,17 @@ function onSearch(v) {
   searchQ = v.trim();
   // не сбрасываем filterSlug, чтобы поисковый запрос применялся в рамках выбранной категории
   loadListings();
+  renderRecommendations();
+
+  clearTimeout(searchTrackTimer);
+  if (searchQ.length >= 2) {
+    searchTrackTimer = setTimeout(() => {
+      trackBehavior('search', {
+        category: filterSlug !== 'all' ? filterSlug : null,
+        search_query: searchQ,
+      });
+    }, 500);
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3457,6 +3890,9 @@ function addToCart(p, qty) {
   }
   saveCart();
   syncBadge();
+  if (p.listing_id) {
+    trackBehavior('add_to_cart', { listing_id: p.listing_id, category: p.cat_slug || p.listing?.category || null });
+  }
   toast(`${p.name}`);
   haptic('success');
 }
@@ -3487,26 +3923,38 @@ async function checkout() {
 }
 
 function openCryptoBot() {} // legacy
+    const positiveCount = reviews.filter(r => Number(r.review_score) > 0).length;
+    const negativeCount = reviews.filter(r => Number(r.review_score) < 0).length;
 
-// ══════════════════════════════════════════════════════════
-// ORDERS
+    el.innerHTML = `
+      <div class="my-reviews-summary">
+        <div class="my-reviews-chip"><div class="v">${reviews.length}</div><div class="l">Всего</div></div>
+        <div class="my-reviews-chip"><div class="v">${positiveCount}</div><div class="l">Положительных</div></div>
+        <div class="my-reviews-chip"><div class="v">${negativeCount}</div><div class="l">Отрицательных</div></div>
+      </div>
+    ` + reviews.map(r => {
+      const isPositive = Number(r.review_score) > 0;
+      const scoreIcon = isPositive ? '↑' : '↓';
+      const scoreClass = isPositive ? 'pos' : 'neg';
 // ══════════════════════════════════════════════════════════
 async function loadOrders() {
   const el = document.getElementById('ordersContent');
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
-    const { orders } = await api('/api/orders');
-    if (!orders.length) {
-      el.innerHTML = `
-        <div class="empty">
-          <div class="empty-ico">📋</div>
-          <div class="empty-ttl">Заказов нет</div>
-          <div class="empty-sub">Совершите первую покупку</div>
-        </div>`;
+      return `<div class="review-card">
+        <div class="review-head">
+          <div class="review-user">
+            <div class="review-icon ${scoreClass}">${scoreIcon}</div>
+            <div>
+              <div class="review-name">${reviewer}</div>
+              <div class="review-item">${r.listing_title || 'Товар'}</div>
+            </div>
       return;
-    }
+          <div class="review-date">${date}</div>
 
-    const STG = {
+        ${r.review_text
+          ? `<div class="review-text ${scoreClass}">${r.review_text}</div>`
+          : `<div class="review-empty-note">Пользователь оставил только оценку без комментария.</div>`}
       pending:   ['s-p', 'Ожидание'],
       paid:      ['s-pa', 'Оплачен'],
       delivered: ['s-d', 'Доставлен'],
@@ -3728,16 +4176,32 @@ async function openTxHistory() {
       el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Нет транзакций</div><div class="empty-sub">История пополнений и списаний появится здесь</div></div>';
       return;
     }
-    el.innerHTML = transactions.map(tx => {
+
+    const incomingAmount = transactions
+      .filter(tx => (tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout')
+      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+    const outgoingAmount = transactions
+      .filter(tx => !((tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout') && !(tx.type === 'topup' && tx.status === 'pending'))
+      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+    const pendingCount = transactions.filter(tx => tx.type === 'topup' && tx.status === 'pending').length;
+
+    el.innerHTML = `
+      <div class="tx-summary">
+        <div class="tx-chip"><div class="v">$${Number(balance || 0).toFixed(2)}</div><div class="l">Баланс</div></div>
+        <div class="tx-chip"><div class="v">+$${incomingAmount.toFixed(2)}</div><div class="l">Поступления</div></div>
+        <div class="tx-chip"><div class="v">${pendingCount}</div><div class="l">В ожидании</div></div>
+      </div>
+      <div class="tx-list">` + transactions.map(tx => {
       // ПРИХОД: пополнение, возврат, выплата за сделку (кроме pending topup)
       const isIn = (tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout';
       const isPending = tx.type === 'topup' && tx.status === 'pending';
+      const kind = isIn ? 'in' : isPending ? 'pending' : 'out';
       
       // Описание с учётом статуса
       let desc = tx.description;
       if (!desc) {
         if (tx.type === 'topup') {
-          desc = tx.status === 'pending' ? '⏳ Ожидание оплаты' : 'Пополнение';
+          desc = tx.status === 'pending' ? 'Ожидание оплаты' : 'Пополнение';
         } else {
           desc = {
             'deal_payout': 'Выплата за сделку',
@@ -3749,18 +4213,37 @@ async function openTxHistory() {
           }[tx.type] || 'Транзакция';
         }
       }
+
+      const note = {
+        'deal_payout': 'Средства успешно зачислены на ваш баланс.',
+        'refund': 'Средства возвращены после отмены или пересмотра сделки.',
+        'payment': 'Сумма списана за покупку или оплату внутри сервиса.',
+        'withdraw': 'Запрошен вывод средств через CryptoBot.',
+        'topup': tx.status === 'pending' ? 'Ожидаем оплату инвойса в CryptoBot.' : 'Баланс пополнен успешно.',
+        'topup_error': 'Пополнение не было завершено.',
+        'withdraw_error': 'Во время вывода произошла ошибка.'
+      }[tx.type] || 'Операция обработана системой.';
+
+      const icon = isIn ? '↓' : isPending ? '•' : '↑';
+      const badge = isIn ? 'Поступление' : isPending ? 'В ожидании' : 'Списание';
       
       const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
       
-      return `<div class="tx-item">
-        <div class="tx-ico ${isIn?'in':isPending?'pending':'out'}"></div>
-        <div class="tx-info">
-          <div class="tx-desc">${desc}</div>
-          <div class="tx-date">${date}</div>
+      return `<div class="tx-card">
+        <div class="tx-card-top">
+          <div class="tx-left">
+            <div class="tx-icon-box ${kind}">${icon}</div>
+            <div class="tx-info">
+              <div class="tx-desc">${desc}</div>
+              <div class="tx-date">${date}</div>
+              <div class="tx-status-badge ${kind}">${badge}</div>
+            </div>
+          </div>
+          <div class="tx-amt ${kind}">${isIn?'+':isPending?'':'-'}$${Number(tx.amount).toFixed(2)}</div>
         </div>
-        <div class="tx-amt ${isIn?'in':isPending?'pending':'out'}">${isIn?'+':isPending?'⏳':'-'}$${Number(tx.amount).toFixed(2)}</div>
+        <div class="tx-note">${note}</div>
       </div>`;
-    }).join('');
+    }).join('') + '</div>';
   } catch (e) {
     el.innerHTML = `<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Ошибка загрузки</div></div>`;
   }
@@ -3788,6 +4271,7 @@ function openListing(id, listingObj) {
   curListing = listingObj;
   if (!curListing) return;
   const l = curListing;
+  trackBehavior('listing_open', { listing_id: l.id, category: l.category });
   const rat = l.seller_rating;
   const sellerDeals = Number(l.seller_deals_total || 0);
   const sellerReviews = Number(l.seller_reviews_total || 0);
@@ -4482,8 +4966,7 @@ async function submitListing() {
 function openReview(dealId) {
   curDealId = dealId; reviewScore = 1;
   document.getElementById('reviewText').value = '';
-  document.getElementById('revGood').style.opacity = '1';
-  document.getElementById('revBad').style.opacity  = '.45';
+  setReview(1);
   openOverlay('reviewOverlay');
 }
 
@@ -4503,15 +4986,14 @@ async function sendItem(dealId) {
 function openSellerReview(dealId) {
   curDealId = dealId; reviewScore = 1;
   document.getElementById('sellerReviewText').value = '';
-  document.getElementById('sellerRevGood').style.opacity = '1';
-  document.getElementById('sellerRevBad').style.opacity  = '.45';
+  setSellerReview(1);
   openOverlay('sellerReviewOverlay');
 }
 
 function setSellerReview(score) {
   reviewScore = score;
-  document.getElementById('sellerRevGood').style.opacity = score === 1  ? '1' : '.45';
-  document.getElementById('sellerRevBad').style.opacity  = score === -1 ? '1' : '.45';
+  document.getElementById('sellerRevGood').className = 'review-option' + (score === 1 ? ' active-positive' : '');
+  document.getElementById('sellerRevBad').className  = 'review-option' + (score === -1 ? ' active-negative' : '');
 }
 
 async function submitSellerReview() {
@@ -4529,13 +5011,13 @@ async function submitSellerReview() {
     openMyDeals();
   } catch(e) {
     toast(`❌ ${e.message}`);
-    btn.disabled = false; btn.textContent = '⭐ Отправить отзыв';
+    btn.disabled = false; btn.textContent = 'Отправить отзыв';
   }
 }
 function setReview(score) {
   reviewScore = score;
-  document.getElementById('revGood').style.opacity = score === 1  ? '1' : '.45';
-  document.getElementById('revBad').style.opacity  = score === -1 ? '1' : '.45';
+  document.getElementById('revGood').className = 'review-option' + (score === 1 ? ' active-positive' : '');
+  document.getElementById('revBad').className  = 'review-option' + (score === -1 ? ' active-negative' : '');
 }
 async function submitReview() {
   const btn = document.getElementById('submitReviewBtn');
@@ -4554,7 +5036,7 @@ async function submitReview() {
     loadBalance();
   } catch(e) {
     toast(`❌ ${e.message}`);
-    btn.disabled = false; btn.textContent = '✅ Подтвердить получение';
+    btn.disabled = false; btn.textContent = 'Опубликовать отзыв';
   }
 }
 
@@ -5132,6 +5614,7 @@ async function confirmCartPay() {
     
     // Обновляем каталог и раздел "Добавить" чтобы показать новое количество товара
     await loadListings();
+    await loadRecommendations();
     if (document.getElementById('myListingsContent')) {
       loadMyListingsInline();
     }
@@ -5305,13 +5788,17 @@ function renderDealHistoryCards() {
 
   listEl.innerHTML = filtered.map(d => {
       const isBuyer = String(d.buyer_id) === String(TG_USER.id);
+      const myRole = isBuyer ? 'Покупатель' : 'Продавец';
       const party = isBuyer ? 'Продавец' : 'Покупатель';
       const partyName = isBuyer ? (d.seller_username || 'скрыт') : (d.buyer_username || 'скрыт');
       const statusLabel = statusMap[d.status] || d.status;
       const date = new Date(d.completed_at || d.created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
       return `<div class="dh-card">
         <div class="dh-top">
-          <div class="dh-title">${d.listing_title || 'Товар'}</div>
+          <div>
+            <div class="dh-title">${d.listing_title || d.title || 'Товар'}</div>
+            <div class="dh-role">Вы: ${myRole}</div>
+          </div>
           <div class="dh-amount">$${Number(d.amount || 0).toFixed(2)}</div>
         </div>
         <div class="dh-meta">
