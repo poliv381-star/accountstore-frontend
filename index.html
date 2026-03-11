@@ -3183,6 +3183,9 @@ function selectCategory(slug) {
     // Загружаем уведомления при старте
     await loadNotifications();
     
+    // Предзагрузка профиля
+    loadProfile().catch(() => {});
+    
     // Автоматическое обновление каталога каждые 10 секунд
     // Проверяем новые объявления каждые 5 секунд (без полной перерисовки)
     setInterval(async () => {
@@ -3923,38 +3926,17 @@ async function checkout() {
 }
 
 function openCryptoBot() {} // legacy
-    const positiveCount = reviews.filter(r => Number(r.review_score) > 0).length;
-    const negativeCount = reviews.filter(r => Number(r.review_score) < 0).length;
 
-    el.innerHTML = `
-      <div class="my-reviews-summary">
-        <div class="my-reviews-chip"><div class="v">${reviews.length}</div><div class="l">Всего</div></div>
-        <div class="my-reviews-chip"><div class="v">${positiveCount}</div><div class="l">Положительных</div></div>
-        <div class="my-reviews-chip"><div class="v">${negativeCount}</div><div class="l">Отрицательных</div></div>
-      </div>
-    ` + reviews.map(r => {
-      const isPositive = Number(r.review_score) > 0;
-      const scoreIcon = isPositive ? '↑' : '↓';
-      const scoreClass = isPositive ? 'pos' : 'neg';
-// ══════════════════════════════════════════════════════════
 async function loadOrders() {
   const el = document.getElementById('ordersContent');
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
-      return `<div class="review-card">
-        <div class="review-head">
-          <div class="review-user">
-            <div class="review-icon ${scoreClass}">${scoreIcon}</div>
-            <div>
-              <div class="review-name">${reviewer}</div>
-              <div class="review-item">${r.listing_title || 'Товар'}</div>
-            </div>
+    const { orders } = await api('/api/orders');
+    if (!orders || !orders.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Заказов нет</div></div>';
       return;
-          <div class="review-date">${date}</div>
-
-        ${r.review_text
-          ? `<div class="review-text ${scoreClass}">${r.review_text}</div>`
-          : `<div class="review-empty-note">Пользователь оставил только оценку без комментария.</div>`}
+    }
+    const STG = {
       pending:   ['s-p', 'Ожидание'],
       paid:      ['s-pa', 'Оплачен'],
       delivered: ['s-d', 'Доставлен'],
@@ -5906,39 +5888,5 @@ function haptic(type) {
     Отмена
   </button>
 </div>
-
-<script>
-// ══════════════════════════════════════════════════════════
-// ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
-// ══════════════════════════════════════════════════════════
-(async function BOOT() {
-  try {
-    console.log('🚀 Запуск приложения...');
-    
-    // Загружаем каталог
-    await loadListings();
-    
-    // Показываем каталог по умолчанию
-    switchPage('catalog', document.getElementById('nt-catalog'));
-    
-    // Загружаем профиль
-    loadProfile();
-    
-    // Стартуем периодическую проверку новых объявлений
-    setInterval(async () => {
-      try {
-        await checkNewListings();
-      } catch (e) {
-        console.log('ℹ️ Ошибка проверки новых объявлений:', e.message);
-      }
-    }, 5000); // каждые 5 секунд
-    
-    console.log('✅ Приложение загружено');
-  } catch (e) {
-    console.error('❌ Ошибка загрузки:', e);
-    alert('Ошибка: ' + e.message);
-  }
-})();
-</script>
 </body>
 </html>
