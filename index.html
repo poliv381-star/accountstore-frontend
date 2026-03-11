@@ -662,6 +662,10 @@ body::after {
   background:var(--s1); border:1px solid var(--border);
   border-radius:16px; overflow:hidden; display:flex; align-items:stretch;
 }
+.wi.out-stock {
+  opacity:.58;
+  filter:saturate(.65);
+}
 .wi-img {
   width:72px; flex-shrink:0; object-fit:cover; display:block;
 }
@@ -1074,6 +1078,56 @@ body::after {
 .m-txt { font-size:14px; font-weight:700; flex:1; }
 .m-arr { color:var(--dim); font-size:18px; }
 
+/* PRIVACY SETTINGS */
+.privacy-card {
+  margin: 0 18px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+.privacy-title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.privacy-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 0;
+  border-top:1px solid var(--border);
+}
+.privacy-row:first-of-type { border-top:none; padding-top:0; }
+.privacy-label { font-size:13px; font-weight:700; color:var(--text); }
+.privacy-sub { font-size:11px; color:var(--dim); margin-top:3px; }
+.privacy-toggle {
+  display:flex;
+  background:var(--s2);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:2px;
+  gap:2px;
+}
+.privacy-btn {
+  border:none;
+  background:transparent;
+  color:var(--sub);
+  font-size:11px;
+  font-weight:800;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+.privacy-btn.on {
+  background:rgba(232,200,74,.15);
+  color:var(--gold);
+}
+
 /* BALANCE CARD */
 .balance-card {
   margin: 14px 18px 0;
@@ -1330,6 +1384,64 @@ body::after {
 .deal-status.dispute { background:rgba(255,140,42,.1); color:var(--orange); border:1px solid rgba(255,140,42,.3); }
 .deal-status.auto_completed { background:rgba(0,224,128,.1); color:var(--green); border:1px solid rgba(0,224,128,.25); }
 .deal-status.refunded { background:rgba(148,148,184,.1); color:var(--sub); border:1px solid var(--border); }
+
+/* ── PROFILE DEAL HISTORY ── */
+.dh-summary {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+.dh-chip {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+}
+.dh-chip .v { font-size:15px; font-weight:900; color:var(--text); line-height:1; }
+.dh-chip .l { font-size:10px; color:var(--dim); margin-top:4px; text-transform:uppercase; letter-spacing:.06em; }
+.dh-filters { display:flex; gap:8px; margin-bottom:10px; overflow:auto; padding-bottom:2px; }
+.dh-filter-btn {
+  border:1px solid var(--border);
+  background:var(--s1);
+  color:var(--sub);
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.dh-filter-btn.on {
+  border-color:rgba(232,200,74,.45);
+  background:rgba(232,200,74,.12);
+  color:var(--gold);
+}
+.dh-card {
+  background:linear-gradient(135deg, rgba(19,19,24,0.85) 0%, rgba(26,26,34,0.65) 100%);
+  border:1px solid rgba(232,200,74,0.14);
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:10px;
+}
+.dh-top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:8px; }
+.dh-title { font-size:14px; font-weight:800; color:var(--text); line-height:1.35; }
+.dh-amount { font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color:var(--gold); white-space:nowrap; }
+.dh-meta { display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--sub); margin-bottom:9px; }
+.dh-foot { display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:11px; color:var(--dim); }
+.dh-badge {
+  display:inline-flex; align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:10px; font-weight:800;
+  border:1px solid var(--border);
+  background:var(--s1);
+}
+.dh-badge.completed,
+.dh-badge.auto_completed { color:var(--green); border-color:rgba(0,224,128,.35); background:rgba(0,224,128,.1); }
+.dh-badge.cancelled { color:var(--red); border-color:rgba(255,77,90,.35); background:rgba(255,77,90,.1); }
+.dh-badge.refunded { color:var(--sub); border-color:var(--border2); background:rgba(148,148,184,.12); }
 
 /* ══════════════════════════════════════════
    КАРУСЕЛЬ В КАРТОЧКЕ
@@ -1871,6 +1983,32 @@ body::after {
       </div>
     </div>
     
+  </div>
+
+  <div class="privacy-card" style="margin-top:8px">
+    <div class="privacy-title">Приватность</div>
+
+    <div class="privacy-row">
+      <div>
+        <div class="privacy-label">Продавать анонимно</div>
+        <div class="privacy-sub">Скрывать ваш @username в карточке объявления</div>
+      </div>
+      <div class="privacy-toggle">
+        <button class="privacy-btn" id="sellAnonOn" onclick="setPrivacyChoice('sell', true)">Анонимно</button>
+        <button class="privacy-btn" id="sellAnonOff" onclick="setPrivacyChoice('sell', false)">Открыто</button>
+      </div>
+    </div>
+
+    <div class="privacy-row">
+      <div>
+        <div class="privacy-label">Покупать анонимно</div>
+        <div class="privacy-sub">Скрывать ваш @username в интерфейсе сделки для продавца</div>
+      </div>
+      <div class="privacy-toggle">
+        <button class="privacy-btn" id="buyAnonOn" onclick="setPrivacyChoice('buy', true)">Анонимно</button>
+        <button class="privacy-btn" id="buyAnonOff" onclick="setPrivacyChoice('buy', false)">Открыто</button>
+      </div>
+    </div>
   </div>
 
   <div class="menu-l">
@@ -2489,6 +2627,47 @@ let curMiniUrl   = null;
 let filterSlug   = localStorage.getItem('as_filter') || 'all';
 let searchQ      = '';
 let lastListingId = 0;  // Отслеживание новых объявлений
+let privacySettings = {
+  is_seller_anonymous: true,
+  is_buyer_anonymous: true,
+};
+
+function renderPrivacySettings() {
+  const sellOn = document.getElementById('sellAnonOn');
+  const sellOff = document.getElementById('sellAnonOff');
+  const buyOn = document.getElementById('buyAnonOn');
+  const buyOff = document.getElementById('buyAnonOff');
+  if (!sellOn || !sellOff || !buyOn || !buyOff) return;
+
+  sellOn.classList.toggle('on', !!privacySettings.is_seller_anonymous);
+  sellOff.classList.toggle('on', !privacySettings.is_seller_anonymous);
+  buyOn.classList.toggle('on', !!privacySettings.is_buyer_anonymous);
+  buyOff.classList.toggle('on', !privacySettings.is_buyer_anonymous);
+}
+
+async function setPrivacyChoice(kind, value) {
+  const next = {
+    is_seller_anonymous: kind === 'sell' ? !!value : !!privacySettings.is_seller_anonymous,
+    is_buyer_anonymous: kind === 'buy' ? !!value : !!privacySettings.is_buyer_anonymous,
+  };
+
+  const prev = { ...privacySettings };
+  privacySettings = next;
+  renderPrivacySettings();
+
+  try {
+    await api('/api/profile/privacy', {
+      method: 'PUT',
+      body: JSON.stringify(next)
+    });
+    toast('Настройки приватности сохранены');
+  } catch (e) {
+    privacySettings = prev;
+    renderPrivacySettings();
+    toast(e.message || 'Не удалось сохранить настройки');
+    haptic('error');
+  }
+}
 
 // Загрузка товаров с фильтрацией по категории и поиску
 async function loadListings() {
@@ -2999,6 +3178,17 @@ function toggleWish(id) {
   if (document.getElementById('wishContent').style.display !== 'none') renderWish();
 }
 
+function removeWishItem(id) {
+  id = String(id);
+  const idx = wishlist.findIndex(x => String(x.id) === id);
+  if (idx < 0) return;
+  wishlist.splice(idx, 1);
+  saveWish();
+  syncWishCount();
+  toast('Убрано из избранного');
+  if (document.getElementById('wishContent').style.display !== 'none') renderWish();
+}
+
 function toggleWishFromSheet() {
   if (!curProduct) return;
   toggleWish(curProduct.id);
@@ -3041,7 +3231,7 @@ function renderWish() {
   }
   el.innerHTML = `<div class="cart-list">${wishlist.map(item => {
     const inStock = item.stock > 0;
-    return `<div class="wi">
+    return `<div class="wi ${inStock ? '' : 'out-stock'}">
       ${item.image_url
         ? `<img class="wi-img" src="${item.image_url}" alt="" onerror="this.outerHTML='<div class=wi-img-ph>${item.cat_emoji||''}</div>'">`
         : `<div class="wi-img-ph">${item.cat_emoji||''}</div>`}
@@ -3054,7 +3244,7 @@ function renderWish() {
           <span class="wi-status ${inStock?'in':'out'}">${inStock?'✓ В наличии':'✗ Нет'}</span>
           <div style="display:flex;gap:6px">
             ${inStock ? `<button class="wi-btn buy" onclick="window.addWishToCart('${item.id}')">В корзину</button>` : ''}
-            <button class="wi-btn del" onclick="window.toggleWish('${item.id}')">✕</button>
+            <button class="wi-btn del" onclick="event.stopPropagation(); window.removeWishItem('${item.id}')">✕</button>
           </div>
         </div>
       </div>
@@ -3106,7 +3296,7 @@ async function removeNotification(notifId) {
     await api(`/api/notifications/${notifId}`, { method: 'DELETE' });
     
     // Удаляем локально (ID теперь всегда серверные)
-    notifications = notifications.filter(n => n.id !== notifId);
+    notifications = notifications.filter(n => String(n.id) !== String(notifId));
     
     // Обновляем бейдж и рендер
     updateNotifBadge();
@@ -3221,7 +3411,7 @@ function renderNotifications() {
       if (e.target.classList.contains('notif-remove-btn')) {
         e.preventDefault();
         e.stopPropagation();
-        const notifId = parseInt(e.target.getAttribute('data-notif-id'));
+        const notifId = e.target.getAttribute('data-notif-id');
         await removeNotification(notifId);
       }
     });
@@ -3293,7 +3483,7 @@ async function checkout() {
     haptic('error');
     return;
   }
-  openCartConfirmSheet();
+  confirmCartPay();
 }
 
 function openCryptoBot() {} // legacy
@@ -3367,7 +3557,7 @@ async function loadProfile() {
     console.log('📊 Загружаем профиль...');
     const res = await api('/api/profile');
     console.log('📊 Ответ профиля:', res);
-    const { stats } = res;
+    const { stats, privacy } = res;
     console.log('📊 Stats:', stats);
     
     if (!stats) {
@@ -3376,7 +3566,7 @@ async function loadProfile() {
     }
 
     // Общая репутация
-    const total = Number(stats.total_deals || 0);
+    const total = Number(stats.total_reviews ?? stats.total_deals ?? 0);
     const pos   = Number(stats.total_positive || 0);
     const neg   = Number(stats.total_negative || 0);
     const pct = total > 0 ? Math.round(100 * pos / total) : 0;
@@ -3399,6 +3589,12 @@ async function loadProfile() {
     if (dealsCountEl) dealsCountEl.textContent = stats.total_deals || 0;
     const dealsAmountEl = document.getElementById('dealsAmount');
     if (dealsAmountEl) dealsAmountEl.textContent = Number(stats.total_deals_amount || 0).toFixed(2);
+
+    privacySettings = {
+      is_seller_anonymous: privacy?.is_seller_anonymous ?? true,
+      is_buyer_anonymous: privacy?.is_buyer_anonymous ?? true,
+    };
+    renderPrivacySettings();
   } catch (e) {
     console.error('Ошибка loadProfile:', e);
   }
@@ -3593,6 +3789,11 @@ function openListing(id, listingObj) {
   if (!curListing) return;
   const l = curListing;
   const rat = l.seller_rating;
+  const sellerDeals = Number(l.seller_deals_total || 0);
+  const sellerReviews = Number(l.seller_reviews_total || 0);
+  const sellerPositive = rat !== null && rat !== undefined ? `${Math.round(Number(rat))}% позит.` : 'Нет отзывов';
+  const regDate = l.seller_created_at ? new Date(l.seller_created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Не указана';
+  const sellerPublicName = l.seller_username ? '@' + l.seller_username : 'Продавец скрыт';
   const rCls = rat === null ? 'new' : Number(rat) >= 55 ? 'good' : 'bad';
   const timeText = l.avail_from
     ? `С ${l.avail_from.slice(0,5)} до ${l.avail_to.slice(0,5)} МСК`
@@ -3633,11 +3834,12 @@ function openListing(id, listingObj) {
     <div class="ld-seller-row">
       <div class="ld-seller-ava">${(l.seller_name||'?').charAt(0).toUpperCase()}</div>
       <div class="ld-seller-info">
-        <div class="ld-seller-name">Продавец скрыт</div>
-        <div class="ld-seller-sub">Контакты появятся после оплаты</div>
+        <div class="ld-seller-name">${sellerPublicName}</div>
+        <div class="ld-seller-sub">Регистрация: ${regDate}</div>
         <div class="ld-ratings">
-          <span class="seller-rating ${rCls}">${rat !== null ? `${rat}% позит.` : 'Новый'}</span>
-          <span class="seller-rating new">${l.seller_deals_total || 0} сделок</span>
+          <span class="seller-rating ${rCls}">${sellerPositive}</span>
+          <span class="seller-rating new">${sellerDeals} сделок</span>
+          <span class="seller-rating new">${sellerReviews} отзывов</span>
         </div>
       </div>
     </div>
@@ -3948,9 +4150,10 @@ async function loadDealsPage() {
       const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
       const canSendItem = isSeller && d.status === 'accepted';            // Продавец отправляет
       const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
+      const canDisputeAcceptedBuyer = isBuyer && d.status === 'accepted'; // Покупатель спор после принятия
       const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
       const canDisputeSeller = isSeller && d.status === 'waiting_confirmation'; // Продавец спор (после отправки)
-      const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller); // Отменить
+      const canCancel   = (d.status === 'frozen' && (isBuyer || isSeller)) || (d.status === 'accepted' && isSeller); // Отменить
       const canLeaveReview = (d.status === 'completed' || d.status === 'auto_completed') && 
                             ((isBuyer && !d.buyer_review_score) || (isSeller && !d.seller_review_score)); // Можно оставить отзыв
 
@@ -3988,6 +4191,7 @@ async function loadDealsPage() {
         (canSendItem ? '<button class="deal-btn confirm" onclick="sendItem(' + d.id + ')">Отправил товар</button>' : '') +
         // СТАТУС: waiting_confirmation (ждём подтверждения покупателя)
         (canReceive  ? '<button class="deal-btn confirm" onclick="receiveDeal(' + d.id + ')">Получил товар</button>' : '') +
+        (canDisputeAcceptedBuyer ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
         (canDispute  ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
         (canDisputeSeller ? '<button class="deal-btn dispute" onclick="openDisputeDeal(' + d.id + ')">Открыть спор</button>' : '') +
         // Отмена (для frozen и accepted статусов)
@@ -4774,10 +4978,10 @@ function renderCart() {
             </div>
           </div>
           ${item.image_url
-            ? `<img class="ci-img" src="${item.image_url}" alt="" onerror="this.style.display='none'">`
-            : `<div class="ci-img-ph">${item.cat_emoji||'📦'}</div>`}
+            ? `<img class="ci-img" data-open-id="${safeId}" style="cursor:pointer" src="${item.image_url}" alt="" onerror="this.style.display='none'">`
+            : `<div class="ci-img-ph" data-open-id="${safeId}" style="cursor:pointer">${item.cat_emoji||'📦'}</div>`}
           <div class="ci-body">
-            <div>
+            <div data-open-id="${safeId}" style="cursor:pointer">
               <div class="ci-name">${item.name}</div>
               <div style="font-size:11px;color:var(--sub);margin-top:4px">В наличии: ${item.stock || 1} шт</div>
             </div>
@@ -4800,7 +5004,7 @@ function renderCart() {
         </div>`;
       }).join('')}
     </div>
-    <button class="pay-btn-main" id="payBtn" onclick="openCartConfirmSheet()" style="margin:18px 18px 0;width:calc(100% - 36px)">
+    <button class="pay-btn-main" id="payBtn" onclick="confirmCartPay()" style="margin:18px 18px 0;width:calc(100% - 36px)">
       Оплатить выбранное
     </button>
     <div style="height:20px"></div>
@@ -4833,6 +5037,16 @@ function renderCart() {
       renderCart();
     });
   });
+  // Делегирование: открыть карточку товара
+  el.querySelectorAll('[data-open-id]').forEach(node => {
+    node.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = node.dataset.openId;
+      const item = cart.find(x => String(x.id) === String(id));
+      if (!item) return;
+      openProduct(item.id);
+    });
+  });
 
   loadCartBalance();
 }
@@ -4851,20 +5065,8 @@ function selectCartItem(id) {
 }
 
 function openCartConfirmSheet() {
-  if (selectedCartItemId === null) { toast('⚠️ Выберите товар'); return; }
-  const item = cart.find(x => String(x.id) === String(selectedCartItemId));
-  if (!item) return;
-
-  const total = (item.price * item.qty).toFixed(2);
-
-  document.getElementById('cartConfirmItemName').textContent = item.name;
-  document.getElementById('cartConfirmQty').textContent = `${item.qty} шт`;
-  document.getElementById('cartConfirmAmount').textContent = total;
-  document.getElementById('cartConfirmAgree').checked = false;
-
-  document.getElementById('cartConfirmBackdrop').classList.add('open');
-  document.getElementById('cartConfirmSheet').classList.add('open');
-  haptic('medium');
+  // Legacy handler: confirmation sheet removed, pay immediately
+  confirmCartPay();
 }
 
 function closeCartConfirmSheet() {
@@ -4879,21 +5081,16 @@ async function confirmCartPay() {
     haptic('error');
     return;
   }
-  
-  // Проверка 2: согласие с условиями
-  if (!document.getElementById('cartConfirmAgree').checked) {
-    toast('⚠️ Подтвердите согласие с условиями'); haptic('error'); return;
-  }
-  
-  // Проверка 3: товар выбран
+
+  // Проверка 2: товар выбран
   const item = cart.find(x => String(x.id) === String(selectedCartItemId));
   if (!item) {
     toast('⚠️ Выберите товар');
     haptic('error');
     return;
   }
-  
-  // Проверка 4: количество больше 0
+
+  // Проверка 3: количество больше 0
   if (!item.qty || item.qty <= 0) {
     toast('⚠️ Выберите корректное количество товара');
     haptic('error');
@@ -4906,13 +5103,15 @@ async function confirmCartPay() {
     const activeDeals = deals.filter(d => ['frozen','accepted','waiting_confirmation','dispute'].includes(d.status));
     if (activeDeals.length >= 3) {
       toast('❌ Максимум 3 активные сделки одновременно');
-      closeCartConfirmSheet();
       return;
     }
   } catch {}
 
-  const btn = document.getElementById('cartConfirmPayBtn');
-  btn.disabled = true; btn.textContent = 'Замораживаем средства...';
+  const btn = document.getElementById('payBtn') || document.getElementById('cartConfirmPayBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Замораживаем средства...';
+  }
 
   try {
     const listing_id = item.listing_id;
@@ -4928,7 +5127,6 @@ async function confirmCartPay() {
     selectedCartItemId = null;
     saveCart(); syncBadge(); renderCart();
 
-    closeCartConfirmSheet();
     toast('✅ Средства заморожены! Продавец уведомлён.');
     haptic('success');
     
@@ -4944,8 +5142,10 @@ async function confirmCartPay() {
     toast(`❌ ${e.message}`);
     haptic('error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = '❄️ Заморозить и оплатить';
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Оплатить выбранное';
+    }
   }
 }
 
@@ -5030,39 +5230,100 @@ async function openDealHistory() {
   el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
   try {
     const { deals } = await api('/api/deals/my');
-    // История = всё кроме активных (frozen, accepted, waiting_confirmation)
-    const history = (deals || []).filter(d => !['frozen', 'accepted', 'waiting_confirmation'].includes(d.status));
+    // История = закрытые сделки
+    const closedStatuses = ['completed', 'auto_completed', 'cancelled', 'refunded'];
+    const history = (deals || [])
+      .filter(d => closedStatuses.includes(d.status))
+      .sort((a, b) => new Date(b.completed_at || b.created_at) - new Date(a.completed_at || a.created_at));
+
     if (!history.length) {
       el.innerHTML = '<div class="empty"><div class="empty-ttl">История пуста</div><div class="empty-sub">Завершённые и отменённые сделки появятся здесь</div></div>';
       return;
     }
     const statusMap = {
-      completed: '✅ Завершена',
-      cancelled: '❌ Отменена',
-      dispute: '⚠️ Спор',
-      refunded: '↩️ Возврат',
-      auto_completed: '✅ Авто-завершена'
+      completed: 'Завершена',
+      cancelled: 'Отменена',
+      refunded: 'Возврат',
+      auto_completed: 'Авто-завершена'
     };
-    el.innerHTML = history.map(d => {
+
+    const completedCount = history.filter(d => d.status === 'completed' || d.status === 'auto_completed').length;
+    const cancelledCount = history.filter(d => d.status === 'cancelled').length;
+    const refundedCount = history.filter(d => d.status === 'refunded').length;
+
+    window._dealHistoryData = history;
+    window._dealHistoryStatusMap = statusMap;
+    window._dealHistoryFilter = 'all';
+
+    el.innerHTML =
+      `<div class="dh-summary">
+        <div class="dh-chip"><div class="v">${history.length}</div><div class="l">Всего</div></div>
+        <div class="dh-chip"><div class="v">${completedCount}</div><div class="l">Завершено</div></div>
+        <div class="dh-chip"><div class="v">${cancelledCount + refundedCount}</div><div class="l">Отмен/возвр</div></div>
+      </div>
+      <div class="dh-filters">
+        <button class="dh-filter-btn on" id="dh-filter-all" onclick="setDealHistoryFilter('all')">Все</button>
+        <button class="dh-filter-btn" id="dh-filter-completed" onclick="setDealHistoryFilter('completed')">Завершенные</button>
+        <button class="dh-filter-btn" id="dh-filter-cancelled" onclick="setDealHistoryFilter('cancelled')">Отмененные</button>
+        <button class="dh-filter-btn" id="dh-filter-refunded" onclick="setDealHistoryFilter('refunded')">Возвраты</button>
+      </div>
+      <div id="dealHistoryCards"></div>`;
+
+    renderDealHistoryCards();
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">${e.message}</div>`;
+  }
+}
+
+function setDealHistoryFilter(filter) {
+  window._dealHistoryFilter = filter;
+  document.querySelectorAll('.dh-filter-btn').forEach(btn => btn.classList.remove('on'));
+  const active = document.getElementById('dh-filter-' + filter);
+  if (active) active.classList.add('on');
+  renderDealHistoryCards();
+}
+
+function renderDealHistoryCards() {
+  const listEl = document.getElementById('dealHistoryCards');
+  const all = window._dealHistoryData || [];
+  const statusMap = window._dealHistoryStatusMap || {};
+  const filter = window._dealHistoryFilter || 'all';
+  if (!listEl) return;
+
+  const filtered = all.filter(d => {
+    if (filter === 'all') return true;
+    if (filter === 'completed') return d.status === 'completed' || d.status === 'auto_completed';
+    if (filter === 'cancelled') return d.status === 'cancelled';
+    if (filter === 'refunded') return d.status === 'refunded';
+    return true;
+  });
+
+  if (!filtered.length) {
+    listEl.innerHTML = '<div class="empty" style="padding:32px 12px"><div class="empty-ttl" style="font-size:16px">Ничего не найдено</div><div class="empty-sub">По выбранному фильтру сделок нет</div></div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(d => {
       const isBuyer = String(d.buyer_id) === String(TG_USER.id);
-      const party = isBuyer ? 'Продавец: @' + (d.seller_username || 'скрыт') : 'Покупатель: @' + (d.buyer_username || 'скрыт');
+      const party = isBuyer ? 'Продавец' : 'Покупатель';
+      const partyName = isBuyer ? (d.seller_username || 'скрыт') : (d.buyer_username || 'скрыт');
       const statusLabel = statusMap[d.status] || d.status;
-      const date = new Date(d.created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
-      return `<div class="deal-card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
-          <div><div style="font-size:14px;font-weight:700;color:var(--text)">${d.listing_title || 'Товар'}</div></div>
-          <div style="font-size:12px;color:var(--gold)">$${Number(d.amount).toFixed(2)}</div>
+      const date = new Date(d.completed_at || d.created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: '2-digit' });
+      return `<div class="dh-card">
+        <div class="dh-top">
+          <div class="dh-title">${d.listing_title || 'Товар'}</div>
+          <div class="dh-amount">$${Number(d.amount || 0).toFixed(2)}</div>
         </div>
-        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${party}</div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)">
-          <span>${statusLabel}</span>
+        <div class="dh-meta">
+          <span>${party}: @${partyName}</span>
+          <span>#${d.id}</span>
+        </div>
+        <div class="dh-foot">
+          <span class="dh-badge ${d.status}">${statusLabel}</span>
           <span>${date}</span>
         </div>
       </div>`;
     }).join('');
-  } catch (e) {
-    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">❌ ${e.message}</div>`;
-  }
 }
 
 // ── MY REVIEWS ────────────────────────────────────────────
