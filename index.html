@@ -2789,7 +2789,7 @@ function onSearch(v) {
 let carouselImgs = [], carouselIdx = 0, lbImgs = [], lbIdx = 0;
 let touchStartX = 0, touchStartY = 0;
 
-function openProduct(id) {
+async function openProduct(id) {
   const p = allProducts.find(x => x.id === id);
   if (!p) return;
 
