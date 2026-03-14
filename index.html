@@ -2384,7 +2384,7 @@ body::after {
 /* ══════════════════════════════════════════
    RESPONSIVE BUTTONS (auto-fit for screens)
 ══════════════════════════════════════════ */
-button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.ld-fs-close):not(.create-close):not(.notif-remove-btn):not(.ld-expand-btn):not(#chatAttachPhotoBtn):not(#chatAttachFileBtn) {
+button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.ld-fs-close):not(.create-close):not(.notif-remove-btn):not(.ld-expand-btn):not(#chatAttachPhotoBtn):not(#chatAttachFileBtn):not(.wish-btn) {
   min-height: clamp(36px, 5.6vw, 50px);
   max-width: 100%;
   padding: clamp(8px, 2.2vw, 14px) clamp(10px, 3.6vw, 16px) !important;
@@ -2392,6 +2392,11 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
   line-height: 1.2;
   white-space: normal;
   text-wrap: balance;
+}
+
+.wish-btn {
+  min-height: 0 !important;
+  padding: 0 !important;
 }
 
 .balance-actions,
@@ -3543,7 +3548,9 @@ function getVisible() {
     const q = searchQ.toLowerCase();
     list = list.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q)
+      (p.description || '').toLowerCase().includes(q) ||
+      (p.article || '').toLowerCase().includes(q) ||
+      String(p.listing_id || '').toLowerCase().includes(q)
     );
   }
 
