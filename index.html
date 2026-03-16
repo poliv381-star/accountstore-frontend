@@ -2885,8 +2885,8 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
         <div class="ta-chip" onclick="setWithdrawAmount(50)">$50</div>
         <div class="ta-chip" onclick="setWithdrawAmount(100)">$100</div>
       </div>
-      <input class="topup-input" id="withdrawInput" type="number" min="1" placeholder="0.00" oninput="clearWithdrawChips()">
-      <div style="font-size:11px;color:var(--dim);margin-bottom:16px">Минимум $1 · Выплата через CryptoBot</div>
+      <input class="topup-input" id="withdrawInput" type="number" min="2" placeholder="0.00" oninput="clearWithdrawChips()">
+      <div style="font-size:11px;color:var(--dim);margin-bottom:16px">Минимум $2 · Выплата через CryptoBot</div>
       <button class="pay-btn-main" onclick="doWithdraw()" id="withdrawBtn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
           <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -4450,7 +4450,7 @@ function setWithdrawAmount(n) {
   }
   async function doWithdraw() {
     const amount = Number(document.getElementById('withdrawInput').value);
-    if (!amount || amount < 1) { toast('Введите сумму от $1'); return; }
+    if (!amount || amount < 2) { toast('⚠️ Минимальная сумма вывода: $2'); return; }
     const btn = document.getElementById('withdrawBtn');
     btn.disabled = true; btn.textContent = 'Выводим...';
     try {
