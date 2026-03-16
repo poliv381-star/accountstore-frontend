@@ -891,6 +891,27 @@ body::after {
 }
 .pay-btn-main:disabled { opacity:.45; cursor:not-allowed; transform:none; }
 
+/* Центрирование ключевых кнопок (мобилка) */
+#withdrawBtn,
+#topupBtn,
+#submitListingBtn,
+#submitReviewBtn {
+  width: min(100%, 560px);
+  margin: 12px auto 0 !important;
+  text-align: center;
+  justify-content: center;
+}
+
+@media (max-width: 420px) {
+  #withdrawBtn,
+  #topupBtn,
+  #submitListingBtn,
+  #submitReviewBtn {
+    width: 100%;
+    margin: 10px auto 0 !important;
+  }
+}
+
 .trust-row-cart {
   margin:10px 18px 0;
   display:flex; justify-content:center; align-items:center;
@@ -2454,7 +2475,7 @@ body::after {
 /* ══════════════════════════════════════════
    RESPONSIVE BUTTONS (auto-fit for screens)
 ══════════════════════════════════════════ */
-button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.ld-fs-close):not(.create-close):not(.notif-remove-btn):not(.ld-expand-btn):not(#chatAttachPhotoBtn):not(#chatAttachFileBtn):not(.wish-btn) {
+button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.ld-fs-close):not(.create-close):not(.notif-remove-btn):not(.ld-expand-btn):not(#chatAttachPhotoBtn):not(#chatAttachFileBtn):not(#chatAttachBtn):not(.wish-btn) {
   min-height: clamp(36px, 5.6vw, 50px);
   max-width: 100%;
   padding: clamp(8px, 2.2vw, 14px) clamp(10px, 3.6vw, 16px) !important;
@@ -3243,16 +3264,14 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
           <button onclick="clearChatFile()" style="position:absolute;top:6px;right:6px;width:20px;height:20px;background:rgba(0,0,0,0.55);border:none;border-radius:50%;color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">✕</button>
         </div>
         <!-- Input для текста и кнопка загрузки -->
-        <div style="display:flex;gap:8px;align-items:center">
+        <div style="display:flex;gap:8px;align-items:center;min-width:0">
           <input id="chatInput" type="text" placeholder="Напишите сообщение..." style="flex:1;padding:11px 12px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px">
-          <!-- Скрытый input для файлов -->
-          <input id="chatPhotoInput" type="file" accept="image/*" style="display:none" onchange="handleChatPhotoSelect(event)">
-          <input id="chatFileInput" type="file" style="display:none" onchange="handleChatFileSelect(event)">
-          <button id="chatAttachPhotoBtn" onclick="document.getElementById('chatPhotoInput').click()" style="padding:10px 11px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px">📷</button>
-          <button id="chatAttachFileBtn" onclick="document.getElementById('chatFileInput').click()" style="padding:10px 11px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px">📎</button>
+          <!-- Единый input для вложений (фото + файл) -->
+          <input id="chatAttachInput" type="file" style="display:none" onchange="handleChatAttachSelect(event)">
+          <button id="chatAttachBtn" onclick="document.getElementById('chatAttachInput').click()" style="padding:10px 11px;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px;white-space:nowrap;flex-shrink:0">📎</button>
         </div>
       </div>
-      <button id="chatSendBtn" onclick="sendDealMessage()" style="padding:11px 16px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:10px;color:#000;font-weight:800;cursor:pointer;font-family:'Manrope',sans-serif">Отправить</button>
+      <button id="chatSendBtn" onclick="sendDealMessage()" style="padding:11px 13px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:10px;color:#000;font-weight:800;cursor:pointer;font-family:'Manrope',sans-serif;white-space:nowrap;flex-shrink:0">Отправить</button>
     </div>
   </div>
 </div>
@@ -4707,6 +4726,14 @@ function openListing(id, listingObj) {
     })
     .slice(0, 8);
 
+  const similarIds = new Set(similarProducts.map(p => Number(p.listing_id || p.listing?.id || 0)));
+  const sellerProducts = (allProducts || [])
+    .filter(p => p?.listing && Number(p.listing.id) !== Number(l.id))
+    .filter(p => Number(p.listing?.seller_id) === Number(l.seller_id))
+    .filter(p => !similarIds.has(Number(p.listing_id || p.listing?.id || 0)))
+    .sort((a, b) => Number(b.listing_id || 0) - Number(a.listing_id || 0))
+    .slice(0, 8);
+
   // Карусель фото — пробуем все возможные источники
   let limgs = [];
   try {
@@ -4798,6 +4825,29 @@ function openListing(id, listingObj) {
         <div class="ld-rel-title">Похожие товары</div>
         <div class="ld-rel-row">
           ${similarProducts.map(p => {
+            const mainImg = p.images && p.images.length ? p.images[0] : p.image_url;
+            const pStock = Number(p.stock || 0);
+            const ljson = JSON.stringify(p.listing).replace(/"/g, '&quot;');
+            return `<div class="ld-rel-card" onclick="openListing(${p.listing_id}, ${ljson})">
+              ${mainImg ? `<img class="ld-rel-img" src="${mainImg}" alt="${p.name}">` : `<div class="ld-rel-ph">${p.cat_emoji || ''}</div>`}
+              <div class="ld-rel-body">
+                <div class="ld-rel-name">${p.name}</div>
+                <div class="ld-rel-meta">
+                  <div class="ld-rel-price">$${Number(p.price).toFixed(2)}</div>
+                  <div class="ld-rel-stock">${pStock > 0 ? `${pStock} шт` : 'нет'}</div>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    ${sellerProducts.length ? `
+      <div class="ld-rel-wrap">
+        <div class="ld-rel-title">Товары от этого продавца</div>
+        <div class="ld-rel-row">
+          ${sellerProducts.map(p => {
             const mainImg = p.images && p.images.length ? p.images[0] : p.image_url;
             const pStock = Number(p.stock || 0);
             const ljson = JSON.stringify(p.listing).replace(/"/g, '&quot;');
@@ -5673,14 +5723,12 @@ async function openDealChat(dealId) {
     if (isCompleted) {
       document.getElementById('chatMessages').innerHTML = `<div style="text-align:center;color:var(--dim);padding:40px"><div style="font-size:36px;margin-bottom:12px"></div><div style="font-size:14px">Чат закрыт</div><div style="font-size:12px;margin-top:6px;color:var(--dim)">Сделка завершена - история сообщений удалена</div></div>`;
       const chatInput = document.getElementById('chatInput');
-      const photoBtn = document.getElementById('chatAttachPhotoBtn');
-      const fileBtn = document.getElementById('chatAttachFileBtn');
+      const attachBtn = document.getElementById('chatAttachBtn');
       const chatSendBtn = document.getElementById('chatSendBtn');
       chatInput.disabled = true;
       chatInput.placeholder = 'Чат удален';
       chatInput.style.opacity = '0.3';
-      if (photoBtn) photoBtn.disabled = true;
-      if (fileBtn) fileBtn.disabled = true;
+      if (attachBtn) attachBtn.disabled = true;
       if (chatSendBtn) chatSendBtn.style.display = 'none';
       return;
     }
@@ -5691,16 +5739,14 @@ async function openDealChat(dealId) {
     // Включаем чат для активной сделки
     const chatInput = document.getElementById('chatInput');
     const chatSendBtn = document.getElementById('chatSendBtn');
-    const photoBtn = document.getElementById('chatAttachPhotoBtn');
-    const fileBtn = document.getElementById('chatAttachFileBtn');
+    const attachBtn = document.getElementById('chatAttachBtn');
     
     chatInput.disabled = false;
     chatInput.placeholder = 'Напишите сообщение...';
     chatInput.style.opacity = '1';
     chatInput.style.cursor = 'text';
     if (chatSendBtn) { chatSendBtn.disabled = false; chatSendBtn.style.display = 'block'; }
-    if (photoBtn) photoBtn.disabled = false;
-    if (fileBtn) fileBtn.disabled = false;
+    if (attachBtn) attachBtn.disabled = false;
     
     await renderChatMessages(messages);
   } catch (e) {
@@ -5712,6 +5758,48 @@ async function openDealChat(dealId) {
 // Глобальная переменная для хранения выбранного фото
 let chatSelectedPhoto = null;
 let chatSelectedFile = null;
+
+function handleChatAttachSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Фото
+  if ((file.type || '').startsWith('image/')) {
+    if (file.size > 5 * 1024 * 1024) {
+      toast('❌ Фото слишком большое (макс 5MB)');
+      const input = document.getElementById('chatAttachInput');
+      if (input) input.value = '';
+      return;
+    }
+
+    chatSelectedPhoto = file;
+    clearChatFile();
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = document.getElementById('chatPhotoPreview');
+      const previewImg = document.getElementById('chatPhotoPreviewImg');
+      previewImg.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  // Файл
+  if (file.size > 10 * 1024 * 1024) {
+    toast('❌ Файл слишком большой (макс 10MB)');
+    const input = document.getElementById('chatAttachInput');
+    if (input) input.value = '';
+    return;
+  }
+
+  chatSelectedFile = file;
+  clearChatPhoto();
+  document.getElementById('chatFileName').textContent = file.name || 'Вложение';
+  document.getElementById('chatFileMeta').textContent = `${file.type || 'файл'} · ${formatChatFileSize(file.size)}`;
+  document.getElementById('chatFilePreview').style.display = 'block';
+}
 
 // Функция для обработки выбора фото
 function handleChatPhotoSelect(event) {
@@ -5727,7 +5815,8 @@ function handleChatPhotoSelect(event) {
   // Проверяем размер (5MB max)
   if (file.size > 5 * 1024 * 1024) {
     toast('❌ Файл слишком большой (макс 5MB)');
-    document.getElementById('chatPhotoInput').value = '';
+    const input = document.getElementById('chatAttachInput');
+    if (input) input.value = '';
     return;
   }
   
@@ -5748,7 +5837,8 @@ function handleChatPhotoSelect(event) {
 // Функция для очистки выбранного фото
 function clearChatPhoto() {
   chatSelectedPhoto = null;
-  document.getElementById('chatPhotoInput').value = '';
+  const attachInput = document.getElementById('chatAttachInput');
+  if (attachInput) attachInput.value = '';
   document.getElementById('chatPhotoPreview').style.display = 'none';
   document.getElementById('chatPhotoPreviewImg').src = '';
 }
@@ -5759,7 +5849,8 @@ function handleChatFileSelect(event) {
 
   if (file.size > 10 * 1024 * 1024) {
     toast('❌ Файл слишком большой (макс 10MB)');
-    document.getElementById('chatFileInput').value = '';
+    const input = document.getElementById('chatAttachInput');
+    if (input) input.value = '';
     return;
   }
 
@@ -5773,7 +5864,7 @@ function handleChatFileSelect(event) {
 
 function clearChatFile() {
   chatSelectedFile = null;
-  const input = document.getElementById('chatFileInput');
+  const input = document.getElementById('chatAttachInput');
   if (input) input.value = '';
   const preview = document.getElementById('chatFilePreview');
   if (preview) preview.style.display = 'none';
