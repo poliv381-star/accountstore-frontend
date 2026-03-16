@@ -2582,7 +2582,7 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     <input class="search" type="text" id="searchInput" placeholder="🔍  Поиск по названию или артикулу..." oninput="onSearch(this.value)">
     <button id="priceFilterBtn" onclick="openOverlay('priceFilterOverlay')" style="flex-shrink:0;padding:0 14px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;white-space:nowrap">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-      <span id="priceFilterLabel">Цена</span>
+      <span id="priceFilterLabel">Фильтр</span>
     </button>
   </div>
 
@@ -2591,7 +2591,7 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 28px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:4px">Фильтр цены</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">Фильтр</div>
       <div style="font-size:13px;color:var(--sub);margin-bottom:20px">Укажите диапазон цен в USDT</div>
       <div style="display:flex;gap:12px;margin-bottom:20px">
         <div style="flex:1">
@@ -2602,13 +2602,6 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
           <div style="font-size:11px;color:var(--dim);margin-bottom:6px">ДО</div>
           <input id="priceMaxInput" type="number" min="0" placeholder="любая" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;box-sizing:border-box">
         </div>
-      </div>
-      <div style="font-size:12px;color:var(--dim);margin-bottom:16px">Быстрые пресеты:</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
-        <button onclick="setPricePreset(0,10)" class="ta-chip">$0 — $10</button>
-        <button onclick="setPricePreset(10,50)" class="ta-chip">$10 — $50</button>
-        <button onclick="setPricePreset(50,200)" class="ta-chip">$50 — $200</button>
-        <button onclick="setPricePreset(200,0)" class="ta-chip">$200+</button>
       </div>
       <div style="display:flex;gap:10px">
         <button onclick="resetPriceFilter()" style="flex:1;padding:13px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--sub);font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Сбросить</button>
@@ -3567,13 +3560,6 @@ async function loadListings() {
   renderGrid();
 }
 
-function setPricePreset(min, max) {
-  document.getElementById('priceMinInput').value = min || '';
-  document.getElementById('priceMaxInput').value = max || '';
-  document.querySelectorAll('#priceFilterOverlay .ta-chip').forEach(c => c.classList.remove('on'));
-  event.target.classList.add('on');
-}
-
 function applyPriceFilter() {
   priceMin = Number(document.getElementById('priceMinInput').value) || 0;
   priceMax = Number(document.getElementById('priceMaxInput').value) || 0;
@@ -3586,7 +3572,6 @@ function resetPriceFilter() {
   priceMin = 0; priceMax = 0; priceSort = '';
   document.getElementById('priceMinInput').value = '';
   document.getElementById('priceMaxInput').value = '';
-  document.querySelectorAll('#priceFilterOverlay .ta-chip').forEach(c => c.classList.remove('on'));
   updatePriceFilterLabel();
   closeOverlay('priceFilterOverlay');
   loadListings();
@@ -3604,7 +3589,7 @@ function updatePriceFilterLabel() {
     btn.style.borderColor = 'var(--gold)';
     btn.style.color = 'var(--gold)';
   } else {
-    lbl.textContent = 'Цена';
+    lbl.textContent = 'Фильтр';
     btn.style.borderColor = 'rgba(255,255,255,0.1)';
     btn.style.color = 'var(--text)';
   }
@@ -4982,11 +4967,24 @@ function openListing(id, listingObj) {
         <div style="font-size:13px">В наличии: <b>${l.quantity || 1} шт</b></div>
       </div>
       ${l.terms ? `
-        <div style="border-top:1px solid var(--border);padding-top:14px">
+        <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
           <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Условия сделки</div>
           <div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word">${l.terms}</div>
         </div>
       ` : ''}
+      
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">О товаре</div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:4px">Опубликовано: <b>${l.created_at ? (() => {
+          const d = new Date(l.created_at);
+          const day = String(d.getDate()).padStart(2, '0');
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const year = d.getFullYear();
+          const hours = String(d.getHours()).padStart(2, '0');
+          const mins = String(d.getMinutes()).padStart(2, '0');
+          return day + '.' + month + '.' + year + ', ' + hours + ':' + mins;
+        })() : 'Не указано'}</b></div>
+      </div>
     </div>
     ${isMine
       ? `<div style="text-align:center;padding:12px;color:var(--sub);font-size:13px;background:var(--s2);border-radius:12px">Это ваше объявление</div>`
@@ -5371,10 +5369,22 @@ async function loadDealsPage() {
       const party = isBuyer
         ? 'Продавец: @' + (d.seller_username || 'скрыт')
         : 'Покупатель: @' + (d.buyer_username || 'скрыт');
+      const startedAt = d.created_at
+        ? new Date(d.created_at).toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        : '—';
 
       return '<div class="deal-card">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
-          '<div style="font-size:13px;font-weight:800;color:var(--sub)">#' + d.id + ' · ' + (isBuyer ? 'Покупка' : 'Продажа') + '</div>' +
+          '<div>' +
+            '<div style="font-size:13px;font-weight:800;color:var(--sub)">#' + d.id + ' · ' + (isBuyer ? 'Покупка' : 'Продажа') + '</div>' +
+            '<div style="font-size:11px;color:var(--dim);margin-top:2px">Начало: ' + startedAt + '</div>' +
+          '</div>' +
           '<div style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;background:' + color + '22;color:' + color + '">' + ico + ' ' + label + '</div>' +
         '</div>' +
         statusInfo +
@@ -5472,6 +5482,7 @@ async function openMyListings() {
         <div>
           <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:4px">${l.title}</div>
           <div style="font-size:14px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700">$${Number(l.price).toFixed(2)}</div>
+          <div style="font-size:12px;color:${Number(l.days_left) <= 3 ? '#ffb74d' : 'var(--dim)'};margin-top:4px">Срок жизни: ${Number(l.days_left) <= 0 ? 'истёк' : `${Number(l.days_left)} дн. осталось`}</div>
         </div>
         <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(232,200,74,.1);border-radius:8px">
           <div style="font-size:12px;font-weight:700;color:${l.status === 'active' ? 'var(--green)' : l.status === 'paused' ? 'var(--dim)' : 'var(--green)'}">${sMap[l.status]}</div>
