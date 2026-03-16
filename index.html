@@ -223,6 +223,9 @@ body::after {
 /* ── SEARCH ── */
 .search-row {
   padding: 0 18px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .search {
@@ -2577,7 +2580,43 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
 
   <div class="search-row">
     <input class="search" type="text" id="searchInput" placeholder="🔍  Поиск по названию или артикулу..." oninput="onSearch(this.value)">
+    <button id="priceFilterBtn" onclick="openOverlay('priceFilterOverlay')" style="flex-shrink:0;padding:0 14px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;white-space:nowrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      <span id="priceFilterLabel">Цена</span>
+    </button>
   </div>
+
+<!-- Оверлей фильтра по цене -->
+<div class="overlay" id="priceFilterOverlay" onclick="closeOverlayByBg(event,'priceFilterOverlay')">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 28px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">Фильтр цены</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:20px">Укажите диапазон цен в USDT</div>
+      <div style="display:flex;gap:12px;margin-bottom:20px">
+        <div style="flex:1">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:6px">ОТ</div>
+          <input id="priceMinInput" type="number" min="0" placeholder="0" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;box-sizing:border-box">
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:6px">ДО</div>
+          <input id="priceMaxInput" type="number" min="0" placeholder="любая" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;box-sizing:border-box">
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:16px">Быстрые пресеты:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
+        <button onclick="setPricePreset(0,10)" class="ta-chip">$0 — $10</button>
+        <button onclick="setPricePreset(10,50)" class="ta-chip">$10 — $50</button>
+        <button onclick="setPricePreset(50,200)" class="ta-chip">$50 — $200</button>
+        <button onclick="setPricePreset(200,0)" class="ta-chip">$200+</button>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="resetPriceFilter()" style="flex:1;padding:13px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--sub);font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Сбросить</button>
+        <button onclick="applyPriceFilter()" style="flex:2;padding:13px;border-radius:12px;border:none;background:var(--gold);color:#000;font-family:'Manrope',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Применить</button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="cats" id="catsRow">
     <div class="cat on" onclick="filterCat('all',this)">Все</div>
@@ -3503,6 +3542,8 @@ async function setPrivacyChoice(kind, value) {
 }
 
 // Загрузка товаров с фильтрацией по категории и поиску
+let priceMin = 0, priceMax = 0, priceSort = '';
+
 async function loadListings() {
   let url = '/api/listings';
   const params = [];
@@ -3510,26 +3551,63 @@ async function loadListings() {
   if (filterSlug !== 'all') {
     params.push(`category=${encodeURIComponent(filterSlug)}`);
   }
-
   if (searchQ) {
     params.push(`search=${encodeURIComponent(searchQ)}`);
   }
+  if (priceMin > 0) params.push(`price_min=${priceMin}`);
+  if (priceMax > 0) params.push(`price_max=${priceMax}`);
+  if (priceSort)   params.push(`sort=${priceSort}`);
 
-  if (params.length) {
-    url += '?' + params.join('&');
-  }
+  if (params.length) url += '?' + params.join('&');
 
   const { listings } = await api(url).catch(() => ({ listings: [] }));
-
   allProducts = (listings || []).map(mapListingToProduct);
-
-  // Сохраняем ID первого (самого нового) объявления
-  if (allProducts.length > 0) {
-    lastListingId = allProducts[0].listing_id;
-  }
-
+  if (allProducts.length > 0) lastListingId = allProducts[0].listing_id;
   buildCats();
   renderGrid();
+}
+
+function setPricePreset(min, max) {
+  document.getElementById('priceMinInput').value = min || '';
+  document.getElementById('priceMaxInput').value = max || '';
+  document.querySelectorAll('#priceFilterOverlay .ta-chip').forEach(c => c.classList.remove('on'));
+  event.target.classList.add('on');
+}
+
+function applyPriceFilter() {
+  priceMin = Number(document.getElementById('priceMinInput').value) || 0;
+  priceMax = Number(document.getElementById('priceMaxInput').value) || 0;
+  updatePriceFilterLabel();
+  closeOverlay('priceFilterOverlay');
+  loadListings();
+}
+
+function resetPriceFilter() {
+  priceMin = 0; priceMax = 0; priceSort = '';
+  document.getElementById('priceMinInput').value = '';
+  document.getElementById('priceMaxInput').value = '';
+  document.querySelectorAll('#priceFilterOverlay .ta-chip').forEach(c => c.classList.remove('on'));
+  updatePriceFilterLabel();
+  closeOverlay('priceFilterOverlay');
+  loadListings();
+}
+
+function updatePriceFilterLabel() {
+  const btn = document.getElementById('priceFilterBtn');
+  const lbl = document.getElementById('priceFilterLabel');
+  if (!lbl) return;
+  const active = priceMin > 0 || priceMax > 0;
+  if (active) {
+    const from = priceMin > 0 ? `$${priceMin}` : '0';
+    const to   = priceMax > 0 ? `$${priceMax}` : '∞';
+    lbl.textContent = `${from}–${to}`;
+    btn.style.borderColor = 'var(--gold)';
+    btn.style.color = 'var(--gold)';
+  } else {
+    lbl.textContent = 'Цена';
+    btn.style.borderColor = 'rgba(255,255,255,0.1)';
+    btn.style.color = 'var(--text)';
+  }
 }
 
 // Проверка новых объявлений (без полной перерисовки)
@@ -4590,12 +4668,18 @@ function isTxPending(tx) {
   return (tx.type === 'topup' && tx.status === 'pending') || (tx.type === 'withdraw' && tx.status === 'pending');
 }
 
-function isTxWithdraw(tx) {
-  return tx.type === 'withdraw' || tx.type === 'withdraw_error';
+// Ожидание + ошибки
+function isTxPendingOrError(tx) {
+  return isTxPending(tx) || tx.status === 'failed' || tx.type === 'withdraw_error' || tx.type === 'topup_error';
 }
 
+// Списание = усп. выводы + payment (без ошибок и pending)
 function isTxOutgoing(tx) {
-  return !isTxIncoming(tx) && !isTxPending(tx);
+  return (tx.type === 'withdraw' && tx.status === 'completed') || tx.type === 'payment';
+}
+
+function isTxWithdraw(tx) {
+  return tx.type === 'withdraw' || tx.type === 'withdraw_error';
 }
 
 function setTxHistoryFilter(filter) {
@@ -4615,10 +4699,8 @@ function renderTxHistoryList() {
     filtered = filtered.filter(isTxIncoming);
   } else if (txHistoryFilter === 'outgoing') {
     filtered = filtered.filter(isTxOutgoing);
-  } else if (txHistoryFilter === 'withdraw') {
-    filtered = filtered.filter(isTxWithdraw);
   } else if (txHistoryFilter === 'pending') {
-    filtered = filtered.filter(isTxPending);
+    filtered = filtered.filter(isTxPendingOrError);
   }
 
   if (!filtered.length) {
@@ -4629,7 +4711,8 @@ function renderTxHistoryList() {
   listEl.innerHTML = filtered.map(tx => {
     const isIn = isTxIncoming(tx);
     const isPending = isTxPending(tx);
-    const kind = isIn ? 'in' : isPending ? 'pending' : 'out';
+    const isError = tx.status === 'failed' || tx.type === 'withdraw_error' || tx.type === 'topup_error';
+    const kind = isIn ? 'in' : (isPending || isError) ? 'pending' : 'out';
 
     let desc = tx.description;
     if (!desc) {
@@ -4651,14 +4734,14 @@ function renderTxHistoryList() {
       'deal_payout': 'Средства успешно зачислены на ваш баланс.',
       'refund': 'Средства возвращены после отмены или пересмотра сделки.',
       'payment': 'Сумма списана за покупку или оплату внутри сервиса.',
-      'withdraw': 'Запрошен вывод средств через CryptoBot.',
+      'withdraw': tx.status === 'failed' ? (tx.error_reason || 'Вывод не выполнен, средства возвращены.') : 'Запрошен вывод средств через CryptoBot.',
       'topup': tx.status === 'pending' ? 'Ожидаем оплату инвойса в CryptoBot.' : 'Баланс пополнен успешно.',
       'topup_error': 'Пополнение не было завершено.',
       'withdraw_error': 'Во время вывода произошла ошибка.'
     }[tx.type] || 'Операция обработана системой.';
 
-    const icon = isIn ? '↓' : isPending ? '•' : '↑';
-    const badge = isIn ? 'Поступление' : isPending ? 'В ожидании' : 'Списание';
+    const icon = isIn ? '↓' : (isPending || isError) ? '•' : '↑';
+    const badge = isIn ? 'Поступление' : isError ? 'Ошибка' : isPending ? 'В ожидании' : 'Списание';
     const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
 
     return `<div class="tx-card">
@@ -4693,13 +4776,12 @@ async function openTxHistory() {
     const incomingAmount = transactions
       .filter(isTxIncoming)
       .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+    // Списание = успешные выводы + траты на площадке (payment)
     const outgoingAmount = transactions
-      .filter(isTxOutgoing)
+      .filter(tx => (tx.type === 'withdraw' && tx.status === 'completed') || tx.type === 'payment')
       .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-    const withdrawAmount = transactions
-      .filter(tx => tx.type === 'withdraw')
-      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
-    const pendingCount = transactions.filter(isTxPending).length;
+    // Ожидание = pending ТРАНЗАКЦИИ + ошибки
+    const pendingAndErrorCount = transactions.filter(isTxPendingOrError).length;
 
     txHistoryData = transactions;
     txHistoryFilter = 'all';
@@ -4708,9 +4790,8 @@ async function openTxHistory() {
       <div class="tx-summary">
         <button type="button" class="tx-chip tx-chip-btn on" id="tx-chip-all" onclick="setTxHistoryFilter('all')"><div class="v">${transactions.length}</div><div class="l">Все</div></button>
         <button type="button" class="tx-chip tx-chip-btn" id="tx-chip-incoming" onclick="setTxHistoryFilter('incoming')"><div class="v">+$${incomingAmount.toFixed(2)}</div><div class="l">Поступления</div></button>
-        <button type="button" class="tx-chip tx-chip-btn" id="tx-chip-outgoing" onclick="setTxHistoryFilter('outgoing')"><div class="v">-$${outgoingAmount.toFixed(2)}</div><div class="l">Списания</div></button>
-        <button type="button" class="tx-chip tx-chip-btn" id="tx-chip-withdraw" onclick="setTxHistoryFilter('withdraw')"><div class="v">$${withdrawAmount.toFixed(2)}</div><div class="l">Общий вывод</div></button>
-        <button type="button" class="tx-chip tx-chip-btn" id="tx-chip-pending" onclick="setTxHistoryFilter('pending')"><div class="v">${pendingCount}</div><div class="l">В ожидании</div></button>
+        <button type="button" class="tx-chip tx-chip-btn" id="tx-chip-outgoing" onclick="setTxHistoryFilter('outgoing')"><div class="v">-$${outgoingAmount.toFixed(2)}</div><div class="l">Списание</div></button>
+        <button type="button" class="tx-chip tx-chip-btn" id="tx-chip-pending" onclick="setTxHistoryFilter('pending')"><div class="v">${pendingAndErrorCount}</div><div class="l">Ожидание</div></button>
       </div>
       <div class="tx-list" id="txCardsList"></div>`;
 
