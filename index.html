@@ -2115,6 +2115,76 @@ body::after {
 }
 .ld-dot.on { background: var(--gold); width: 16px; border-radius: 3px; }
 
+/* Похожие товары в карточке объявления */
+.ld-rel-wrap { margin-top: 12px; }
+.ld-rel-title {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.ld-rel-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.ld-rel-row::-webkit-scrollbar { display: none; }
+.ld-rel-card {
+  min-width: 170px;
+  max-width: 170px;
+  background: linear-gradient(135deg, rgba(19,19,24,.9), rgba(26,26,34,.72));
+  border: 1px solid rgba(232,200,74,.14);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.ld-rel-card:active { transform: scale(.98); }
+.ld-rel-img {
+  width: 100%;
+  height: 92px;
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+.ld-rel-ph {
+  width: 100%;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--s2);
+  font-size: 32px;
+}
+.ld-rel-body { padding: 9px 10px 10px; }
+.ld-rel-name {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--text);
+  min-height: 32px;
+}
+.ld-rel-meta {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.ld-rel-price {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.ld-rel-stock {
+  font-size: 10px;
+  color: var(--dim);
+}
+
 /* FULLSCREEN VIEWER */
 .ld-fullscreen {
   position: fixed; inset: 0; z-index: 9999;
@@ -4626,6 +4696,17 @@ function openListing(id, listingObj) {
     : 'Не указано';
   const isMine = TG_USER && String(l.seller_id) === String(TG_USER.id);
 
+  const similarProducts = (allProducts || [])
+    .filter(p => p?.listing && Number(p.listing.id) !== Number(l.id))
+    .filter(p => (l.category ? String(p.cat_slug || '').toLowerCase() === String(l.category).toLowerCase() : true))
+    .sort((a, b) => {
+      const scoreA = Number(recommendationScores[a.id] || a.recommendation_score || 0);
+      const scoreB = Number(recommendationScores[b.id] || b.recommendation_score || 0);
+      if (scoreB !== scoreA) return scoreB - scoreA;
+      return Number(b.listing_id || 0) - Number(a.listing_id || 0);
+    })
+    .slice(0, 8);
+
   // Карусель фото — пробуем все возможные источники
   let limgs = [];
   try {
@@ -4711,6 +4792,29 @@ function openListing(id, listingObj) {
             </svg>
           </button>
         </div>`}
+
+    ${similarProducts.length ? `
+      <div class="ld-rel-wrap">
+        <div class="ld-rel-title">Похожие товары</div>
+        <div class="ld-rel-row">
+          ${similarProducts.map(p => {
+            const mainImg = p.images && p.images.length ? p.images[0] : p.image_url;
+            const pStock = Number(p.stock || 0);
+            const ljson = JSON.stringify(p.listing).replace(/"/g, '&quot;');
+            return `<div class="ld-rel-card" onclick="openListing(${p.listing_id}, ${ljson})">
+              ${mainImg ? `<img class="ld-rel-img" src="${mainImg}" alt="${p.name}">` : `<div class="ld-rel-ph">${p.cat_emoji || ''}</div>`}
+              <div class="ld-rel-body">
+                <div class="ld-rel-name">${p.name}</div>
+                <div class="ld-rel-meta">
+                  <div class="ld-rel-price">$${Number(p.price).toFixed(2)}</div>
+                  <div class="ld-rel-stock">${pStock > 0 ? `${pStock} шт` : 'нет'}</div>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    ` : ''}
     </div>
   `;
 
