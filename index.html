@@ -1299,7 +1299,7 @@ body::after {
 .tx-amt.pending { color: var(--gold); }
 .tx-summary {
   display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
   gap:8px;
   margin-bottom:12px;
 }
@@ -2627,17 +2627,7 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     <div style="margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--text)">Репутация</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--text)" id="repTotal">0</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:12px;font-weight:700;color:var(--text)">% положительных</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green)" id="repPosPct">0%</div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:12px;font-weight:700;color:var(--text)">% отрицательных</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--red)" id="repNegPct">0%</div>
-        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--text)" id="repCombined">0% полож. • 0 отзывов</div>
       </div>
     </div>
     
@@ -2865,7 +2855,7 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 24px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:4px">↑ Вывод средств</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">Вывод средств</div>
       <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Выберите сумму или введите свою</div>
       <div class="topup-amounts">
         <div class="ta-chip" onclick="setWithdrawAmount(5)">$5</div>
@@ -2877,6 +2867,10 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
       <input class="topup-input" id="withdrawInput" type="number" min="1" placeholder="0.00" oninput="clearWithdrawChips()">
       <div style="font-size:11px;color:var(--dim);margin-bottom:16px">Минимум $1 · Выплата через CryptoBot</div>
       <button class="pay-btn-main" onclick="doWithdraw()" id="withdrawBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
         Вывести через CryptoBot
       </button>
     </div>
@@ -2887,7 +2881,7 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
   <div class="sheet">
     <div class="sh-handle"></div>
     <div style="padding:0 20px 24px">
-      <div style="font-size:18px;font-weight:900;margin-bottom:4px">💳 Пополнение баланса</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">Пополнение баланса</div>
       <div style="font-size:13px;color:var(--sub);margin-bottom:16px">Выберите сумму или введите свою</div>
       <div class="topup-amounts">
         <div class="ta-chip" onclick="setTopupAmt(5)">$5</div>
@@ -3057,11 +3051,9 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
           <div class="create-title">Новое объявление</div>
           <button class="create-close" onclick="closeOverlay('createListingOverlay')">✕</button>
         </div>
-        <div class="create-sub">Оформите карточку товара красиво и понятно — это повышает конверсию в сделку.</div>
       </div>
 
       <div class="create-card">
-        <div class="create-card-title">Основная информация</div>
         <div class="form-group">
           <label class="form-label" style="color:var(--gold)">Название товара</label>
           <input class="form-input" id="lTitle" placeholder="Netflix Premium 1 месяц" style="font-size:15px;padding:14px">
@@ -3078,7 +3070,6 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
       </div>
 
       <div class="create-card">
-        <div class="create-card-title">Описание и условия</div>
         <div class="form-group">
           <label class="form-label" style="color:var(--gold)">Описание товара</label>
           <textarea class="form-input form-textarea" id="lDesc" placeholder="Подробно опишите: что входит, какие функции, сроки действия..." style="min-height:100px;resize:vertical"></textarea>
@@ -3090,7 +3081,6 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
       </div>
 
       <div class="create-card">
-        <div class="create-card-title">Цена и остаток</div>
         <div class="create-grid-2">
           <div class="form-group" style="margin-bottom:0">
             <label class="form-label" style="color:var(--gold)">Цена ($)</label>
@@ -3104,7 +3094,6 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
       </div>
 
       <div class="create-card">
-        <div class="create-card-title">Фото товара (до 3 шт.)</div>
         <div style="margin-bottom:10px">
           <div id="lImgPreview0" style="display:none;margin-bottom:8px;border-radius:12px;overflow:hidden;background:#000;height:140px">
             <img id="lImgThumb0" style="width:100%;height:140px;object-fit:contain;display:block">
@@ -3434,7 +3423,6 @@ function renderRecommendations() {
       <div class="rec-head">
         <div>
           <div class="rec-title">Для вас</div>
-          <div class="rec-sub">Подобрано по вашим просмотрам, корзине и покупкам</div>
         </div>
       </div>
       <div class="rec-row">
@@ -4382,21 +4370,13 @@ async function loadProfile() {
     // Общая репутация
     const total = Number(stats.total_reviews ?? stats.total_deals ?? 0);
     const pos   = Number(stats.total_positive || 0);
-    const neg   = Number(stats.total_negative || 0);
     const pct = total > 0 ? Math.round(100 * pos / total) : 0;
-    const negPct = total > 0 ? Math.round(100 * neg / total) : 0;
+    const repLine = `${pct}% полож. • ${total} отзывов`;
     
     console.log(`📊 Репутация: total=${total}, pos=${pos}, neg=${neg}, pct=${pct}%`);
     
-    // Обновляю новые элементы
-    const repTotalEl = document.getElementById('repTotal');
-    if (repTotalEl) repTotalEl.textContent = total;
-    
-    const repPosPctEl = document.getElementById('repPosPct');
-    if (repPosPctEl) repPosPctEl.textContent = pct + '%';
-    
-    const repNegPctEl = document.getElementById('repNegPct');
-    if (repNegPctEl) repNegPctEl.textContent = negPct + '%';
+    const repCombinedEl = document.getElementById('repCombined');
+    if (repCombinedEl) repCombinedEl.textContent = repLine;
 
     // Сделки
     const dealsCountEl = document.getElementById('dealsCount');
@@ -4463,7 +4443,14 @@ function setWithdrawAmount(n) {
     } catch (e) {
       toast(e.message);
     } finally {
-      btn.disabled = false; btn.textContent = 'Вывести через CryptoBot';
+      btn.disabled = false;
+      btn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        Вывести через CryptoBot
+      `;
     }
   }
   async function doTopup() {
@@ -4526,11 +4513,97 @@ function setWithdrawAmount(n) {
   } catch (e) {
     toast(`${e.message}`);
   } finally {
-    btn.disabled = false; btn.textContent = 'Пополнить через CryptoBot';
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      Пополнить через CryptoBot
+    `;
   }
 }
 
 // ── TX HISTORY ────────────────────────────────────────────
+let txHistoryFilter = 'all';
+let txHistoryData = [];
+
+function setTxHistoryFilter(filter) {
+  txHistoryFilter = filter;
+  document.querySelectorAll('.tx-filter-btn').forEach(btn => btn.classList.remove('on'));
+  const active = document.getElementById(`tx-filter-${filter}`);
+  if (active) active.classList.add('on');
+  renderTxHistoryList();
+}
+
+function renderTxHistoryList() {
+  const listEl = document.getElementById('txCardsList');
+  if (!listEl) return;
+
+  let filtered = [...(txHistoryData || [])];
+  if (txHistoryFilter === 'topup') {
+    filtered = filtered.filter(tx => tx.type === 'topup');
+  } else if (txHistoryFilter === 'withdraw') {
+    filtered = filtered.filter(tx => tx.type === 'withdraw' || tx.type === 'withdraw_error');
+  }
+
+  if (!filtered.length) {
+    listEl.innerHTML = '<div class="empty"><div class="empty-ttl">Нет операций</div><div class="empty-sub">По выбранному фильтру пока пусто</div></div>';
+    return;
+  }
+
+  listEl.innerHTML = filtered.map(tx => {
+    const isIn = (tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout';
+    const isPending = tx.type === 'topup' && tx.status === 'pending';
+    const kind = isIn ? 'in' : isPending ? 'pending' : 'out';
+
+    let desc = tx.description;
+    if (!desc) {
+      if (tx.type === 'topup') {
+        desc = tx.status === 'pending' ? 'Ожидание оплаты' : 'Пополнение';
+      } else {
+        desc = {
+          'deal_payout': 'Выплата за сделку',
+          'refund': 'Возврат',
+          'payment': 'Списание',
+          'withdraw': 'Вывод',
+          'topup_error': 'Ошибка пополнения',
+          'withdraw_error': 'Ошибка вывода'
+        }[tx.type] || 'Транзакция';
+      }
+    }
+
+    const note = {
+      'deal_payout': 'Средства успешно зачислены на ваш баланс.',
+      'refund': 'Средства возвращены после отмены или пересмотра сделки.',
+      'payment': 'Сумма списана за покупку или оплату внутри сервиса.',
+      'withdraw': 'Запрошен вывод средств через CryptoBot.',
+      'topup': tx.status === 'pending' ? 'Ожидаем оплату инвойса в CryptoBot.' : 'Баланс пополнен успешно.',
+      'topup_error': 'Пополнение не было завершено.',
+      'withdraw_error': 'Во время вывода произошла ошибка.'
+    }[tx.type] || 'Операция обработана системой.';
+
+    const icon = isIn ? '↓' : isPending ? '•' : '↑';
+    const badge = isIn ? 'Поступление' : isPending ? 'В ожидании' : 'Списание';
+    const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+
+    return `<div class="tx-card">
+      <div class="tx-card-top">
+        <div class="tx-left">
+          <div class="tx-icon-box ${kind}">${icon}</div>
+          <div class="tx-info">
+            <div class="tx-desc">${desc}</div>
+            <div class="tx-date">${date}</div>
+            <div class="tx-status-badge ${kind}">${badge}</div>
+          </div>
+        </div>
+        <div class="tx-amt ${kind}">${isIn?'+':isPending?'':'-'}$${Number(tx.amount).toFixed(2)}</div>
+      </div>
+      <div class="tx-note">${note}</div>
+    </div>`;
+  }).join('');
+}
+
 async function openTxHistory() {
   openOverlay('txOverlay');
   const el = document.getElementById('txList');
@@ -4549,67 +4622,30 @@ async function openTxHistory() {
     const outgoingAmount = transactions
       .filter(tx => !((tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout') && !(tx.type === 'topup' && tx.status === 'pending'))
       .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+    const withdrawAmount = transactions
+      .filter(tx => tx.type === 'withdraw' && tx.status === 'completed')
+      .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
     const pendingCount = transactions.filter(tx => tx.type === 'topup' && tx.status === 'pending').length;
+
+    txHistoryData = transactions;
+    txHistoryFilter = 'all';
 
     el.innerHTML = `
       <div class="tx-summary">
         <div class="tx-chip"><div class="v">$${Number(balance || 0).toFixed(2)}</div><div class="l">Баланс</div></div>
         <div class="tx-chip"><div class="v">+$${incomingAmount.toFixed(2)}</div><div class="l">Поступления</div></div>
+        <div class="tx-chip"><div class="v">-$${outgoingAmount.toFixed(2)}</div><div class="l">Списания</div></div>
+        <div class="tx-chip"><div class="v">$${withdrawAmount.toFixed(2)}</div><div class="l">Общий вывод</div></div>
         <div class="tx-chip"><div class="v">${pendingCount}</div><div class="l">В ожидании</div></div>
       </div>
-      <div class="tx-list">` + transactions.map(tx => {
-      // ПРИХОД: пополнение, возврат, выплата за сделку (кроме pending topup)
-      const isIn = (tx.type === 'topup' && tx.status === 'completed') || tx.type === 'refund' || tx.type === 'deal_payout';
-      const isPending = tx.type === 'topup' && tx.status === 'pending';
-      const kind = isIn ? 'in' : isPending ? 'pending' : 'out';
-      
-      // Описание с учётом статуса
-      let desc = tx.description;
-      if (!desc) {
-        if (tx.type === 'topup') {
-          desc = tx.status === 'pending' ? 'Ожидание оплаты' : 'Пополнение';
-        } else {
-          desc = {
-            'deal_payout': 'Выплата за сделку',
-            'refund': 'Возврат',
-            'payment': 'Списание',
-            'withdraw': 'Вывод',
-            'topup_error': 'Ошибка пополнения',
-            'withdraw_error': 'Ошибка вывода'
-          }[tx.type] || 'Транзакция';
-        }
-      }
+      <div class="dh-filters" style="margin-top:10px">
+        <button class="dh-filter-btn tx-filter-btn on" id="tx-filter-all" onclick="setTxHistoryFilter('all')">Все</button>
+        <button class="dh-filter-btn tx-filter-btn" id="tx-filter-topup" onclick="setTxHistoryFilter('topup')">Пополнения</button>
+        <button class="dh-filter-btn tx-filter-btn" id="tx-filter-withdraw" onclick="setTxHistoryFilter('withdraw')">Выводы</button>
+      </div>
+      <div class="tx-list" id="txCardsList"></div>`;
 
-      const note = {
-        'deal_payout': 'Средства успешно зачислены на ваш баланс.',
-        'refund': 'Средства возвращены после отмены или пересмотра сделки.',
-        'payment': 'Сумма списана за покупку или оплату внутри сервиса.',
-        'withdraw': 'Запрошен вывод средств через CryptoBot.',
-        'topup': tx.status === 'pending' ? 'Ожидаем оплату инвойса в CryptoBot.' : 'Баланс пополнен успешно.',
-        'topup_error': 'Пополнение не было завершено.',
-        'withdraw_error': 'Во время вывода произошла ошибка.'
-      }[tx.type] || 'Операция обработана системой.';
-
-      const icon = isIn ? '↓' : isPending ? '•' : '↑';
-      const badge = isIn ? 'Поступление' : isPending ? 'В ожидании' : 'Списание';
-      
-      const date = new Date(tx.created_at).toLocaleDateString('ru', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-      
-      return `<div class="tx-card">
-        <div class="tx-card-top">
-          <div class="tx-left">
-            <div class="tx-icon-box ${kind}">${icon}</div>
-            <div class="tx-info">
-              <div class="tx-desc">${desc}</div>
-              <div class="tx-date">${date}</div>
-              <div class="tx-status-badge ${kind}">${badge}</div>
-            </div>
-          </div>
-          <div class="tx-amt ${kind}">${isIn?'+':isPending?'':'-'}$${Number(tx.amount).toFixed(2)}</div>
-        </div>
-        <div class="tx-note">${note}</div>
-      </div>`;
-    }).join('') + '</div>';
+    renderTxHistoryList();
   } catch (e) {
     el.innerHTML = `<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Ошибка загрузки</div></div>`;
   }
@@ -4647,12 +4683,12 @@ async function loadProfileStats(period = 'day') {
     const reviews = Number(stats.total_reviews || 0);
 
     const metrics = [
-      { icon: '💰', name: 'Оборот кеша', value: `$${cash.toFixed(2)}`, raw: cash },
-      { icon: '🤝', name: 'Всего общих сделок', value: `${deals}`, raw: deals },
-      { icon: '📦', name: 'Продано всего товара', value: `${sold}`, raw: sold },
-      { icon: '🛒', name: 'Куплено всего товара', value: `${bought}`, raw: bought },
-      { icon: '📝', name: 'Создано объявлений', value: `${listings}`, raw: listings },
-      { icon: '⭐', name: 'Репутация', value: `${rep}%`, raw: rep },
+      { name: 'Оборот кеша', value: `$${cash.toFixed(2)}`, raw: cash },
+      { name: 'Всего общих сделок', value: `${deals}`, raw: deals },
+      { name: 'Продано всего товара', value: `${sold}`, raw: sold },
+      { name: 'Куплено всего товара', value: `${bought}`, raw: bought },
+      { name: 'Создано объявлений', value: `${listings}`, raw: listings },
+      { name: 'Репутация', value: `${rep}%`, raw: rep },
     ];
 
     const maxRaw = Math.max(1, ...metrics.map(m => m.raw));
@@ -4667,7 +4703,7 @@ async function loadProfileStats(period = 'day') {
           const width = m.name === 'Репутация' ? Math.max(3, Math.min(100, m.raw)) : Math.max(3, Math.min(100, Math.round((m.raw / maxRaw) * 100)));
           return `<div class="ps-item">
             <div class="ps-top">
-              <div class="ps-name"><span>${m.icon}</span><span>${m.name}</span></div>
+              <div class="ps-name"><span>${m.name}</span></div>
               <div class="ps-value">${m.value}</div>
             </div>
             <div class="ps-bar"><div class="ps-fill" style="width:${width}%"></div></div>
