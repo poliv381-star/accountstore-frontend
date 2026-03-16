@@ -4373,7 +4373,7 @@ async function loadProfile() {
     const pct = total > 0 ? Math.round(100 * pos / total) : 0;
     const repLine = `${pct}% полож. • ${total} отзывов`;
     
-    console.log(`📊 Репутация: total=${total}, pos=${pos}, neg=${neg}, pct=${pct}%`);
+    console.log(`📊 Репутация: total=${total}, pos=${pos}, pct=${pct}%`);
     
     const repCombinedEl = document.getElementById('repCombined');
     if (repCombinedEl) repCombinedEl.textContent = repLine;
