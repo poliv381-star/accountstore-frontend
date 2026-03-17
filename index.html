@@ -2632,6 +2632,82 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     font-size: 10px !important;
   }
 }
+
+/* ══════════════════════════════════════════
+   GAME PAGE
+══════════════════════════════════════════ */
+.lb-tab {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  background: var(--s2);
+  border-radius: 20px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: .2s;
+}
+.lb-tab.on {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  border-color: transparent;
+  color: #000;
+}
+.game-tab-bar {
+  display: flex;
+  gap: 0;
+  margin: 0 18px 16px;
+  background: var(--s2);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid var(--border);
+}
+.game-tab-btn {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--dim);
+  cursor: pointer;
+  transition: .2s;
+}
+.game-tab-btn.on {
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: #000;
+}
+.game-coins-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 18px 12px;
+  padding: 13px 16px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.game-coin-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.game-coin-col .label { font-size: 10px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.game-coin-col .value { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 900; }
+.game-canvas-wrap {
+  margin: 0 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+#flappyCanvas {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 360px;
+  touch-action: none;
+  display: block;
+}
 </style>
 </head>
 <body>
@@ -2720,10 +2796,57 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
   <div id="wishContent" style="display:none"></div>
 </div>
 
-<!-- DEALS -->
-<div class="pg" id="pg-deals">
-  <div class="pg-head">Сделки</div>
-  <div id="dealsPageContent"><div class="spin-wrap"><div class="spin"></div></div></div>
+<!-- GAME -->
+<div class="pg" id="pg-game">
+  <div class="pg-head" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px">
+    <span>🎮 Игра</span>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold)" id="gameCoinsToday">0 / 200 🪙</div>
+  </div>
+
+  <!-- Tab switcher -->
+  <div class="game-tab-bar">
+    <button class="game-tab-btn on" id="gameTabGame" onclick="switchGameTab('game')">🐦 Игра</button>
+    <button class="game-tab-btn" id="gameTabBoard" onclick="switchGameTab('board')">🏆 Рейтинг</button>
+  </div>
+
+  <!-- GAME SECTION -->
+  <div id="gameSectionGame">
+    <div class="game-coins-bar">
+      <div class="game-coin-col">
+        <div class="label">Всего монет</div>
+        <div class="value" id="gameTotalCoins" style="color:var(--gold)">0</div>
+      </div>
+      <div class="game-coin-col">
+        <div class="label">Рекорд</div>
+        <div class="value" id="gameHighScore" style="color:var(--cyan)">0</div>
+      </div>
+      <div class="game-coin-col">
+        <div class="label">Сегодня</div>
+        <div class="value" id="gameDailyCoins" style="color:var(--green)">0</div>
+      </div>
+    </div>
+    <div class="game-canvas-wrap">
+      <canvas id="flappyCanvas" height="420"></canvas>
+      <div id="gameMsg" style="font-size:13px;color:var(--dim);text-align:center">Нажми или тапни чтобы начать</div>
+      <div style="font-size:11px;color:var(--dim);text-align:center;padding-bottom:4px">
+        За каждую трубу: <b style="color:var(--gold)">+5 монет</b> · Лимит: <b style="color:var(--gold)">200/день</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD SECTION -->
+  <div id="gameSectionBoard" style="display:none">
+    <div style="display:flex;gap:8px;margin:0 18px 12px;overflow-x:auto;padding-bottom:2px">
+      <button class="lb-tab on" id="lbTabDay" onclick="switchLbTab('day')">День</button>
+      <button class="lb-tab" id="lbTabWeek" onclick="switchLbTab('week')">Неделя</button>
+      <button class="lb-tab" id="lbTabAll" onclick="switchLbTab('all')">Всё время</button>
+    </div>
+    <div id="leaderboardList" style="padding:0 18px;display:flex;flex-direction:column;gap:8px">
+      <div class="spin-wrap"><div class="spin"></div></div>
+    </div>
+  </div>
+
+  <div class="gap"></div>
 </div>
 
 <!-- PROFILE -->
@@ -2826,6 +2949,16 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
       <div class="m-txt">Транзакции</div>
       <div class="m-arr">›</div>
     </div>
+    <div class="mrow" onclick="openMyDeals()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="m-txt">Активные сделки</div>
+      <div id="activeDealsMenuBadge" class="n-badge" style="position:static;margin-left:auto;margin-right:8px"></div>
+      <div class="m-arr">›</div>
+    </div>
     <div class="mrow" onclick="openDealHistory()">
       <div class="m-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -2914,11 +3047,14 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     </svg>
     <span>Добавить</span>
   </div>
-  <div class="nt" id="nt-deals" onclick="switchPage('deals',this)">
+  <div class="nt" id="nt-game" onclick="switchPage('game',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <rect x="2" y="6" width="20" height="12" rx="3"/>
+      <path d="M6 12h4M8 10v4"/>
+      <circle cx="16" cy="11" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="18" cy="13" r="1" fill="currentColor" stroke="none"/>
     </svg>
-    <span>Сделки</span>
+    <span>Игра</span>
   </div>
   <div class="nt" id="nt-profile" onclick="switchPage('profile',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -3286,6 +3422,18 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     <div style="padding:0 20px 24px">
       <div style="font-size:18px;font-weight:900;margin-bottom:16px">Мои сделки</div>
       <div id="myDealsList"><div class="spin-wrap"><div class="spin"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACTIVE DEALS OVERLAY ══════════════════ -->
+<div class="overlay" id="activeDealsOverlay" onclick="closeOverlayByBg(event,'activeDealsOverlay')">
+  <div class="sheet" style="max-height:92vh;overflow-y:auto">
+    <div class="sh-handle"></div>
+    <div style="padding:0 20px 24px">
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px">⚡ Активные сделки</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:16px">История сделок доступна ниже в профиле</div>
+      <div id="dealsPageContent"><div class="spin-wrap"><div class="spin"></div></div></div>
     </div>
   </div>
 </div>
@@ -4995,7 +5143,7 @@ function switchPage(name, el) {
   const nav = el || document.getElementById('nt-' + name);
   if (nav) nav.classList.add('on');
   if (name === 'cart') { switchCartTab('cart'); syncWishCount(); loadCartBalance(); }
-  if (name === 'deals')   loadDealsPage();
+  if (name === 'game')    initGamePage();
   if (name === 'p2p')     loadMyListingsInline();
   if (name === 'profile') loadProfile();
 }
@@ -5541,7 +5689,10 @@ async function loadDealsPage() {
 
 
 async function openMyDeals() {
-  switchPage('deals', document.getElementById('nt-deals'));
+  openOverlay('activeDealsOverlay');
+  await loadDealsPage();
+  // update badge
+  updateActiveDealsCount();
   return;
   // legacy overlay (unused)
   openOverlay('myDealsOverlay');
@@ -6884,6 +7035,441 @@ function haptic(type) {
     alert('Ошибка: ' + e.message);
   }
 })();
+
+// ══════════════════════════════════════════════════════════
+// GAME PAGE — Flappy Bird + Tokens + Leaderboard
+// ══════════════════════════════════════════════════════════
+const GAME_DAILY_LIMIT = 200;
+const COINS_PER_PIPE   = 5;
+let _flappyGame = null;
+
+function initGamePage() {
+  updateGameUI();
+  switchGameTab('game');
+}
+
+function updateGameUI() {
+  const daily = getGameDailyCoins();
+  const total = getGameTotalCoins();
+  const high  = getGameHighScore();
+  const el1 = document.getElementById('gameCoinsToday');
+  const el2 = document.getElementById('gameTotalCoins');
+  const el3 = document.getElementById('gameHighScore');
+  const el4 = document.getElementById('gameDailyCoins');
+  if (el1) el1.textContent = daily + ' / ' + GAME_DAILY_LIMIT + ' 🪙';
+  if (el2) el2.textContent = total;
+  if (el3) el3.textContent = high;
+  if (el4) el4.textContent = daily;
+}
+
+function getGameDailyCoins() {
+  const today = new Date().toDateString();
+  const d = JSON.parse(localStorage.getItem('gameDaily') || '{}');
+  if (d.date !== today) return 0;
+  return d.coins || 0;
+}
+
+function addGameDailyCoins(n) {
+  const today = new Date().toDateString();
+  const d = JSON.parse(localStorage.getItem('gameDaily') || '{}');
+  if (d.date !== today) { d.date = today; d.coins = 0; }
+  const remaining = GAME_DAILY_LIMIT - (d.coins || 0);
+  const add = Math.min(n, Math.max(0, remaining));
+  if (add <= 0) return 0;
+  d.coins = (d.coins || 0) + add;
+  localStorage.setItem('gameDaily', JSON.stringify(d));
+  const total = getGameTotalCoins() + add;
+  localStorage.setItem('gameTotalCoins', String(total));
+  updateGameUI();
+  return add;
+}
+
+function getGameTotalCoins() {
+  return parseInt(localStorage.getItem('gameTotalCoins') || '0');
+}
+
+function getGameHighScore() {
+  return parseInt(localStorage.getItem('gameHighScore') || '0');
+}
+
+function setGameHighScore(score) {
+  const cur = getGameHighScore();
+  if (score > cur) {
+    localStorage.setItem('gameHighScore', String(score));
+    updateGameUI();
+  }
+  saveToLeaderboard(score);
+}
+
+function getWeekKey() {
+  const d = new Date();
+  const first = new Date(d.getFullYear(), 0, 1);
+  const wk = Math.ceil(((d - first) / 86400000 + first.getDay() + 1) / 7);
+  return d.getFullYear() + '-W' + wk;
+}
+
+function saveToLeaderboard(score) {
+  if (score < 1) return;
+  const lb = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+  const userId = (window.tgUser && window.tgUser.id) ? String(window.tgUser.id) : 'anon';
+  const name   = (window.tgUser && (window.tgUser.first_name || window.tgUser.username)) || 'Игрок';
+  const entry  = { userId, name, score, date: new Date().toDateString(), week: getWeekKey(), ts: Date.now() };
+  lb.push(entry);
+  if (lb.length > 500) lb.splice(0, lb.length - 500);
+  localStorage.setItem('leaderboard', JSON.stringify(lb));
+}
+
+function switchGameTab(tab) {
+  const gs = document.getElementById('gameSectionGame');
+  const gb = document.getElementById('gameSectionBoard');
+  const tg = document.getElementById('gameTabGame');
+  const tb = document.getElementById('gameTabBoard');
+  if (!gs) return;
+  gs.style.display = tab === 'game'  ? 'block' : 'none';
+  gb.style.display = tab === 'board' ? 'block' : 'none';
+  tg.classList.toggle('on', tab === 'game');
+  tb.classList.toggle('on', tab === 'board');
+  if (tab === 'game') {
+    if (!_flappyGame) {
+      setTimeout(() => {
+        const canvas = document.getElementById('flappyCanvas');
+        if (canvas && !_flappyGame) { _flappyGame = new FlappyGame(canvas); }
+      }, 80);
+    }
+  }
+  if (tab === 'board') loadLeaderboard('day');
+}
+
+function switchLbTab(period) {
+  document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('on'));
+  const key = { day:'Day', week:'Week', all:'All' }[period] || 'Day';
+  const btn = document.getElementById('lbTab' + key);
+  if (btn) btn.classList.add('on');
+  loadLeaderboard(period);
+}
+
+function loadLeaderboard(period) {
+  const el = document.getElementById('leaderboardList');
+  if (!el) return;
+  const lb    = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+  const today = new Date().toDateString();
+  const week  = getWeekKey();
+  let filtered;
+  if (period === 'day')  filtered = lb.filter(e => e.date === today);
+  else if (period === 'week') filtered = lb.filter(e => e.week === week);
+  else filtered = lb;
+
+  const byUser = {};
+  filtered.forEach(e => {
+    if (!byUser[e.userId] || byUser[e.userId].score < e.score) byUser[e.userId] = e;
+  });
+  const sorted = Object.values(byUser).sort((a, b) => b.score - a.score).slice(0, 20);
+  const selfId = (window.tgUser && window.tgUser.id) ? String(window.tgUser.id) : 'anon';
+
+  if (!sorted.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ico">🎮</div><div class="empty-ttl">Нет записей</div><div class="empty-sub">Сыграй первым!</div></div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  el.innerHTML = sorted.map((e, i) => {
+    const isSelf = e.userId === selfId;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;
+      background:${isSelf ? 'rgba(232,200,74,0.08)' : 'var(--s2)'};
+      border:1px solid ${isSelf ? 'rgba(232,200,74,0.35)' : 'var(--border)'};border-radius:12px">
+      <div style="font-size:22px;min-width:30px;text-align:center">${medals[i] || (i + 1)}</div>
+      <div style="flex:1;font-size:13px;font-weight:700;color:var(--text)">
+        ${escapeHtml(e.name)}${isSelf ? ' <span style="color:var(--gold);font-size:11px">(вы)</span>' : ''}
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:900;color:var(--gold)">
+        ${e.score} <span style="font-size:10px;color:var(--dim)">труб</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateActiveDealsCount() {
+  try {
+    const { deals } = await api('/api/deals/my');
+    const active = (deals || []).filter(d =>
+      ['frozen','accepted','waiting_confirmation','dispute'].includes(d.status)).length;
+    const badge = document.getElementById('activeDealsMenuBadge');
+    if (!badge) return;
+    if (active > 0) {
+      badge.textContent = active;
+      badge.classList.add('on');
+    } else {
+      badge.classList.remove('on');
+    }
+  } catch (_) {}
+}
+
+// ── Flappy Bird ──────────────────────────────────────────
+function _roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+class FlappyGame {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx    = canvas.getContext('2d');
+    this.resize();
+    this.reset();
+    this.bindEvents();
+    this.drawIdle();
+  }
+
+  resize() {
+    const w = this.canvas.parentElement ? this.canvas.parentElement.clientWidth - 36 : 340;
+    this.W = Math.min(w, 360);
+    this.H = Math.round(this.W * 1.18);
+    this.canvas.width  = this.W;
+    this.canvas.height = this.H;
+    this.canvas.style.width  = this.W + 'px';
+    this.canvas.style.height = this.H + 'px';
+  }
+
+  reset() {
+    this.state       = 'idle';
+    this.score       = 0;
+    this.coinsEarned = 0;
+    this.bird        = { x: this.W * 0.25, y: this.H * 0.44, vy: 0, r: Math.round(this.W * 0.046) };
+    this.pipes       = [];
+    this.frame       = 0;
+    this.speed       = this.W * 0.0065;
+    this.gap         = Math.round(this.H * 0.32);
+    this.pipeW       = Math.round(this.W * 0.14);
+    this.pipeInt     = 95;
+  }
+
+  bindEvents() {
+    this._onTap = () => this.tap();
+    this.canvas.addEventListener('pointerdown', this._onTap);
+    this._onKey = (e) => {
+      if (['Space','ArrowUp'].includes(e.code) || e.key === ' ') { e.preventDefault(); this.tap(); }
+    };
+    document.addEventListener('keydown', this._onKey);
+  }
+
+  destroy() {
+    this.canvas.removeEventListener('pointerdown', this._onTap);
+    document.removeEventListener('keydown', this._onKey);
+    this.state = 'destroyed';
+  }
+
+  tap() {
+    if (this.state === 'idle')    { this.start(); return; }
+    if (this.state === 'dead')    { this.reset(); this.drawIdle(); return; }
+    if (this.state === 'playing') { this.bird.vy = -(this.H * 0.018); }
+  }
+
+  start() {
+    this.state = 'playing';
+    this.bird.vy = -(this.H * 0.018);
+    requestAnimationFrame(() => this.loop());
+  }
+
+  loop() {
+    if (this.state !== 'playing') return;
+    this.update();
+    this.draw();
+    requestAnimationFrame(() => this.loop());
+  }
+
+  update() {
+    this.frame++;
+    // gravity
+    this.bird.vy += this.H * 0.00095;
+    this.bird.y  += this.bird.vy;
+    // speed up
+    if (this.frame % 280 === 0) this.speed = Math.min(this.speed + this.W * 0.0012, this.W * 0.016);
+    // spawn
+    if (this.frame % this.pipeInt === 0) {
+      const minH = Math.round(this.H * 0.14);
+      const maxH = Math.round(this.H - this.gap - this.H * 0.14);
+      const topH = minH + Math.random() * (maxH - minH);
+      this.pipes.push({ x: this.W + 10, topH, passed: false });
+    }
+    // move pipes
+    this.pipes.forEach(p => p.x -= this.speed);
+    this.pipes = this.pipes.filter(p => p.x + this.pipeW > -10);
+    // score
+    this.pipes.forEach(p => {
+      if (!p.passed && p.x + this.pipeW < this.bird.x - this.bird.r) {
+        p.passed = true;
+        this.score++;
+        this.onPipe();
+      }
+    });
+    // floor / ceiling
+    if (this.bird.y - this.bird.r < 0 || this.bird.y + this.bird.r > this.H) { this.die(); return; }
+    // pipe collision
+    for (const p of this.pipes) {
+      if (this.bird.x + this.bird.r > p.x && this.bird.x - this.bird.r < p.x + this.pipeW) {
+        if (this.bird.y - this.bird.r < p.topH || this.bird.y + this.bird.r > p.topH + this.gap) {
+          this.die(); return;
+        }
+      }
+    }
+  }
+
+  onPipe() {
+    if (getGameDailyCoins() < GAME_DAILY_LIMIT) {
+      const added = addGameDailyCoins(COINS_PER_PIPE);
+      this.coinsEarned += added;
+    }
+  }
+
+  die() {
+    this.state = 'dead';
+    setGameHighScore(this.score);
+    this.drawDead();
+    const msg = document.getElementById('gameMsg');
+    if (msg) msg.textContent = 'Тап или Space — сыграть снова';
+  }
+
+  // ─── Drawing ─────────────────────────────────────────
+  drawBg() {
+    const g = this.ctx.createLinearGradient(0, 0, 0, this.H);
+    g.addColorStop(0, '#07071a');
+    g.addColorStop(1, '#0c1625');
+    this.ctx.fillStyle = g;
+    this.ctx.fillRect(0, 0, this.W, this.H);
+    // stars
+    this.ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    for (let i = 0; i < 28; i++) {
+      const sx = ((i * 137 + 11) % this.W);
+      const sy = ((i * 97  + 31) % (this.H * 0.6));
+      this.ctx.fillRect(sx, sy, 1.5, 1.5);
+    }
+  }
+
+  drawPipe(p) {
+    const ctx = this.ctx;
+    // top
+    ctx.fillStyle = '#1b4d1b';
+    ctx.fillRect(p.x, 0, this.pipeW, p.topH);
+    ctx.fillStyle = '#2a7a2a';
+    ctx.fillRect(p.x - 4, p.topH - 18, this.pipeW + 8, 18);
+    // bottom
+    const botY = p.topH + this.gap;
+    ctx.fillStyle = '#1b4d1b';
+    ctx.fillRect(p.x, botY, this.pipeW, this.H - botY);
+    ctx.fillStyle = '#2a7a2a';
+    ctx.fillRect(p.x - 4, botY, this.pipeW + 8, 18);
+  }
+
+  drawBird() {
+    const ctx = this.ctx, b = this.bird, r = b.r;
+    ctx.save();
+    ctx.translate(b.x, b.y);
+    const angle = Math.min(Math.max(b.vy * 0.053, -0.48), 1.1);
+    ctx.rotate(angle);
+    // body
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8c84a'; ctx.fill();
+    // wing
+    ctx.beginPath(); ctx.ellipse(-r * 0.25, r * 0.25, r * 0.62, r * 0.38, -0.3, 0, Math.PI * 2);
+    ctx.fillStyle = '#f5d96e'; ctx.fill();
+    // eye white
+    ctx.beginPath(); ctx.arc(r * 0.38, -r * 0.25, r * 0.26, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    // pupil
+    ctx.beginPath(); ctx.arc(r * 0.44, -r * 0.25, r * 0.13, 0, Math.PI * 2);
+    ctx.fillStyle = '#111'; ctx.fill();
+    // beak
+    ctx.beginPath();
+    ctx.moveTo(r * 0.85, -r * 0.07);
+    ctx.lineTo(r * 1.28, r * 0.13);
+    ctx.lineTo(r * 0.85, r * 0.32);
+    ctx.fillStyle = '#ff8c42'; ctx.fill();
+    ctx.restore();
+  }
+
+  drawHUD() {
+    const ctx = this.ctx;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.round(this.W * 0.09)}px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 6;
+    ctx.fillText(this.score, this.W / 2, Math.round(this.H * 0.12));
+    ctx.shadowBlur = 0;
+    if (this.coinsEarned > 0) {
+      ctx.font = `bold ${Math.round(this.W * 0.038)}px Manrope, sans-serif`;
+      ctx.fillStyle = '#e8c84a';
+      ctx.fillText('+' + this.coinsEarned + ' 🪙', this.W / 2, Math.round(this.H * 0.19));
+    }
+  }
+
+  draw() {
+    this.drawBg();
+    this.pipes.forEach(p => this.drawPipe(p));
+    this.drawBird();
+    this.drawHUD();
+  }
+
+  drawIdle() {
+    this.drawBg();
+    this.drawBird();
+    const ctx = this.ctx;
+    ctx.fillStyle = 'rgba(232,200,74,0.92)';
+    ctx.font = `bold ${Math.round(this.W * 0.052)}px Manrope, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Тап / Space — начать', this.W / 2, this.H * 0.56);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
+    ctx.fillText('Лети сквозь трубы и зарабатывай монеты', this.W / 2, this.H * 0.63);
+  }
+
+  drawDead() {
+    this.draw();
+    const ctx = this.ctx;
+    const cx = this.W / 2, cy = this.H / 2;
+    const pw = Math.round(this.W * 0.76), ph = Math.round(this.H * 0.42);
+    ctx.fillStyle = 'rgba(0,0,0,0.52)';
+    ctx.fillRect(0, 0, this.W, this.H);
+    ctx.fillStyle = 'rgba(13,13,20,0.97)';
+    _roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16); ctx.fill();
+    ctx.strokeStyle = 'rgba(232,200,74,0.38)'; ctx.lineWidth = 1;
+    _roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16); ctx.stroke();
+    // title
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.round(this.W * 0.056)}px Manrope, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Игра окончена', cx, cy - ph/2 + Math.round(ph * 0.18));
+    // score
+    ctx.fillStyle = '#e8c84a';
+    ctx.font = `bold ${Math.round(this.W * 0.115)}px 'JetBrains Mono', monospace`;
+    ctx.fillText(this.score, cx, cy - ph/2 + Math.round(ph * 0.46));
+    // highscore
+    ctx.fillStyle = '#9898b8';
+    ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
+    ctx.fillText('Рекорд: ' + getGameHighScore(), cx, cy - ph/2 + Math.round(ph * 0.60));
+    // coins
+    if (this.coinsEarned > 0) {
+      ctx.fillStyle = '#00e080';
+      ctx.font = `bold ${Math.round(this.W * 0.04)}px Manrope, sans-serif`;
+      ctx.fillText('+' + this.coinsEarned + ' монет 🪙', cx, cy - ph/2 + Math.round(ph * 0.76));
+    } else {
+      ctx.fillStyle = '#ff6b6b';
+      ctx.font = `${Math.round(this.W * 0.034)}px Manrope, sans-serif`;
+      ctx.fillText('Лимит монет исчерпан', cx, cy - ph/2 + Math.round(ph * 0.76));
+    }
+    // hint
+    ctx.fillStyle = 'rgba(232,200,74,0.8)';
+    ctx.font = `bold ${Math.round(this.W * 0.037)}px Manrope, sans-serif`;
+    ctx.fillText('Тап / Space — снова', cx, cy - ph/2 + Math.round(ph * 0.91));
+  }
+}
 </script>
 </body>
 </html>
