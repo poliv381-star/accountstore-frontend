@@ -2809,6 +2809,23 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     <button class="game-tab-btn" id="gameTabBoard" onclick="switchGameTab('board')">🏆 Рейтинг</button>
   </div>
 
+  <div style="display:flex;gap:8px;margin:0 18px 12px">
+    <button id="playModeSolo" onclick="switchPlayMode('solo')" style="flex:1;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;font-size:13px;font-weight:900;cursor:pointer">Соло</button>
+    <button id="playModeOnline" onclick="switchPlayMode('online')" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:13px;font-weight:800;cursor:pointer">Онлайн 1v1</button>
+  </div>
+
+  <div id="onlineDuelPanel" style="display:none;margin:0 18px 12px;padding:12px;border-radius:12px;border:1px solid rgba(0,207,232,.25);background:rgba(0,207,232,.06)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:800;color:var(--text)">⚔️ Дуэль онлайн</div>
+      <div style="font-size:11px;color:var(--dim)">Банк: <b style="color:var(--gold)">36 🪙 победа / 12 🪙 участие</b></div>
+    </div>
+    <div id="duelStatus" style="font-size:12px;color:var(--dim);margin-bottom:10px">Нажми «Найти соперника», чтобы начать матч</div>
+    <div style="display:flex;gap:8px">
+      <button id="duelFindBtn" onclick="startOnlineMatchmaking()" style="flex:1;padding:10px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:#00151a;font-size:12px;font-weight:900;cursor:pointer">Найти соперника</button>
+      <button id="duelCancelBtn" onclick="cancelOnlineMatchmaking()" style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--s2);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;display:none">Отмена</button>
+    </div>
+  </div>
+
   <!-- GAME SECTION -->
   <div id="gameSectionGame">
     <div class="game-coins-bar">
@@ -3618,6 +3635,7 @@ applyTheme(getInitialTheme(), false);
 
 const TG_USER   = tg?.initDataUnsafe?.user || null;
 const INIT_DATA = tg?.initData || '';
+window.tgUser = TG_USER || null;
 
 if (TG_USER) {
   const name = [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || 'Покупатель';
@@ -7037,15 +7055,153 @@ function haptic(type) {
 })();
 
 // ══════════════════════════════════════════════════════════
-// GAME PAGE — Flappy Bird + Tokens + Leaderboard
+// GAME PAGE — Solo + Online Duel
 // ══════════════════════════════════════════════════════════
 const GAME_DAILY_LIMIT = 200;
 const COINS_PER_PIPE   = 5;
 let _flappyGame = null;
+let _gameMode = 'solo';
+let _duelWs = null;
+let _duelState = 'idle'; // idle|searching|matched|playing|done
+
+function duelStatus(text) {
+  const el = document.getElementById('duelStatus');
+  if (el) el.textContent = text;
+}
+
+function duelButtons(searching) {
+  const f = document.getElementById('duelFindBtn');
+  const c = document.getElementById('duelCancelBtn');
+  if (f) f.style.display = searching ? 'none' : '';
+  if (c) c.style.display = searching ? '' : 'none';
+}
+
+function getWsUrl() {
+  const configured = window.DUEL_WS_BASE || localStorage.getItem('duel_ws_base') || API_BASE;
+  let host = location.host;
+  try {
+    const u = new URL(configured);
+    host = u.host;
+  } catch {}
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const uid = encodeURIComponent(String(TG_USER?.id || 'anon_' + Math.random().toString(36).slice(2, 8)));
+  const name = encodeURIComponent((TG_USER?.first_name || TG_USER?.username || 'Игрок').slice(0, 30));
+  return `${proto}//${host}/ws/duel?uid=${uid}&name=${name}`;
+}
+
+function ensureDuelSocket() {
+  if (_duelWs && (_duelWs.readyState === WebSocket.OPEN || _duelWs.readyState === WebSocket.CONNECTING)) return;
+  _duelWs = new WebSocket(getWsUrl());
+  _duelWs.onopen = () => {
+    if (_duelState === 'searching') {
+      _duelWs.send(JSON.stringify({ type: 'queue' }));
+      duelStatus('Ищем соперника...');
+      duelButtons(true);
+    }
+  };
+  _duelWs.onmessage = (ev) => {
+    let msg;
+    try { msg = JSON.parse(ev.data); } catch { return; }
+    if (msg.type === 'queued') {
+      duelStatus('Ищем соперника...');
+      return;
+    }
+    if (msg.type === 'matched') {
+      _duelState = 'matched';
+      duelStatus(`Соперник: ${msg.opponent?.name || 'Игрок'} · старт через 3 сек`);
+      if (_flappyGame) _flappyGame.prepareOnline(msg);
+      return;
+    }
+    if (msg.type === 'opponent_jump') {
+      if (_flappyGame) _flappyGame.onOpponentJump();
+      return;
+    }
+    if (msg.type === 'opponent_dead') {
+      if (_flappyGame) _flappyGame.onOpponentDead(Number(msg.score || 0));
+      return;
+    }
+    if (msg.type === 'result') {
+      _duelState = 'done';
+      duelButtons(false);
+      const reward = Number(msg.reward || 0);
+      if (reward > 0) addGameDailyCoins(reward);
+      if (_flappyGame) _flappyGame.onOnlineResult(msg);
+      const draw = !!msg.draw;
+      if (draw) duelStatus(`Ничья. +${reward} 🪙`);
+      else {
+        const myUid = String(TG_USER?.id || '');
+        const win = String(msg.winnerUid || '') === myUid;
+        duelStatus(win ? `Победа! +${reward} 🪙` : `Поражение. +${reward} 🪙`);
+      }
+      return;
+    }
+    if (msg.type === 'error') {
+      duelStatus(msg.message || 'Ошибка соединения');
+      duelButtons(false);
+    }
+  };
+  _duelWs.onclose = () => {
+    if (_duelState === 'searching') duelStatus('Соединение потеряно. Нажмите «Найти соперника»');
+    duelButtons(false);
+    _duelState = 'idle';
+  };
+}
+
+function startOnlineMatchmaking() {
+  switchPlayMode('online');
+  _duelState = 'searching';
+  duelStatus('Подключение...');
+  duelButtons(true);
+  ensureDuelSocket();
+  if (_duelWs && _duelWs.readyState === WebSocket.OPEN) {
+    _duelWs.send(JSON.stringify({ type: 'queue' }));
+    duelStatus('Ищем соперника...');
+  }
+}
+
+function cancelOnlineMatchmaking() {
+  _duelState = 'idle';
+  if (_duelWs && _duelWs.readyState === WebSocket.OPEN) {
+    _duelWs.send(JSON.stringify({ type: 'leave_queue' }));
+  }
+  duelButtons(false);
+  duelStatus('Поиск отменен');
+}
+
+function switchPlayMode(mode) {
+  _gameMode = mode === 'online' ? 'online' : 'solo';
+  const soloBtn = document.getElementById('playModeSolo');
+  const onlineBtn = document.getElementById('playModeOnline');
+  const panel = document.getElementById('onlineDuelPanel');
+  if (soloBtn && onlineBtn) {
+    if (_gameMode === 'solo') {
+      soloBtn.style.background = 'linear-gradient(135deg,var(--gold),var(--orange))';
+      soloBtn.style.border = 'none';
+      soloBtn.style.color = '#000';
+      onlineBtn.style.background = 'var(--s2)';
+      onlineBtn.style.border = '1px solid var(--border)';
+      onlineBtn.style.color = 'var(--text)';
+    } else {
+      onlineBtn.style.background = 'linear-gradient(135deg,var(--cyan),var(--cyan2))';
+      onlineBtn.style.border = 'none';
+      onlineBtn.style.color = '#00151a';
+      soloBtn.style.background = 'var(--s2)';
+      soloBtn.style.border = '1px solid var(--border)';
+      soloBtn.style.color = 'var(--text)';
+    }
+  }
+  if (panel) panel.style.display = _gameMode === 'online' ? 'block' : 'none';
+  if (_flappyGame) _flappyGame.setMode(_gameMode);
+  if (_gameMode === 'solo') {
+    duelButtons(false);
+    duelStatus('Нажми «Найти соперника», чтобы начать матч');
+  }
+}
 
 function initGamePage() {
   updateGameUI();
   switchGameTab('game');
+  switchPlayMode(_gameMode);
 }
 
 function updateGameUI() {
@@ -7115,7 +7271,7 @@ function saveToLeaderboard(score) {
   const name   = (window.tgUser && (window.tgUser.first_name || window.tgUser.username)) || 'Игрок';
   const entry  = { userId, name, score, date: new Date().toDateString(), week: getWeekKey(), ts: Date.now() };
   lb.push(entry);
-  if (lb.length > 500) lb.splice(0, lb.length - 500);
+  if (lb.length > 700) lb.splice(0, lb.length - 700);
   localStorage.setItem('leaderboard', JSON.stringify(lb));
 }
 
@@ -7133,7 +7289,10 @@ function switchGameTab(tab) {
     if (!_flappyGame) {
       setTimeout(() => {
         const canvas = document.getElementById('flappyCanvas');
-        if (canvas && !_flappyGame) { _flappyGame = new FlappyGame(canvas); }
+        if (canvas && !_flappyGame) {
+          _flappyGame = new FlappyGame(canvas);
+          _flappyGame.setMode(_gameMode);
+        }
       }, 80);
     }
   }
@@ -7155,7 +7314,7 @@ function loadLeaderboard(period) {
   const today = new Date().toDateString();
   const week  = getWeekKey();
   let filtered;
-  if (period === 'day')  filtered = lb.filter(e => e.date === today);
+  if (period === 'day') filtered = lb.filter(e => e.date === today);
   else if (period === 'week') filtered = lb.filter(e => e.week === week);
   else filtered = lb;
 
@@ -7222,10 +7381,29 @@ class FlappyGame {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx    = canvas.getContext('2d');
+    this.mode   = 'solo';
+    this.seed   = 1;
     this.resize();
     this.reset();
     this.bindEvents();
     this.drawIdle();
+  }
+
+  rand() {
+    this.seed = (1664525 * this.seed + 1013904223) >>> 0;
+    return this.seed / 4294967296;
+  }
+
+  setMode(mode) {
+    this.mode = mode === 'online' ? 'online' : 'solo';
+    this.reset();
+    this.drawIdle();
+    const msg = document.getElementById('gameMsg');
+    if (msg) {
+      msg.textContent = this.mode === 'online'
+        ? 'Выбран режим Онлайн. Нажми «Найти соперника»'
+        : 'Нажми или тапни чтобы начать';
+    }
   }
 
   resize() {
@@ -7242,13 +7420,28 @@ class FlappyGame {
     this.state       = 'idle';
     this.score       = 0;
     this.coinsEarned = 0;
-    this.bird        = { x: this.W * 0.25, y: this.H * 0.44, vy: 0, r: Math.round(this.W * 0.046) };
+    this.bird        = { x: this.W * 0.24, y: this.H * 0.44, vy: 0, r: Math.round(this.W * 0.046) };
+    this.opponent    = { x: this.W * 0.36, y: this.H * 0.44, vy: 0, alive: false, score: 0 };
     this.pipes       = [];
     this.frame       = 0;
     this.speed       = this.W * 0.0065;
     this.gap         = Math.round(this.H * 0.32);
     this.pipeW       = Math.round(this.W * 0.14);
     this.pipeInt     = 95;
+    this._loopRun    = false;
+    this._startAt    = 0;
+    this._onlineResult = null;
+  }
+
+  prepareOnline(match) {
+    this.mode = 'online';
+    this.reset();
+    this.seed = Number(match.seed || 1) || 1;
+    this.state = 'countdown';
+    this._startAt = Number(match.startAt || (Date.now() + 2000));
+    this.opponent.alive = true;
+    this.opponent.name = match.opponent?.name || 'Соперник';
+    this._ensureLoop();
   }
 
   bindEvents() {
@@ -7260,13 +7453,28 @@ class FlappyGame {
     document.addEventListener('keydown', this._onKey);
   }
 
-  destroy() {
-    this.canvas.removeEventListener('pointerdown', this._onTap);
-    document.removeEventListener('keydown', this._onKey);
-    this.state = 'destroyed';
+  _ensureLoop() {
+    if (this._loopRun) return;
+    this._loopRun = true;
+    requestAnimationFrame(() => this.loop());
   }
 
   tap() {
+    if (this.mode === 'online') {
+      if (this.state === 'countdown') return;
+      if (this.state === 'dead') {
+        this.drawDead();
+        return;
+      }
+      if (this.state === 'playing') {
+        this.bird.vy = -(this.H * 0.018);
+        if (_duelWs && _duelWs.readyState === WebSocket.OPEN) {
+          _duelWs.send(JSON.stringify({ type: 'jump' }));
+        }
+      }
+      return;
+    }
+
     if (this.state === 'idle')    { this.start(); return; }
     if (this.state === 'dead')    { this.reset(); this.drawIdle(); return; }
     if (this.state === 'playing') { this.bird.vy = -(this.H * 0.018); }
@@ -7275,11 +7483,51 @@ class FlappyGame {
   start() {
     this.state = 'playing';
     this.bird.vy = -(this.H * 0.018);
-    requestAnimationFrame(() => this.loop());
+    this._ensureLoop();
+  }
+
+  onOpponentJump() {
+    if (this.mode !== 'online' || this.state === 'dead') return;
+    this.opponent.vy = -(this.H * 0.018);
+  }
+
+  onOpponentDead(score) {
+    this.opponent.alive = false;
+    this.opponent.score = Number(score || this.opponent.score || 0);
+  }
+
+  onOnlineResult(result) {
+    this._onlineResult = result;
+    if (this.state !== 'dead') {
+      this.state = 'dead';
+      this.drawDead();
+    }
   }
 
   loop() {
-    if (this.state !== 'playing') return;
+    if (this.state === 'destroyed') {
+      this._loopRun = false;
+      return;
+    }
+
+    if (this.state === 'countdown') {
+      if (Date.now() >= this._startAt) {
+        this.state = 'playing';
+        this.bird.vy = -(this.H * 0.018);
+        this.opponent.vy = -(this.H * 0.018);
+        _duelState = 'playing';
+        duelStatus('Матч начался!');
+      }
+      this.drawCountdown();
+      requestAnimationFrame(() => this.loop());
+      return;
+    }
+
+    if (this.state !== 'playing') {
+      this._loopRun = false;
+      return;
+    }
+
     this.update();
     this.draw();
     requestAnimationFrame(() => this.loop());
@@ -7287,32 +7535,38 @@ class FlappyGame {
 
   update() {
     this.frame++;
-    // gravity
     this.bird.vy += this.H * 0.00095;
     this.bird.y  += this.bird.vy;
-    // speed up
+
+    if (this.mode === 'online' && this.opponent.alive) {
+      this.opponent.vy += this.H * 0.00095;
+      this.opponent.y  += this.opponent.vy;
+    }
+
     if (this.frame % 280 === 0) this.speed = Math.min(this.speed + this.W * 0.0012, this.W * 0.016);
-    // spawn
     if (this.frame % this.pipeInt === 0) {
       const minH = Math.round(this.H * 0.14);
       const maxH = Math.round(this.H - this.gap - this.H * 0.14);
-      const topH = minH + Math.random() * (maxH - minH);
+      const rnd = this.mode === 'online' ? this.rand() : Math.random();
+      const topH = minH + rnd * (maxH - minH);
       this.pipes.push({ x: this.W + 10, topH, passed: false });
     }
-    // move pipes
+
     this.pipes.forEach(p => p.x -= this.speed);
     this.pipes = this.pipes.filter(p => p.x + this.pipeW > -10);
-    // score
+
     this.pipes.forEach(p => {
       if (!p.passed && p.x + this.pipeW < this.bird.x - this.bird.r) {
         p.passed = true;
         this.score++;
         this.onPipe();
+        if (this.mode === 'online' && _duelWs && _duelWs.readyState === WebSocket.OPEN) {
+          _duelWs.send(JSON.stringify({ type: 'score', score: this.score }));
+        }
       }
     });
-    // floor / ceiling
+
     if (this.bird.y - this.bird.r < 0 || this.bird.y + this.bird.r > this.H) { this.die(); return; }
-    // pipe collision
     for (const p of this.pipes) {
       if (this.bird.x + this.bird.r > p.x && this.bird.x - this.bird.r < p.x + this.pipeW) {
         if (this.bird.y - this.bird.r < p.topH || this.bird.y + this.bird.r > p.topH + this.gap) {
@@ -7323,6 +7577,7 @@ class FlappyGame {
   }
 
   onPipe() {
+    if (this.mode === 'online') return;
     if (getGameDailyCoins() < GAME_DAILY_LIMIT) {
       const added = addGameDailyCoins(COINS_PER_PIPE);
       this.coinsEarned += added;
@@ -7332,19 +7587,21 @@ class FlappyGame {
   die() {
     this.state = 'dead';
     setGameHighScore(this.score);
+    if (this.mode === 'online' && _duelWs && _duelWs.readyState === WebSocket.OPEN) {
+      _duelWs.send(JSON.stringify({ type: 'dead', score: this.score }));
+      duelStatus('Ожидание результата...');
+    }
     this.drawDead();
     const msg = document.getElementById('gameMsg');
-    if (msg) msg.textContent = 'Тап или Space — сыграть снова';
+    if (msg) msg.textContent = this.mode === 'online' ? 'Матч завершен' : 'Тап или Space — сыграть снова';
   }
 
-  // ─── Drawing ─────────────────────────────────────────
   drawBg() {
     const g = this.ctx.createLinearGradient(0, 0, 0, this.H);
     g.addColorStop(0, '#07071a');
     g.addColorStop(1, '#0c1625');
     this.ctx.fillStyle = g;
     this.ctx.fillRect(0, 0, this.W, this.H);
-    // stars
     this.ctx.fillStyle = 'rgba(255,255,255,0.25)';
     for (let i = 0; i < 28; i++) {
       const sx = ((i * 137 + 11) % this.W);
@@ -7355,12 +7612,10 @@ class FlappyGame {
 
   drawPipe(p) {
     const ctx = this.ctx;
-    // top
     ctx.fillStyle = '#1b4d1b';
     ctx.fillRect(p.x, 0, this.pipeW, p.topH);
     ctx.fillStyle = '#2a7a2a';
     ctx.fillRect(p.x - 4, p.topH - 18, this.pipeW + 8, 18);
-    // bottom
     const botY = p.topH + this.gap;
     ctx.fillStyle = '#1b4d1b';
     ctx.fillRect(p.x, botY, this.pipeW, this.H - botY);
@@ -7368,25 +7623,17 @@ class FlappyGame {
     ctx.fillRect(p.x - 4, botY, this.pipeW + 8, 18);
   }
 
-  drawBird() {
-    const ctx = this.ctx, b = this.bird, r = b.r;
+  drawBirdAt(x, y, vy, color = '#e8c84a', wing = '#f5d96e') {
+    const ctx = this.ctx;
+    const r = this.bird.r;
     ctx.save();
-    ctx.translate(b.x, b.y);
-    const angle = Math.min(Math.max(b.vy * 0.053, -0.48), 1.1);
+    ctx.translate(x, y);
+    const angle = Math.min(Math.max(vy * 0.053, -0.48), 1.1);
     ctx.rotate(angle);
-    // body
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fillStyle = '#e8c84a'; ctx.fill();
-    // wing
-    ctx.beginPath(); ctx.ellipse(-r * 0.25, r * 0.25, r * 0.62, r * 0.38, -0.3, 0, Math.PI * 2);
-    ctx.fillStyle = '#f5d96e'; ctx.fill();
-    // eye white
-    ctx.beginPath(); ctx.arc(r * 0.38, -r * 0.25, r * 0.26, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff'; ctx.fill();
-    // pupil
-    ctx.beginPath(); ctx.arc(r * 0.44, -r * 0.25, r * 0.13, 0, Math.PI * 2);
-    ctx.fillStyle = '#111'; ctx.fill();
-    // beak
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(-r * 0.25, r * 0.25, r * 0.62, r * 0.38, -0.3, 0, Math.PI * 2); ctx.fillStyle = wing; ctx.fill();
+    ctx.beginPath(); ctx.arc(r * 0.38, -r * 0.25, r * 0.26, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(r * 0.44, -r * 0.25, r * 0.13, 0, Math.PI * 2); ctx.fillStyle = '#111'; ctx.fill();
     ctx.beginPath();
     ctx.moveTo(r * 0.85, -r * 0.07);
     ctx.lineTo(r * 1.28, r * 0.13);
@@ -7403,7 +7650,11 @@ class FlappyGame {
     ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 6;
     ctx.fillText(this.score, this.W / 2, Math.round(this.H * 0.12));
     ctx.shadowBlur = 0;
-    if (this.coinsEarned > 0) {
+    if (this.mode === 'online') {
+      ctx.font = `bold ${Math.round(this.W * 0.032)}px Manrope, sans-serif`;
+      ctx.fillStyle = '#40e0f0';
+      ctx.fillText(`Соперник: ${this.opponent.score || 0}`, this.W / 2, Math.round(this.H * 0.19));
+    } else if (this.coinsEarned > 0) {
       ctx.font = `bold ${Math.round(this.W * 0.038)}px Manrope, sans-serif`;
       ctx.fillStyle = '#e8c84a';
       ctx.fillText('+' + this.coinsEarned + ' 🪙', this.W / 2, Math.round(this.H * 0.19));
@@ -7413,61 +7664,102 @@ class FlappyGame {
   draw() {
     this.drawBg();
     this.pipes.forEach(p => this.drawPipe(p));
-    this.drawBird();
+    this.drawBirdAt(this.bird.x, this.bird.y, this.bird.vy, '#e8c84a', '#f5d96e');
+    if (this.mode === 'online' && this.opponent.alive) {
+      this.drawBirdAt(this.opponent.x, this.opponent.y, this.opponent.vy, '#40e0f0', '#9ff1ff');
+    }
     this.drawHUD();
   }
 
   drawIdle() {
     this.drawBg();
-    this.drawBird();
+    this.drawBirdAt(this.bird.x, this.bird.y, 0, '#e8c84a', '#f5d96e');
     const ctx = this.ctx;
     ctx.fillStyle = 'rgba(232,200,74,0.92)';
     ctx.font = `bold ${Math.round(this.W * 0.052)}px Manrope, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('Тап / Space — начать', this.W / 2, this.H * 0.56);
+    const txt = this.mode === 'online' ? 'Найди соперника для матча' : 'Тап / Space — начать';
+    ctx.fillText(txt, this.W / 2, this.H * 0.56);
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
     ctx.fillText('Лети сквозь трубы и зарабатывай монеты', this.W / 2, this.H * 0.63);
+  }
+
+  drawCountdown() {
+    this.drawBg();
+    this.pipes.forEach(p => this.drawPipe(p));
+    this.drawBirdAt(this.bird.x, this.bird.y, this.bird.vy, '#e8c84a', '#f5d96e');
+    this.drawBirdAt(this.opponent.x, this.opponent.y, this.opponent.vy, '#40e0f0', '#9ff1ff');
+    const ctx = this.ctx;
+    const left = Math.max(0, Math.ceil((this._startAt - Date.now()) / 1000));
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, this.W, this.H);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.round(this.W * 0.07)}px Manrope, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Дуэль начинается', this.W / 2, this.H * 0.42);
+    ctx.fillStyle = '#e8c84a';
+    ctx.font = `bold ${Math.round(this.W * 0.16)}px 'JetBrains Mono', monospace`;
+    ctx.fillText(String(left), this.W / 2, this.H * 0.56);
   }
 
   drawDead() {
     this.draw();
     const ctx = this.ctx;
     const cx = this.W / 2, cy = this.H / 2;
-    const pw = Math.round(this.W * 0.76), ph = Math.round(this.H * 0.42);
+    const pw = Math.round(this.W * 0.78), ph = Math.round(this.H * 0.45);
     ctx.fillStyle = 'rgba(0,0,0,0.52)';
     ctx.fillRect(0, 0, this.W, this.H);
     ctx.fillStyle = 'rgba(13,13,20,0.97)';
     _roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16); ctx.fill();
     ctx.strokeStyle = 'rgba(232,200,74,0.38)'; ctx.lineWidth = 1;
     _roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16); ctx.stroke();
-    // title
+
     ctx.fillStyle = '#fff';
-    ctx.font = `bold ${Math.round(this.W * 0.056)}px Manrope, sans-serif`;
+    ctx.font = `bold ${Math.round(this.W * 0.052)}px Manrope, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('Игра окончена', cx, cy - ph/2 + Math.round(ph * 0.18));
-    // score
+    ctx.fillText(this.mode === 'online' ? 'Матч завершен' : 'Игра окончена', cx, cy - ph/2 + Math.round(ph * 0.16));
+
     ctx.fillStyle = '#e8c84a';
-    ctx.font = `bold ${Math.round(this.W * 0.115)}px 'JetBrains Mono', monospace`;
-    ctx.fillText(this.score, cx, cy - ph/2 + Math.round(ph * 0.46));
-    // highscore
-    ctx.fillStyle = '#9898b8';
-    ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
-    ctx.fillText('Рекорд: ' + getGameHighScore(), cx, cy - ph/2 + Math.round(ph * 0.60));
-    // coins
-    if (this.coinsEarned > 0) {
-      ctx.fillStyle = '#00e080';
-      ctx.font = `bold ${Math.round(this.W * 0.04)}px Manrope, sans-serif`;
-      ctx.fillText('+' + this.coinsEarned + ' монет 🪙', cx, cy - ph/2 + Math.round(ph * 0.76));
+    ctx.font = `bold ${Math.round(this.W * 0.11)}px 'JetBrains Mono', monospace`;
+    ctx.fillText(String(this.score), cx, cy - ph/2 + Math.round(ph * 0.43));
+
+    if (this.mode === 'online') {
+      const res = this._onlineResult;
+      ctx.fillStyle = '#40e0f0';
+      ctx.font = `${Math.round(this.W * 0.04)}px Manrope, sans-serif`;
+      ctx.fillText(`Соперник: ${res ? res.oppScore : this.opponent.score}`, cx, cy - ph/2 + Math.round(ph * 0.58));
+
+      if (res) {
+        const myUid = String(TG_USER?.id || '');
+        const win = !res.draw && String(res.winnerUid || '') === myUid;
+        ctx.fillStyle = res.draw ? '#ffb74d' : (win ? '#66bb6a' : '#ff6b6b');
+        ctx.font = `bold ${Math.round(this.W * 0.042)}px Manrope, sans-serif`;
+        ctx.fillText(res.draw ? 'Ничья' : (win ? 'Победа' : 'Поражение'), cx, cy - ph/2 + Math.round(ph * 0.74));
+        ctx.fillStyle = '#e8c84a';
+        ctx.fillText(`+${Number(res.reward || 0)} 🪙`, cx, cy - ph/2 + Math.round(ph * 0.86));
+      } else {
+        ctx.fillStyle = '#9898b8';
+        ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
+        ctx.fillText('Ожидание результата...', cx, cy - ph/2 + Math.round(ph * 0.78));
+      }
     } else {
-      ctx.fillStyle = '#ff6b6b';
-      ctx.font = `${Math.round(this.W * 0.034)}px Manrope, sans-serif`;
-      ctx.fillText('Лимит монет исчерпан', cx, cy - ph/2 + Math.round(ph * 0.76));
+      ctx.fillStyle = '#9898b8';
+      ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
+      ctx.fillText('Рекорд: ' + getGameHighScore(), cx, cy - ph/2 + Math.round(ph * 0.60));
+      if (this.coinsEarned > 0) {
+        ctx.fillStyle = '#00e080';
+        ctx.font = `bold ${Math.round(this.W * 0.04)}px Manrope, sans-serif`;
+        ctx.fillText('+' + this.coinsEarned + ' монет 🪙', cx, cy - ph/2 + Math.round(ph * 0.76));
+      } else {
+        ctx.fillStyle = '#ff6b6b';
+        ctx.font = `${Math.round(this.W * 0.034)}px Manrope, sans-serif`;
+        ctx.fillText('Лимит монет исчерпан', cx, cy - ph/2 + Math.round(ph * 0.76));
+      }
+      ctx.fillStyle = 'rgba(232,200,74,0.8)';
+      ctx.font = `bold ${Math.round(this.W * 0.037)}px Manrope, sans-serif`;
+      ctx.fillText('Тап / Space — снова', cx, cy - ph/2 + Math.round(ph * 0.91));
     }
-    // hint
-    ctx.fillStyle = 'rgba(232,200,74,0.8)';
-    ctx.font = `bold ${Math.round(this.W * 0.037)}px Manrope, sans-serif`;
-    ctx.fillText('Тап / Space — снова', cx, cy - ph/2 + Math.round(ph * 0.91));
   }
 }
 </script>
