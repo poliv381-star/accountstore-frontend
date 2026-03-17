@@ -34,6 +34,28 @@
 
   --r:  16px;
   --r2: 24px;
+
+  --hdr-bg: rgba(6,6,8,0.88);
+  --hdr-border: rgba(232,200,74,0.08);
+  --nav-bg: rgba(9,9,14,0.96);
+  --grain-opacity: 1;
+}
+
+:root[data-theme="light"] {
+  --bg:       #eef1f6;
+  --s1:       #ffffff;
+  --s2:       #f6f7fb;
+  --s3:       #eceff5;
+  --border:   #dfe3ee;
+  --border2:  #cfd6e5;
+  --text:     #1f2430;
+  --sub:      #5f6878;
+  --dim:      #8b93a5;
+
+  --hdr-bg: rgba(246,247,251,0.92);
+  --hdr-border: rgba(0,0,0,0.06);
+  --nav-bg: rgba(246,247,251,0.95);
+  --grain-opacity: 0.3;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -53,7 +75,7 @@ body::after {
   content: '';
   position: fixed; inset: 0; z-index: 999; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-  opacity: 1;
+  opacity: var(--grain-opacity);
 }
 
 /* ══════════════════════════════════════════
@@ -61,10 +83,10 @@ body::after {
 ══════════════════════════════════════════ */
 .hdr {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(6,6,8,0.88);
+  background: var(--hdr-bg);
   backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border-bottom: 1px solid rgba(232,200,74,0.08);
+  border-bottom: 1px solid var(--hdr-border);
   padding: 13px 18px;
   display: flex; align-items: center; justify-content: space-between;
 }
@@ -126,7 +148,7 @@ body::after {
 ══════════════════════════════════════════ */
 .nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(9,9,14,0.96);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   border-top: 1px solid var(--border);
   display: flex;
@@ -1189,6 +1211,39 @@ body::after {
 .m-ico svg { width:16px; height:16px; stroke:var(--gold); }
 .m-txt { font-size:14px; font-weight:700; flex:1; }
 .m-arr { color:var(--dim); font-size:18px; }
+
+.theme-mode-label {
+  font-size: 12px;
+  color: var(--sub);
+  font-weight: 700;
+}
+
+.theme-switch {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  position: relative;
+  transition: .2s;
+}
+
+.theme-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  transition: .2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+.theme-switch.on::after {
+  transform: translateX(20px);
+}
 
 /* PRIVACY SETTINGS */
 .privacy-card {
@@ -2713,6 +2768,20 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
   </div>
 
   <div class="menu-l">
+    <div class="mrow" onclick="toggleTheme()">
+      <div class="m-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+      </div>
+      <div class="m-txt">Тема</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="themeModeLabel" class="theme-mode-label">Тёмная</span>
+        <div id="themeSwitch" class="theme-switch"></div>
+      </div>
+    </div>
+
     <div class="mrow" onclick="openTxHistory()">
       <div class="m-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
@@ -3321,12 +3390,49 @@ const API_BASE = 'https://accountstore-backend-production.up.railway.app';  // �
 // TELEGRAM WEBAPР
 // ══════════════════════════════════════════════════════════
 const tg = window.Telegram?.WebApp;
+
+function getInitialTheme() {
+  const saved = localStorage.getItem('as_theme');
+  if (saved === 'dark' || saved === 'light') return saved;
+  const tgScheme = String(tg?.colorScheme || '').toLowerCase();
+  return tgScheme === 'light' ? 'light' : 'dark';
+}
+
+function updateThemeToggleUI(theme) {
+  const label = document.getElementById('themeModeLabel');
+  const sw = document.getElementById('themeSwitch');
+  if (label) label.textContent = theme === 'light' ? 'Светлая' : 'Тёмная';
+  if (sw) sw.classList.toggle('on', theme === 'light');
+}
+
+function applyTheme(theme, persist = true) {
+  const nextTheme = theme === 'light' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', nextTheme);
+  updateThemeToggleUI(nextTheme);
+  if (persist) localStorage.setItem('as_theme', nextTheme);
+
+  if (tg) {
+    if (nextTheme === 'light') {
+      tg.setHeaderColor('#f6f7fb');
+      tg.setBackgroundColor('#eef1f6');
+    } else {
+      tg.setHeaderColor('#060608');
+      tg.setBackgroundColor('#060608');
+    }
+  }
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  applyTheme(cur === 'light' ? 'dark' : 'light');
+}
+
 if (tg) {
   tg.ready();
   tg.expand();
-  tg.setHeaderColor('#060608');
-  tg.setBackgroundColor('#060608');
 }
+
+applyTheme(getInitialTheme(), false);
 
 const TG_USER   = tg?.initDataUnsafe?.user || null;
 const INIT_DATA = tg?.initData || '';
@@ -3670,6 +3776,21 @@ function buildCats() {
       ${c.name}
     </div>`
   ).join('');
+}
+
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+function safeSrc(url) {
+  if (!url || typeof url !== 'string') return '';
+  return /^https:\/\//i.test(url) ? url : '';
 }
 
 function catName(cat) {
@@ -4858,7 +4979,7 @@ function openListing(id, listingObj) {
   const sellerReviews = Number(l.seller_reviews_total || 0);
   const sellerPositive = rat !== null && rat !== undefined ? `${Math.round(Number(rat))}% позит.` : 'Нет отзывов';
   const regDate = l.seller_created_at ? new Date(l.seller_created_at).toLocaleDateString('ru', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Не указана';
-  const sellerPublicName = l.seller_username ? '@' + l.seller_username : 'Продавец скрыт';
+  const sellerPublicName = l.seller_username ? '@' + escapeHtml(l.seller_username) : 'Продавец скрыт';
   const rCls = rat === null ? 'new' : Number(rat) >= 55 ? 'good' : 'bad';
   const timeText = l.avail_from
     ? `С ${l.avail_from.slice(0,5)} до ${l.avail_to.slice(0,5)} МСК`
@@ -4930,7 +5051,7 @@ function openListing(id, listingObj) {
     ${carouselHtml}
     <div style="padding:${carouselHtml ? '14px' : '8px'} 20px 24px">
     <div class="ld-seller-row">
-      <div class="ld-seller-ava">${(l.seller_name||'?').charAt(0).toUpperCase()}</div>
+      <div class="ld-seller-ava">${escapeHtml((l.seller_name||'?').charAt(0).toUpperCase())}</div>
       <div class="ld-seller-info">
         <div class="ld-seller-name">${sellerPublicName}</div>
         <div class="ld-seller-sub">Регистрация: ${regDate}</div>
@@ -4941,13 +5062,13 @@ function openListing(id, listingObj) {
         </div>
       </div>
     </div>
-    <div style="font-size:38px;font-weight:900;margin-bottom:6px;line-height:1.2">${l.title}</div>
+    <div style="font-size:38px;font-weight:900;margin-bottom:6px;line-height:1.2">${escapeHtml(l.title)}</div>
     <div style="font-size:12px;color:var(--dim);margin-bottom:4px;letter-spacing:.03em">Артикул: ${l.article || `ART-${String(l.id || '').padStart(8, '0')}`}</div>
     <div style="font-size:12px;color:var(--dim);margin-bottom:8px;letter-spacing:.03em">Опубликовано: ${pubDate}</div>
     <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:16px">$${Number(l.price).toFixed(2)}</div>
     <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
       <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Описание товара</div>
-      <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:14px;word-wrap:break-word;overflow-wrap:break-word">${l.description || 'Нет описания'}</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:14px;word-wrap:break-word;overflow-wrap:break-word;white-space:pre-wrap">${escapeHtml(l.description || 'Нет описания')}</div>
       
       <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
         <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Категория</div>
@@ -4963,7 +5084,7 @@ function openListing(id, listingObj) {
       ${l.terms ? `
         <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
           <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Условия сделки</div>
-          <div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word">${l.terms}</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word">${escapeHtml(l.terms)}</div>
         </div>
       ` : ''}
     </div>
@@ -5461,7 +5582,7 @@ async function openMyListings() {
     el.innerHTML = listings.map(l => `<div class="deal-card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
         <div>
-          <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:4px">${l.title}</div>
+          <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:4px">${escapeHtml(l.title)}</div>
           <div style="font-size:14px;color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700">$${Number(l.price).toFixed(2)}</div>
           <div style="font-size:12px;color:${Number(l.days_left) <= 3 ? '#ffb74d' : 'var(--dim)'};margin-top:4px">Срок жизни: ${Number(l.days_left) <= 0 ? 'истёк' : `${Number(l.days_left)} дн. осталось`}</div>
         </div>
@@ -5512,7 +5633,7 @@ async function loadMyListingsInline() {
         <!-- ИНФО -->
         <div class="listing-info">
           <div>
-            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${l.title}${isPaused ? ' <span style="font-size:11px;color:var(--dim)">(пауза)</span>' : ''}</div>
+            <div class="listing-title" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">${escapeHtml(l.title)}${isPaused ? ' <span style="font-size:11px;color:var(--dim)">(пауза)</span>' : ''}</div>
             <div class="listing-price">$${Number(l.price).toFixed(2)}</div>
             <div style="font-size:12px;color:${stockColor};font-weight:700">${l.quantity} шт</div>
             <div style="font-size:12px;color:${Number(l.days_left) <= 3 ? '#ffb74d' : 'var(--dim)'};margin-top:4px">До автопаузы: ${Number(l.days_left) <= 0 ? 'истёк' : `${Number(l.days_left)} дн.`}</div>
@@ -5814,23 +5935,25 @@ async function renderChatMessages(messages) {
     const timeStr = new Date(m.created_at).toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'});
 
     // Построение HTML фото
-    const photoHtml = m.image_url ? `
+    const safeImg = safeSrc(m.image_url);
+    const photoHtml = safeImg ? `
       <div style="margin:8px 0 0 0">
-        <img src="${m.image_url}" 
+        <img src="${safeImg}" 
              class="chat-image"
-             onclick="openChatImage('${m.image_url}')" 
+             onclick="openChatImage('${safeImg}')" 
              style="max-width:100%;max-height:280px;border-radius:10px;cursor:pointer;display:block;transition:opacity 0.2s"
              onmouseover="this.style.opacity='0.85'"
              onmouseout="this.style.opacity='1'">
       </div>
     ` : '';
 
-    const fileHtml = m.file_url ? `
-      <a href="${m.file_url}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin-top:8px;background:${mine ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'};border:1px solid ${mine ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)'};border-radius:10px;text-decoration:none;color:inherit">
+    const safeFile = safeSrc(m.file_url);
+    const fileHtml = safeFile ? `
+      <a href="${safeFile}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin-top:8px;background:${mine ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.06)'};border:1px solid ${mine ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)'};border-radius:10px;text-decoration:none;color:inherit">
         <span style="font-size:18px">📎</span>
         <div style="min-width:0;flex:1">
-          <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.file_name || 'Вложение'}</div>
-          <div style="font-size:11px;opacity:.72">${m.file_mime || 'файл'} · ${formatChatFileSize(m.file_size)}</div>
+          <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(m.file_name || 'Вложение')}</div>
+          <div style="font-size:11px;opacity:.72">${escapeHtml(m.file_mime || 'файл')} · ${formatChatFileSize(m.file_size)}</div>
         </div>
         <span style="font-size:12px;opacity:.8">Открыть</span>
       </a>
@@ -5839,7 +5962,7 @@ async function renderChatMessages(messages) {
     return `
     <div style="display:flex;margin-bottom:8px;justify-content:${mine ? 'flex-end' : 'flex-start'}">
       <div style="max-width:78%;padding:${m.image_url ? '0' : '10px 12px'};border-radius:16px;background:${mine ? 'linear-gradient(135deg,var(--gold),var(--gold2))' : '#22222c'};color:${mine ? '#111' : '#fff'};border:${mine ? 'none' : '1px solid rgba(255,255,255,.08)'};box-shadow:0 6px 16px rgba(0,0,0,.18)">
-        ${m.message && m.message.trim() ? `<div style="padding:${m.image_url ? '10px 12px 0' : '0'};line-height:1.45;word-break:break-word">${m.message}</div>` : ''}
+        ${m.message && m.message.trim() ? `<div style="padding:${m.image_url ? '10px 12px 0' : '0'};line-height:1.45;word-break:break-word;white-space:pre-wrap">${escapeHtml(m.message)}</div>` : ''}
         ${photoHtml}
         ${fileHtml}
         <div style="padding:${(m.image_url || m.file_url) ? '8px 12px 10px' : '4px 0 0'};display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:${mine ? 'rgba(0,0,0,0.68)' : 'rgba(255,255,255,0.62)'}">
@@ -6469,7 +6592,7 @@ async function openListingHistory() {
       const catName_val = { accounts:'Аккаунты', games:'Игры', software:'Софт', other:'Другое' }[l.category] || l.category;
       return `<div class="deal-card" onclick="openListing(${l.id}, ${JSON.stringify(l).replace(/"/g, '&quot;')})">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
-          <div><div style="font-size:14px;font-weight:700;color:var(--text)">${l.title}</div></div>
+          <div><div style="font-size:14px;font-weight:700;color:var(--text)">${escapeHtml(l.title)}</div></div>
           <div style="font-size:12px;color:var(--gold)">$${Number(l.price).toFixed(2)}</div>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--dim)">
