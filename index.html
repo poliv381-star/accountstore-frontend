@@ -2634,80 +2634,33 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
 }
 
 /* ══════════════════════════════════════════
-   GAME PAGE
+   MERCHANT GAME PAGE — Торговец
 ══════════════════════════════════════════ */
-.lb-tab {
-  padding: 7px 16px;
-  border: 1px solid var(--border);
-  background: var(--s2);
-  border-radius: 20px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--dim);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: .2s;
-}
-.lb-tab.on {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  border-color: transparent;
-  color: #000;
-}
-.game-tab-bar {
-  display: flex;
-  gap: 0;
-  margin: 0 18px 16px;
-  background: var(--s2);
-  border-radius: 12px;
-  padding: 4px;
-  border: 1px solid var(--border);
-}
-.game-tab-btn {
-  flex: 1;
-  padding: 9px;
-  border: none;
-  background: transparent;
-  border-radius: 9px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--dim);
-  cursor: pointer;
-  transition: .2s;
-}
-.game-tab-btn.on {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #000;
-}
-.game-coins-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 18px 12px;
-  padding: 13px 16px;
-  background: var(--s2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-}
-.game-coin-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.game-coin-col .label { font-size: 10px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
-.game-coin-col .value { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 900; }
-.game-canvas-wrap {
-  margin: 0 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-#flappyCanvas {
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  width: 100%;
-  max-width: 360px;
-  touch-action: none;
-  display: block;
-}
+.game-tab-bar { display:flex;gap:0;margin:0 18px 14px;background:var(--s2);border-radius:12px;padding:4px;border:1px solid var(--border); }
+.game-tab-btn { flex:1;padding:9px;border:none;background:transparent;border-radius:9px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:800;color:var(--dim);cursor:pointer;transition:.2s; }
+.game-tab-btn.on { background:linear-gradient(135deg,var(--gold),var(--orange));color:#000; }
+.merch-stats-bar { display:flex;align-items:center;justify-content:space-around;margin:0 18px 14px;padding:13px 10px;background:var(--s2);border:1px solid var(--border);border-radius:14px; }
+.merch-stat { display:flex;flex-direction:column;align-items:center;gap:2px; }
+.merch-stat .label { font-size:10px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.06em; }
+.merch-stat .value { font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:900; }
+.merch-product-card { display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--s2);border:1px solid var(--border);border-radius:14px;transition:.2s; }
+.merch-product-card.bought { border-color:rgba(232,200,74,.4);background:rgba(232,200,74,.05); }
+.merch-product-emoji { font-size:28px;line-height:1;min-width:36px;text-align:center; }
+.merch-product-info { flex:1;min-width:0; }
+.merch-product-name { font-size:14px;font-weight:800;color:var(--text);margin-bottom:2px; }
+.merch-product-cat { font-size:11px;color:var(--dim);font-weight:600; }
+.merch-buy-btn, .merch-sell-btn { padding:8px 14px;border:none;border-radius:9px;font-family:'Manrope',sans-serif;font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;transition:.2s;flex-shrink:0; }
+.merch-buy-btn { background:linear-gradient(135deg,var(--gold),var(--orange));color:#000; }
+.merch-buy-btn:disabled { opacity:.4;cursor:not-allowed; }
+.merch-sell-btn { background:linear-gradient(135deg,var(--green),#00b860);color:#000; }
+.merch-event-card { margin:0 0 12px;padding:18px;border-radius:16px;background:linear-gradient(135deg,rgba(19,19,24,.9),rgba(26,26,34,.75));border:1px solid rgba(232,200,74,.2); }
+.merch-cooldown-card { padding:28px 20px;background:var(--s2);border:1px solid var(--border);border-radius:16px;text-align:center;margin-bottom:12px; }
+.merch-phase-label { display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px; }
+.mp-buy   { background:rgba(232,200,74,.12);color:var(--gold);  border:1px solid rgba(232,200,74,.3); }
+.mp-event { background:rgba(255,140,66,.10);color:var(--orange);border:1px solid rgba(255,140,66,.3); }
+.mp-sell  { background:rgba(0,224,128,.10); color:var(--green); border:1px solid rgba(0,224,128,.3); }
+.lb-tab { padding:7px 16px;border:1px solid var(--border);background:var(--s2);border-radius:20px;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer;white-space:nowrap;transition:.2s; }
+.lb-tab.on { background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;color:#000; }
 </style>
 </head>
 <body>
@@ -2799,66 +2752,46 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
 <!-- GAME -->
 <div class="pg" id="pg-game">
   <div class="pg-head" style="display:flex;align-items:center;justify-content:space-between;padding-right:18px">
-    <span>🎮 Игра</span>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold)" id="gameCoinsToday">0 / 200 🪙</div>
+    <span>� Торговец</span>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--gold)" id="merchantHeaderGold">— 💰</div>
   </div>
 
   <!-- Tab switcher -->
   <div class="game-tab-bar">
-    <button class="game-tab-btn on" id="gameTabGame" onclick="switchGameTab('game')">🐦 Игра</button>
-    <button class="game-tab-btn" id="gameTabBoard" onclick="switchGameTab('board')">🏆 Рейтинг</button>
+    <button class="game-tab-btn on" id="gameTabMarket" onclick="switchGameTab('market')">🛒 Рынок</button>
+    <button class="game-tab-btn" id="gameTabRating" onclick="switchGameTab('rating')">🏆 Рейтинг</button>
   </div>
 
-  <div style="display:flex;gap:8px;margin:0 18px 12px">
-    <button id="playModeSolo" onclick="switchPlayMode('solo')" style="flex:1;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;font-size:13px;font-weight:900;cursor:pointer">Соло</button>
-    <button id="playModeOnline" onclick="switchPlayMode('online')" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-size:13px;font-weight:800;cursor:pointer">Онлайн 1v1</button>
-  </div>
-
-  <div id="onlineDuelPanel" style="display:none;margin:0 18px 12px;padding:12px;border-radius:12px;border:1px solid rgba(0,207,232,.25);background:rgba(0,207,232,.06)">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:800;color:var(--text)">⚔️ Дуэль онлайн</div>
-      <div style="font-size:11px;color:var(--dim)">Банк: <b style="color:var(--gold)">36 🪙 победа / 12 🪙 участие</b></div>
+  <!-- Stats bar -->
+  <div class="merch-stats-bar">
+    <div class="merch-stat">
+      <div class="label">Золото</div>
+      <div class="value" id="merchantGoldStat" style="color:var(--gold)">—</div>
     </div>
-    <div id="duelStatus" style="font-size:12px;color:var(--dim);margin-bottom:10px">Нажми «Найти соперника», чтобы начать матч</div>
-    <div style="display:flex;gap:8px">
-      <button id="duelFindBtn" onclick="startOnlineMatchmaking()" style="flex:1;padding:10px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:#00151a;font-size:12px;font-weight:900;cursor:pointer">Найти соперника</button>
-      <button id="duelCancelBtn" onclick="cancelOnlineMatchmaking()" style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--s2);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;display:none">Отмена</button>
+    <div class="merch-stat">
+      <div class="label">Уровень</div>
+      <div class="value" id="merchantLevelStat" style="color:var(--cyan)">—</div>
     </div>
-  </div>
-
-  <!-- GAME SECTION -->
-  <div id="gameSectionGame">
-    <div class="game-coins-bar">
-      <div class="game-coin-col">
-        <div class="label">Всего монет</div>
-        <div class="value" id="gameTotalCoins" style="color:var(--gold)">0</div>
-      </div>
-      <div class="game-coin-col">
-        <div class="label">Рекорд</div>
-        <div class="value" id="gameHighScore" style="color:var(--cyan)">0</div>
-      </div>
-      <div class="game-coin-col">
-        <div class="label">Сегодня</div>
-        <div class="value" id="gameDailyCoins" style="color:var(--green)">0</div>
-      </div>
-    </div>
-    <div class="game-canvas-wrap">
-      <canvas id="flappyCanvas" height="420"></canvas>
-      <div id="gameMsg" style="font-size:13px;color:var(--dim);text-align:center">Нажми или тапни чтобы начать</div>
-      <div style="font-size:11px;color:var(--dim);text-align:center;padding-bottom:4px">
-        За каждую трубу: <b style="color:var(--gold)">+5 монет</b> · Лимит: <b style="color:var(--gold)">200/день</b>
-      </div>
+    <div class="merch-stat">
+      <div class="label">Монет</div>
+      <div class="value" id="merchantCoinsStat" style="color:var(--green)">—</div>
     </div>
   </div>
 
-  <!-- LEADERBOARD SECTION -->
-  <div id="gameSectionBoard" style="display:none">
+  <!-- Market section -->
+  <div id="gameSectionMarket">
+    <div id="merchantGameContent" style="padding:0 18px;display:flex;flex-direction:column;gap:10px">
+      <div class="spin-wrap"><div class="spin"></div></div>
+    </div>
+  </div>
+
+  <!-- Rating section -->
+  <div id="gameSectionRating" style="display:none">
     <div style="display:flex;gap:8px;margin:0 18px 12px;overflow-x:auto;padding-bottom:2px">
-      <button class="lb-tab on" id="lbTabDay" onclick="switchLbTab('day')">День</button>
-      <button class="lb-tab" id="lbTabWeek" onclick="switchLbTab('week')">Неделя</button>
-      <button class="lb-tab" id="lbTabAll" onclick="switchLbTab('all')">Всё время</button>
+      <button class="lb-tab on" id="lbTabWeek" onclick="switchMerchLbTab('week')">Неделя</button>
+      <button class="lb-tab" id="lbTabAll" onclick="switchMerchLbTab('all')">Всё время</button>
     </div>
-    <div id="leaderboardList" style="padding:0 18px;display:flex;flex-direction:column;gap:8px">
+    <div id="merchantLeaderboardList" style="padding:0 18px;display:flex;flex-direction:column;gap:8px">
       <div class="spin-wrap"><div class="spin"></div></div>
     </div>
   </div>
@@ -7055,206 +6988,66 @@ function haptic(type) {
 })();
 
 // ══════════════════════════════════════════════════════════
-// GAME PAGE — Solo + Online Duel
+// MERCHANT GAME — Торговец
+// Покупай дёшево, продавай дорого. Реагируй на события.
+// Связка с реальной доской: категории влияют на цены.
 // ══════════════════════════════════════════════════════════
-const GAME_DAILY_LIMIT = 200;
-const COINS_PER_PIPE   = 5;
-let _flappyGame = null;
-let _gameMode = 'solo';
-let _duelWs = null;
-let _duelState = 'idle'; // idle|searching|matched|playing|done
 
-function duelStatus(text) {
-  const el = document.getElementById('duelStatus');
-  if (el) el.textContent = text;
+const MERCH_ROUND_MS   = 8 * 60 * 60 * 1000; // 8 ч кулдаун
+const MERCH_START_GOLD = 1000;
+const MERCH_COIN_RATE  = 10; // 1 🪙 за каждые N золота прибыли
+
+const MERCH_LEVELS = [
+  { level: 1, name: 'Новичок',  slots: 2,  minDeals: 0  },
+  { level: 2, name: 'Торговец', slots: 4,  minDeals: 3  },
+  { level: 3, name: 'Купец',    slots: 6,  minDeals: 8  },
+  { level: 4, name: 'Магнат',   slots: 8,  minDeals: 15 }
+];
+
+const MERCH_PRODUCTS = [
+  { id: 'phone',     name: 'Смартфон',  cat: 'electronics', emoji: '📱', base: 500 },
+  { id: 'tablet',    name: 'Планшет',   cat: 'electronics', emoji: '💻', base: 350 },
+  { id: 'parts',     name: 'Запчасти',  cat: 'auto',        emoji: '🔧', base: 200 },
+  { id: 'moto',      name: 'Мотоцикл',  cat: 'auto',        emoji: '🏍️', base: 700 },
+  { id: 'shoes',     name: 'Кроссовки', cat: 'clothes',     emoji: '👟', base: 100 },
+  { id: 'jacket',    name: 'Куртка',    cat: 'clothes',     emoji: '🧥', base: 150 },
+  { id: 'rent',      name: 'Аренда',    cat: 'realty',      emoji: '🏠', base: 800 },
+  { id: 'furniture', name: 'Мебель',    cat: 'realty',      emoji: '🛋️', base: 280 }
+];
+
+const MERCH_EVENTS = [
+  { id: 'new_iphone',   emoji: '📱', title: 'Новый iPhone вышел!',       desc: 'Старые смартфоны резко подешевели',         eff: { electronics: -0.30 } },
+  { id: 'summer_auto',  emoji: '🚗', title: 'Лето — сезон авто!',        desc: 'Спрос на транспорт резко вырос',            eff: { auto: +0.40 } },
+  { id: 'sneaker_drop', emoji: '👟', title: 'Дропнули кроссовки!',       desc: 'Перекупы скупили всё — одежда дорожает',   eff: { clothes: +0.50 } },
+  { id: 'crisis',       emoji: '📉', title: 'Экономический кризис',      desc: 'Все рынки рухнули на 20%',                 eff: { electronics: -0.20, auto: -0.20, clothes: -0.20, realty: -0.20 } },
+  { id: 'sale_season',  emoji: '🌧️', title: 'Сезон распродаж',          desc: 'Рынок одежды перегрет — цены падают',      eff: { clothes: -0.40 } },
+  { id: 'customs',      emoji: '🚫', title: 'Таможня задержала партию',  desc: 'Электроника в дефиците — дорожает',        eff: { electronics: +0.35 } },
+  { id: 'realty_boom',  emoji: '🏙️', title: 'Бум на рынке жилья!',      desc: 'Аренда и мебель резко выросли',            eff: { realty: +0.45 } },
+  { id: 'auto_bust',    emoji: '🌊', title: 'Авторынок затоварен',       desc: 'Много предложений — авто дешевеет',        eff: { auto: -0.35 } },
+  { id: 'tech_boom',    emoji: '💡', title: 'Технологический бум!',      desc: 'Электроника в моде — цены растут',         eff: { electronics: +0.25 } },
+  { id: 'renovation',   emoji: '🏗️', title: 'Волна ремонтов!',          desc: 'Мебель раскупают — цены растут',           eff: { realty: +0.30 } }
+];
+
+// ── Helpers ──────────────────────────────────────────────
+function _ms()   { return JSON.parse(localStorage.getItem('merchantState') || '{}'); }
+function _mss(s) { localStorage.setItem('merchantState', JSON.stringify(s)); }
+
+function catToGameCat(c) {
+  c = (c || '').toLowerCase();
+  if (c.includes('электроник') || c.includes('телефон') || c.includes('смартфон') || c.includes('ноутбук') || c.includes('техник') || c.includes('гаджет')) return 'electronics';
+  if (c.includes('авто') || c.includes('машин') || c.includes('транспорт') || c.includes('мото')) return 'auto';
+  if (c.includes('одежд') || c.includes('обувь') || c.includes('обув') || c.includes('мод')) return 'clothes';
+  if (c.includes('недвиж') || c.includes('аренд') || c.includes('квартир') || c.includes('мебел')) return 'realty';
+  return null;
 }
 
-function duelButtons(searching) {
-  const f = document.getElementById('duelFindBtn');
-  const c = document.getElementById('duelCancelBtn');
-  if (f) f.style.display = searching ? 'none' : '';
-  if (c) c.style.display = searching ? '' : 'none';
+function catLabel(cat) {
+  return { electronics: 'Электроника', auto: 'Авто', clothes: 'Одежда', realty: 'Недвижимость' }[cat] || cat;
 }
 
-function getWsUrl() {
-  const configured = window.DUEL_WS_BASE || localStorage.getItem('duel_ws_base') || API_BASE;
-  let host = location.host;
-  try {
-    const u = new URL(configured);
-    host = u.host;
-  } catch {}
-  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const uid = encodeURIComponent(String(TG_USER?.id || 'anon_' + Math.random().toString(36).slice(2, 8)));
-  const name = encodeURIComponent((TG_USER?.first_name || TG_USER?.username || 'Игрок').slice(0, 30));
-  return `${proto}//${host}/ws/duel?uid=${uid}&name=${name}`;
-}
-
-function ensureDuelSocket() {
-  if (_duelWs && (_duelWs.readyState === WebSocket.OPEN || _duelWs.readyState === WebSocket.CONNECTING)) return;
-  _duelWs = new WebSocket(getWsUrl());
-  _duelWs.onopen = () => {
-    if (_duelState === 'searching') {
-      _duelWs.send(JSON.stringify({ type: 'queue' }));
-      duelStatus('Ищем соперника...');
-      duelButtons(true);
-    }
-  };
-  _duelWs.onmessage = (ev) => {
-    let msg;
-    try { msg = JSON.parse(ev.data); } catch { return; }
-    if (msg.type === 'queued') {
-      duelStatus('Ищем соперника...');
-      return;
-    }
-    if (msg.type === 'matched') {
-      _duelState = 'matched';
-      duelStatus(`Соперник: ${msg.opponent?.name || 'Игрок'} · старт через 3 сек`);
-      if (_flappyGame) _flappyGame.prepareOnline(msg);
-      return;
-    }
-    if (msg.type === 'opponent_jump') {
-      if (_flappyGame) _flappyGame.onOpponentJump();
-      return;
-    }
-    if (msg.type === 'opponent_dead') {
-      if (_flappyGame) _flappyGame.onOpponentDead(Number(msg.score || 0));
-      return;
-    }
-    if (msg.type === 'result') {
-      _duelState = 'done';
-      duelButtons(false);
-      const reward = Number(msg.reward || 0);
-      if (reward > 0) addGameDailyCoins(reward);
-      if (_flappyGame) _flappyGame.onOnlineResult(msg);
-      const draw = !!msg.draw;
-      if (draw) duelStatus(`Ничья. +${reward} 🪙`);
-      else {
-        const myUid = String(TG_USER?.id || '');
-        const win = String(msg.winnerUid || '') === myUid;
-        duelStatus(win ? `Победа! +${reward} 🪙` : `Поражение. +${reward} 🪙`);
-      }
-      return;
-    }
-    if (msg.type === 'error') {
-      duelStatus(msg.message || 'Ошибка соединения');
-      duelButtons(false);
-    }
-  };
-  _duelWs.onclose = () => {
-    if (_duelState === 'searching') duelStatus('Соединение потеряно. Нажмите «Найти соперника»');
-    duelButtons(false);
-    _duelState = 'idle';
-  };
-}
-
-function startOnlineMatchmaking() {
-  switchPlayMode('online');
-  _duelState = 'searching';
-  duelStatus('Подключение...');
-  duelButtons(true);
-  ensureDuelSocket();
-  if (_duelWs && _duelWs.readyState === WebSocket.OPEN) {
-    _duelWs.send(JSON.stringify({ type: 'queue' }));
-    duelStatus('Ищем соперника...');
-  }
-}
-
-function cancelOnlineMatchmaking() {
-  _duelState = 'idle';
-  if (_duelWs && _duelWs.readyState === WebSocket.OPEN) {
-    _duelWs.send(JSON.stringify({ type: 'leave_queue' }));
-  }
-  duelButtons(false);
-  duelStatus('Поиск отменен');
-}
-
-function switchPlayMode(mode) {
-  _gameMode = mode === 'online' ? 'online' : 'solo';
-  const soloBtn = document.getElementById('playModeSolo');
-  const onlineBtn = document.getElementById('playModeOnline');
-  const panel = document.getElementById('onlineDuelPanel');
-  if (soloBtn && onlineBtn) {
-    if (_gameMode === 'solo') {
-      soloBtn.style.background = 'linear-gradient(135deg,var(--gold),var(--orange))';
-      soloBtn.style.border = 'none';
-      soloBtn.style.color = '#000';
-      onlineBtn.style.background = 'var(--s2)';
-      onlineBtn.style.border = '1px solid var(--border)';
-      onlineBtn.style.color = 'var(--text)';
-    } else {
-      onlineBtn.style.background = 'linear-gradient(135deg,var(--cyan),var(--cyan2))';
-      onlineBtn.style.border = 'none';
-      onlineBtn.style.color = '#00151a';
-      soloBtn.style.background = 'var(--s2)';
-      soloBtn.style.border = '1px solid var(--border)';
-      soloBtn.style.color = 'var(--text)';
-    }
-  }
-  if (panel) panel.style.display = _gameMode === 'online' ? 'block' : 'none';
-  if (_flappyGame) _flappyGame.setMode(_gameMode);
-  if (_gameMode === 'solo') {
-    duelButtons(false);
-    duelStatus('Нажми «Найти соперника», чтобы начать матч');
-  }
-}
-
-function initGamePage() {
-  updateGameUI();
-  switchGameTab('game');
-  switchPlayMode(_gameMode);
-}
-
-function updateGameUI() {
-  const daily = getGameDailyCoins();
-  const total = getGameTotalCoins();
-  const high  = getGameHighScore();
-  const el1 = document.getElementById('gameCoinsToday');
-  const el2 = document.getElementById('gameTotalCoins');
-  const el3 = document.getElementById('gameHighScore');
-  const el4 = document.getElementById('gameDailyCoins');
-  if (el1) el1.textContent = daily + ' / ' + GAME_DAILY_LIMIT + ' 🪙';
-  if (el2) el2.textContent = total;
-  if (el3) el3.textContent = high;
-  if (el4) el4.textContent = daily;
-}
-
-function getGameDailyCoins() {
-  const today = new Date().toDateString();
-  const d = JSON.parse(localStorage.getItem('gameDaily') || '{}');
-  if (d.date !== today) return 0;
-  return d.coins || 0;
-}
-
-function addGameDailyCoins(n) {
-  const today = new Date().toDateString();
-  const d = JSON.parse(localStorage.getItem('gameDaily') || '{}');
-  if (d.date !== today) { d.date = today; d.coins = 0; }
-  const remaining = GAME_DAILY_LIMIT - (d.coins || 0);
-  const add = Math.min(n, Math.max(0, remaining));
-  if (add <= 0) return 0;
-  d.coins = (d.coins || 0) + add;
-  localStorage.setItem('gameDaily', JSON.stringify(d));
-  const total = getGameTotalCoins() + add;
-  localStorage.setItem('gameTotalCoins', String(total));
-  updateGameUI();
-  return add;
-}
-
-function getGameTotalCoins() {
-  return parseInt(localStorage.getItem('gameTotalCoins') || '0');
-}
-
-function getGameHighScore() {
-  return parseInt(localStorage.getItem('gameHighScore') || '0');
-}
-
-function setGameHighScore(score) {
-  const cur = getGameHighScore();
-  if (score > cur) {
-    localStorage.setItem('gameHighScore', String(score));
-    updateGameUI();
-  }
-  saveToLeaderboard(score);
+function _rng(seed) {
+  let s = seed;
+  return () => { s = (1664525 * s + 1013904223) >>> 0; return s / 4294967296; };
 }
 
 function getWeekKey() {
@@ -7264,83 +7057,505 @@ function getWeekKey() {
   return d.getFullYear() + '-W' + wk;
 }
 
-function saveToLeaderboard(score) {
-  if (score < 1) return;
-  const lb = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-  const userId = (window.tgUser && window.tgUser.id) ? String(window.tgUser.id) : 'anon';
-  const name   = (window.tgUser && (window.tgUser.first_name || window.tgUser.username)) || 'Игрок';
-  const entry  = { userId, name, score, date: new Date().toDateString(), week: getWeekKey(), ts: Date.now() };
-  lb.push(entry);
-  if (lb.length > 700) lb.splice(0, lb.length - 700);
-  localStorage.setItem('leaderboard', JSON.stringify(lb));
+function formatCd(ms) {
+  if (ms <= 0) return 'Готово!';
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if (h > 0) return h + 'ч ' + m + 'м';
+  if (m > 0) return m + 'м ' + s + 'с';
+  return s + 'с';
+}
+
+// ── State accessors ──────────────────────────────────────
+function getMerchGold()       { const s = _ms(); return typeof s.gold === 'number' ? s.gold : MERCH_START_GOLD; }
+function getMerchDeals()      { return _ms().dealsDone || 0; }
+function getMerchLevel()      { const d = getMerchDeals(); let l = 1; for (const x of MERCH_LEVELS) if (d >= x.minDeals) l = x.level; return l; }
+function getMerchSlots()      { return MERCH_LEVELS[getMerchLevel() - 1].slots; }
+function getMerchCoins()      { return parseInt(localStorage.getItem('merchantCoins') || '0'); }
+function addMerchCoins(n)     { if (n <= 0) return; localStorage.setItem('merchantCoins', String(getMerchCoins() + Math.floor(n))); updateMerchUI(); }
+function canStartMerch()      { const s = _ms(); if (!s.lastRoundEnd) return true; return (Date.now() - s.lastRoundEnd) >= MERCH_ROUND_MS; }
+function getMerchCooldownMs() { const s = _ms(); if (!s.lastRoundEnd) return 0; return Math.max(0, MERCH_ROUND_MS - (Date.now() - s.lastRoundEnd)); }
+
+// ── UI update ────────────────────────────────────────────
+function updateMerchUI() {
+  const gold  = getMerchGold();
+  const level = getMerchLevel();
+  const coins = getMerchCoins();
+  const e1 = document.getElementById('merchantGoldStat');
+  const e2 = document.getElementById('merchantLevelStat');
+  const e3 = document.getElementById('merchantCoinsStat');
+  const e4 = document.getElementById('merchantHeaderGold');
+  if (e1) e1.textContent = gold.toLocaleString();
+  if (e2) { e2.textContent = level; e2.title = MERCH_LEVELS[level - 1].name; }
+  if (e3) e3.textContent = coins.toLocaleString();
+  if (e4) e4.textContent = gold.toLocaleString() + ' 💰';
+}
+
+// ── Round logic ──────────────────────────────────────────
+async function startMerchRound() {
+  const btn = document.getElementById('merchantStartBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Анализируем рынок...'; }
+
+  // Реальная доска влияет на цены: много объявлений в категории → товар дешевле
+  let boardCounts = { electronics: 0, auto: 0, clothes: 0, realty: 0 };
+  try {
+    const data = await api('/api/listings?limit=500');
+    const all  = data.listings || (Array.isArray(data) ? data : []);
+    all.forEach(l => {
+      const gc = catToGameCat(l.category || l.cat || '');
+      if (gc) boardCounts[gc]++;
+    });
+  } catch (_) {}
+
+  const seed     = Date.now() & 0xFFFFFFFF;
+  const rand     = _rng(seed);
+  const slots    = getMerchSlots();
+  const shuffled = [...MERCH_PRODUCTS].sort(() => rand() - 0.5).slice(0, slots);
+  const total    = Object.values(boardCounts).reduce((a, b) => a + b, 0) || 4;
+  const avgPer   = total / 4;
+
+  const market = shuffled.map(p => {
+    // Чем больше объявлений в категории на реальной доске → тем дешевле в игре
+    const cnt       = boardCounts[p.cat] || 0;
+    const supplyM   = avgPer > 0 ? 1 - ((cnt - avgPer) / Math.max(avgPer, 1)) * 0.15 : 1;
+    const clamp     = Math.min(Math.max(supplyM, 0.80), 1.20);
+    const variance  = 0.85 + rand() * 0.30;
+    const buyPrice  = Math.round(p.base * clamp * variance);
+    return { ...p, buyPrice, bought: false };
+  });
+
+  const eventIdx = Math.floor(rand() * MERCH_EVENTS.length);
+  const event    = { ...MERCH_EVENTS[eventIdx] };
+
+  // Цена продажи = цена покупки * (1 + эффект события)
+  market.forEach(p => {
+    const catEff = (event.eff && event.eff[p.cat]) || 0;
+    p.sellPrice  = Math.max(1, Math.round(p.buyPrice * (1 + catEff)));
+  });
+
+  const s = _ms();
+  if (typeof s.gold !== 'number') s.gold = MERCH_START_GOLD;
+  s.round = { phase: 'buy', seed, market, event, inventory: [], profit: 0 };
+  _mss(s);
+  renderMerchGame();
+}
+
+function buyMerchProduct(idx) {
+  const s = _ms();
+  if (!s.round || s.round.phase !== 'buy') return;
+  const p = s.round.market[idx];
+  if (!p || p.bought) return;
+  if ((s.gold || 0) < p.buyPrice) return;
+  p.bought = true;
+  s.gold   = (s.gold || 0) - p.buyPrice;
+  s.round.inventory.push({ ...p });
+  _mss(s);
+  updateMerchUI();
+  renderMerchGame();
+}
+
+function proceedToEvent() {
+  const s = _ms();
+  if (!s.round || s.round.phase !== 'buy') return;
+  if (s.round.inventory.length === 0 && !confirm('Ты ничего не купил. Завершить раунд без покупок?')) return;
+  s.round.phase = 'event';
+  _mss(s);
+  // Сохраняем событие в историю (для Купца ур.3+)
+  const hist = JSON.parse(localStorage.getItem('merchantHistory') || '[]');
+  hist.push({ emoji: s.round.event.emoji, title: s.round.event.title, ts: Date.now() });
+  if (hist.length > 30) hist.splice(0, hist.length - 30);
+  localStorage.setItem('merchantHistory', JSON.stringify(hist));
+  renderMerchGame();
+}
+
+function proceedToSell() {
+  const s = _ms();
+  if (!s.round || s.round.phase !== 'event') return;
+  if (s.round.inventory.length === 0) { finishMerchRound(); return; }
+  s.round.phase = 'sell';
+  _mss(s);
+  renderMerchGame();
+}
+
+function sellMerchItem(idx) {
+  const s = _ms();
+  if (!s.round || s.round.phase !== 'sell') return;
+  const item = s.round.inventory[idx];
+  if (!item || item.sold) return;
+  item.sold      = true;
+  s.gold         = (s.gold || 0) + item.sellPrice;
+  s.round.profit = (s.round.profit || 0) + (item.sellPrice - item.buyPrice);
+  _mss(s);
+  updateMerchUI();
+  renderMerchGame();
+}
+
+function sellAllMerchItems() {
+  const s = _ms();
+  if (!s.round || s.round.phase !== 'sell') return;
+  s.round.inventory.forEach(item => {
+    if (!item.sold) {
+      item.sold      = true;
+      s.gold         = (s.gold || 0) + item.sellPrice;
+      s.round.profit = (s.round.profit || 0) + (item.sellPrice - item.buyPrice);
+    }
+  });
+  _mss(s);
+  updateMerchUI();
+  finishMerchRound();
+}
+
+function finishMerchRound() {
+  const s   = _ms();
+  if (!s.round) return;
+  const profit       = s.round.profit || 0;
+  const coins        = Math.floor(Math.max(0, profit) / MERCH_COIN_RATE);
+  s.round.phase      = 'result';
+  s.round.coinsEarned = coins;
+  s.dealsDone        = (s.dealsDone || 0) + 1;
+  s.lastRoundEnd     = Date.now();
+  _mss(s);
+  if (coins > 0) addMerchCoins(coins);
+  saveMerchLb(profit);
+  renderMerchGame();
+}
+
+function saveMerchLb(profit) {
+  if (profit <= 0) return;
+  const lb   = JSON.parse(localStorage.getItem('merchantLeaderboard') || '[]');
+  const uid  = (window.tgUser && window.tgUser.id) ? String(window.tgUser.id) : 'anon';
+  const name = (window.tgUser && (window.tgUser.first_name || window.tgUser.username)) || 'Торговец';
+  lb.push({ uid, name, profit, week: getWeekKey(), ts: Date.now() });
+  if (lb.length > 1000) lb.splice(0, lb.length - 1000);
+  localStorage.setItem('merchantLeaderboard', JSON.stringify(lb));
+}
+
+// ── Render ───────────────────────────────────────────────
+function renderMerchGame() {
+  const el = document.getElementById('merchantGameContent');
+  if (!el) return;
+  updateMerchUI();
+  const s     = _ms();
+  const round = s.round;
+
+  if (!round) {
+    canStartMerch() ? renderMerchReady(el) : renderMerchCooldown(el);
+    return;
+  }
+
+  if (round.phase === 'result') {
+    if (canStartMerch()) {
+      s.round = null; _mss(s);
+      renderMerchReady(el);
+    } else {
+      renderMerchResult(el, round);
+    }
+    return;
+  }
+
+  if (round.phase === 'buy')        renderMerchBuy(el, round);
+  else if (round.phase === 'event') renderMerchEvent(el, round);
+  else if (round.phase === 'sell')  renderMerchSell(el, round);
+}
+
+function renderMerchReady(el) {
+  const level = getMerchLevel();
+  el.innerHTML = `
+    <div class="merch-cooldown-card">
+      <div style="font-size:44px;margin-bottom:12px">🌅</div>
+      <div style="font-size:19px;font-weight:900;margin-bottom:6px">Рынок открыт!</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:6px">Готов к новому торговому дню</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:20px">
+        Уровень: <b style="color:var(--cyan)">${level} — ${MERCH_LEVELS[level - 1].name}</b> · Слотов: <b style="color:var(--gold)">${getMerchSlots()}</b>
+      </div>
+      <button id="merchantStartBtn" onclick="startMerchRound()" style="width:100%;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--orange));color:#000;font-family:'Manrope',sans-serif;font-size:15px;font-weight:900;cursor:pointer">
+        Начать торговый день →
+      </button>
+    </div>
+    ${renderLevelProgress()}
+    ${renderEventHistory()}
+  `;
+}
+
+function renderMerchCooldown(el) {
+  const ms = getMerchCooldownMs();
+  el.innerHTML = `
+    <div class="merch-cooldown-card">
+      <div style="font-size:36px;margin-bottom:10px">⏱️</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:4px">Рынок закрыт</div>
+      <div id="merchantCooldownTimer" style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:900;color:var(--gold);margin:10px 0">${formatCd(ms)}</div>
+      <div style="font-size:12px;color:var(--dim)">Рынок откроется снова через это время</div>
+    </div>
+    ${renderLevelProgress()}
+    ${renderEventHistory()}
+  `;
+  clearInterval(window._mcd);
+  window._mcd = setInterval(() => {
+    const t = document.getElementById('merchantCooldownTimer');
+    if (!t) { clearInterval(window._mcd); return; }
+    const rem = getMerchCooldownMs();
+    if (rem <= 0) { clearInterval(window._mcd); renderMerchGame(); }
+    else t.textContent = formatCd(rem);
+  }, 1000);
+}
+
+function renderLevelProgress() {
+  const level = getMerchLevel();
+  const deals = getMerchDeals();
+  const nextL = MERCH_LEVELS[level] || null;
+  return `
+    <div style="padding:14px;background:var(--s2);border:1px solid var(--border);border-radius:14px">
+      <div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Прогресс торговца</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700">Ур. ${level} — ${MERCH_LEVELS[level - 1].name}</div>
+        <div style="font-size:12px;color:var(--sub)">Сделок: ${deals}</div>
+      </div>
+      ${nextL
+        ? `<div style="font-size:12px;color:var(--dim)">До ур.${nextL.level} (${nextL.name}): <b style="color:var(--gold)">${Math.max(0, nextL.minDeals - deals)} сделок</b> · +${nextL.slots - getMerchSlots()} слота</div>`
+        : '<div style="font-size:12px;color:var(--gold)">🏆 Максимальный уровень!</div>'
+      }
+    </div>`;
+}
+
+function renderEventHistory() {
+  if (getMerchLevel() < 3) return '';
+  const hist = JSON.parse(localStorage.getItem('merchantHistory') || '[]');
+  if (!hist.length) return '';
+  const last3 = hist.slice(-3).reverse();
+  return `
+    <div style="padding:12px 14px;background:rgba(0,207,232,.05);border:1px solid rgba(0,207,232,.15);border-radius:14px">
+      <div style="font-size:11px;color:var(--cyan);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📜 Последние события</div>
+      ${last3.map(e => `<div style="font-size:12px;color:var(--sub);padding:3px 0">${e.emoji} ${escapeHtml(e.title)}</div>`).join('')}
+    </div>`;
+}
+
+function renderMerchBuy(el, round) {
+  const gold   = getMerchGold();
+  const bought = round.market.filter(p => p.bought).length;
+  el.innerHTML = `
+    <div class="merch-phase-label mp-buy">🛒 Фаза покупки</div>
+    <div style="font-size:13px;color:var(--sub);margin-bottom:12px">
+      Выбирай товары для перепродажи. Событие изменит цены — ты не знаешь какое.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${round.market.map((p, i) => `
+        <div class="merch-product-card${p.bought ? ' bought' : ''}">
+          <div class="merch-product-emoji">${p.emoji}</div>
+          <div class="merch-product-info">
+            <div class="merch-product-name">${escapeHtml(p.name)}</div>
+            <div class="merch-product-cat">${catLabel(p.cat)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:900;color:var(--gold)">${p.buyPrice} 💰</div>
+            ${p.bought
+              ? '<div style="font-size:11px;font-weight:700;color:var(--green)">✓ В корзине</div>'
+              : `<button class="merch-buy-btn" ${gold < p.buyPrice ? 'disabled' : ''} onclick="buyMerchProduct(${i})">Купить</button>`
+            }
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="margin:12px 0;padding:11px 14px;background:var(--s3);border-radius:12px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:13px;color:var(--sub)">Куплено: <b style="color:var(--text)">${bought}</b></div>
+      <div style="font-size:12px;color:var(--dim)">Золото: <b style="color:var(--gold)">${gold.toLocaleString()} 💰</b></div>
+    </div>
+    <button onclick="proceedToEvent()" style="width:100%;padding:14px;border:none;border-radius:14px;background:${bought > 0 ? 'linear-gradient(135deg,var(--gold),var(--orange))' : 'var(--s3)'};color:${bought > 0 ? '#000' : 'var(--dim)'};font-family:'Manrope',sans-serif;font-size:14px;font-weight:900;cursor:pointer">
+      ${bought > 0 ? 'Ждать события →' : 'Пропустить →'}
+    </button>
+  `;
+}
+
+function renderMerchEvent(el, round) {
+  const ev  = round.event;
+  const eff = ev.eff || {};
+  const effLines = Object.entries(eff).map(([cat, val]) => {
+    const pct  = Math.round(val * 100);
+    const sign = pct > 0 ? '+' : '';
+    const col  = pct > 0 ? 'var(--green)' : 'var(--red)';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--text)">${catLabel(cat)}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:900;color:${col}">${sign}${pct}%</div>
+    </div>`;
+  }).join('');
+
+  const inv = round.inventory;
+  const invHtml = inv.length ? `
+    <div style="padding:14px;background:var(--s2);border:1px solid var(--border);border-radius:14px;margin-bottom:12px">
+      <div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Ваш товар</div>
+      ${inv.map(item => {
+        const diff = item.sellPrice - item.buyPrice;
+        const sign = diff >= 0 ? '+' : '';
+        const col  = diff >= 0 ? 'var(--green)' : 'var(--red)';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+          <span style="font-size:20px">${item.emoji}</span>
+          <div style="flex:1;font-size:13px;font-weight:700">${escapeHtml(item.name)}</div>
+          <div style="text-align:right">
+            <div style="font-size:11px;color:var(--dim)">Куплено: ${item.buyPrice} 💰</div>
+            <div style="font-size:13px;font-weight:900;color:${col}">${sign}${diff} 💰</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : `<div style="padding:12px;background:var(--s2);border:1px solid var(--border);border-radius:14px;font-size:13px;color:var(--dim);text-align:center;margin-bottom:12px">Ты ничего не купил — нечего продавать</div>`;
+
+  el.innerHTML = `
+    <div class="merch-phase-label mp-event">⚡ Событие рынка</div>
+    <div class="merch-event-card">
+      <div style="font-size:44px;margin-bottom:10px">${ev.emoji}</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">${escapeHtml(ev.title)}</div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:14px">${escapeHtml(ev.desc)}</div>
+      ${effLines}
+    </div>
+    ${invHtml}
+    <button onclick="proceedToSell()" style="width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--green),#00b860);color:#000;font-family:'Manrope',sans-serif;font-size:14px;font-weight:900;cursor:pointer">
+      ${inv.length ? 'Продавать →' : 'Завершить раунд →'}
+    </button>
+  `;
+}
+
+function renderMerchSell(el, round) {
+  const unsold = round.inventory.map((item, i) => ({ ...item, _idx: i })).filter(x => !x.sold);
+  if (!unsold.length) { finishMerchRound(); return; }
+
+  const totalSell   = unsold.reduce((s, x) => s + x.sellPrice, 0);
+  const totalBuy    = unsold.reduce((s, x) => s + x.buyPrice, 0);
+  const totalProfit = totalSell - totalBuy;
+  const profitCol   = totalProfit >= 0 ? 'var(--green)' : 'var(--red)';
+  const profitSign  = totalProfit >= 0 ? '+' : '';
+
+  el.innerHTML = `
+    <div class="merch-phase-label mp-sell">💰 Фаза продажи</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+      ${unsold.map(item => {
+        const diff = item.sellPrice - item.buyPrice;
+        const sign = diff >= 0 ? '+' : '';
+        const col  = diff >= 0 ? 'var(--green)' : 'var(--red)';
+        return `<div class="merch-product-card">
+          <div class="merch-product-emoji">${item.emoji}</div>
+          <div class="merch-product-info">
+            <div class="merch-product-name">${escapeHtml(item.name)}</div>
+            <div style="font-size:11px;color:var(--dim)">Куплено: ${item.buyPrice} 💰 · Итог: <span style="color:${col}">${sign}${diff} 💰</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:900;color:var(--cyan)">${item.sellPrice} 💰</div>
+            <button class="merch-sell-btn" onclick="sellMerchItem(${item._idx})">Продать</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="padding:11px 14px;background:var(--s3);border-radius:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:13px;color:var(--sub)">Итоговая прибыль</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:900;color:${profitCol}">${profitSign}${totalProfit} 💰</div>
+    </div>
+    <button onclick="sellAllMerchItems()" style="width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--green),#00b860);color:#000;font-family:'Manrope',sans-serif;font-size:14px;font-weight:900;cursor:pointer">
+      Продать всё (получить ${totalSell} 💰)
+    </button>
+  `;
+}
+
+function renderMerchResult(el, round) {
+  const profit = round.profit || 0;
+  const coins  = round.coinsEarned || 0;
+  const gold   = getMerchGold();
+  const pc     = profit >= 0 ? 'var(--green)' : 'var(--red)';
+  const ps     = profit >= 0 ? '+' : '';
+  el.innerHTML = `
+    <div style="padding:24px 20px;text-align:center;background:var(--s2);border:1px solid var(--border);border-radius:16px;margin-bottom:12px">
+      <div style="font-size:44px;margin-bottom:10px">${profit >= 0 ? '🎉' : '😔'}</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:18px">${profit >= 0 ? 'Торговый день удался!' : 'Не лучший день...'}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;text-align:left">
+        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--s3);border-radius:10px">
+          <div style="font-size:13px;color:var(--sub)">Прибыль / убыток</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:900;color:${pc}">${ps}${profit} 💰</div>
+        </div>
+        ${coins > 0 ? `<div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(0,224,128,.08);border:1px solid rgba(0,224,128,.2);border-radius:10px">
+          <div style="font-size:13px;color:var(--sub)">Монеты <span style="color:var(--dim);font-size:11px">(1 🪙 за каждые ${MERCH_COIN_RATE} 💰 прибыли)</span></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:900;color:var(--green)">+${coins} 🪙</div>
+        </div>` : ''}
+        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--s3);border-radius:10px">
+          <div style="font-size:13px;color:var(--sub)">Золото в кошельке</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:900;color:var(--gold)">${gold.toLocaleString()} 💰</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:14px;text-align:center">
+      <div style="font-size:12px;color:var(--dim);margin-bottom:6px">Следующий раунд через</div>
+      <div id="merchantResultTimer" style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:900;color:var(--gold)">${formatCd(getMerchCooldownMs())}</div>
+    </div>
+  `;
+  clearInterval(window._mcd);
+  window._mcd = setInterval(() => {
+    const t = document.getElementById('merchantResultTimer');
+    if (!t) { clearInterval(window._mcd); return; }
+    const rem = getMerchCooldownMs();
+    if (rem <= 0) {
+      clearInterval(window._mcd);
+      const s = _ms(); s.round = null; _mss(s);
+      renderMerchGame();
+    } else {
+      t.textContent = formatCd(rem);
+    }
+  }, 1000);
+}
+
+// ── Page / Tab ───────────────────────────────────────────
+function initGamePage() {
+  clearInterval(window._mcd);
+  updateMerchUI();
+  switchGameTab('market');
 }
 
 function switchGameTab(tab) {
-  const gs = document.getElementById('gameSectionGame');
-  const gb = document.getElementById('gameSectionBoard');
-  const tg = document.getElementById('gameTabGame');
-  const tb = document.getElementById('gameTabBoard');
-  if (!gs) return;
-  gs.style.display = tab === 'game'  ? 'block' : 'none';
-  gb.style.display = tab === 'board' ? 'block' : 'none';
-  tg.classList.toggle('on', tab === 'game');
-  tb.classList.toggle('on', tab === 'board');
-  if (tab === 'game') {
-    if (!_flappyGame) {
-      setTimeout(() => {
-        const canvas = document.getElementById('flappyCanvas');
-        if (canvas && !_flappyGame) {
-          _flappyGame = new FlappyGame(canvas);
-          _flappyGame.setMode(_gameMode);
-        }
-      }, 80);
-    }
-  }
-  if (tab === 'board') loadLeaderboard('day');
+  const sm = document.getElementById('gameSectionMarket');
+  const sr = document.getElementById('gameSectionRating');
+  const tm = document.getElementById('gameTabMarket');
+  const tr = document.getElementById('gameTabRating');
+  if (!sm) return;
+  sm.style.display = tab === 'market' ? 'block' : 'none';
+  sr.style.display = tab === 'rating' ? 'block' : 'none';
+  if (tm) tm.classList.toggle('on', tab === 'market');
+  if (tr) tr.classList.toggle('on', tab === 'rating');
+  if (tab === 'market') renderMerchGame();
+  if (tab === 'rating') loadMerchLb('week');
 }
 
-function switchLbTab(period) {
+function switchMerchLbTab(period) {
   document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('on'));
-  const key = { day:'Day', week:'Week', all:'All' }[period] || 'Day';
-  const btn = document.getElementById('lbTab' + key);
+  const btn = document.getElementById('lbTab' + (period === 'week' ? 'Week' : 'All'));
   if (btn) btn.classList.add('on');
-  loadLeaderboard(period);
+  loadMerchLb(period);
 }
 
-function loadLeaderboard(period) {
-  const el = document.getElementById('leaderboardList');
+function loadMerchLb(period) {
+  const el = document.getElementById('merchantLeaderboardList');
   if (!el) return;
-  const lb    = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-  const today = new Date().toDateString();
-  const week  = getWeekKey();
-  let filtered;
-  if (period === 'day') filtered = lb.filter(e => e.date === today);
-  else if (period === 'week') filtered = lb.filter(e => e.week === week);
-  else filtered = lb;
-
+  const lb   = JSON.parse(localStorage.getItem('merchantLeaderboard') || '[]');
+  const week = getWeekKey();
+  const filt = period === 'week' ? lb.filter(e => e.week === week) : lb;
   const byUser = {};
-  filtered.forEach(e => {
-    if (!byUser[e.userId] || byUser[e.userId].score < e.score) byUser[e.userId] = e;
+  filt.forEach(e => {
+    if (!byUser[e.uid]) byUser[e.uid] = { uid: e.uid, name: e.name, total: 0 };
+    byUser[e.uid].total += e.profit;
   });
-  const sorted = Object.values(byUser).sort((a, b) => b.score - a.score).slice(0, 20);
+  const sorted = Object.values(byUser).sort((a, b) => b.total - a.total).slice(0, 20);
   const selfId = (window.tgUser && window.tgUser.id) ? String(window.tgUser.id) : 'anon';
-
   if (!sorted.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-ico">🎮</div><div class="empty-ttl">Нет записей</div><div class="empty-sub">Сыграй первым!</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-ico">🏪</div><div class="empty-ttl">Нет записей</div><div class="empty-sub">Стань первым торговцем!</div></div>';
     return;
   }
-  const medals = ['🥇','🥈','🥉'];
+  const medals = ['🥇', '🥈', '🥉'];
   el.innerHTML = sorted.map((e, i) => {
-    const isSelf = e.userId === selfId;
+    const isSelf = e.uid === selfId;
+    const ps = e.total >= 0 ? '+' : '';
+    const pc = e.total >= 0 ? 'var(--green)' : 'var(--red)';
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;
-      background:${isSelf ? 'rgba(232,200,74,0.08)' : 'var(--s2)'};
-      border:1px solid ${isSelf ? 'rgba(232,200,74,0.35)' : 'var(--border)'};border-radius:12px">
+      background:${isSelf ? 'rgba(232,200,74,.08)' : 'var(--s2)'};
+      border:1px solid ${isSelf ? 'rgba(232,200,74,.35)' : 'var(--border)'};border-radius:12px">
       <div style="font-size:22px;min-width:30px;text-align:center">${medals[i] || (i + 1)}</div>
       <div style="flex:1;font-size:13px;font-weight:700;color:var(--text)">
         ${escapeHtml(e.name)}${isSelf ? ' <span style="color:var(--gold);font-size:11px">(вы)</span>' : ''}
       </div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:900;color:var(--gold)">
-        ${e.score} <span style="font-size:10px;color:var(--dim)">труб</span>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:900;color:${pc}">
+        ${ps}${e.total} <span style="font-size:10px;color:var(--dim)">💰</span>
       </div>
     </div>`;
   }).join('');
@@ -7350,7 +7565,7 @@ async function updateActiveDealsCount() {
   try {
     const { deals } = await api('/api/deals/my');
     const active = (deals || []).filter(d =>
-      ['frozen','accepted','waiting_confirmation','dispute'].includes(d.status)).length;
+      ['frozen', 'accepted', 'waiting_confirmation', 'dispute'].includes(d.status)).length;
     const badge = document.getElementById('activeDealsMenuBadge');
     if (!badge) return;
     if (active > 0) {
@@ -7360,407 +7575,6 @@ async function updateActiveDealsCount() {
       badge.classList.remove('on');
     }
   } catch (_) {}
-}
-
-// ── Flappy Bird ──────────────────────────────────────────
-function _roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
-
-class FlappyGame {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx    = canvas.getContext('2d');
-    this.mode   = 'solo';
-    this.seed   = 1;
-    this.resize();
-    this.reset();
-    this.bindEvents();
-    this.drawIdle();
-  }
-
-  rand() {
-    this.seed = (1664525 * this.seed + 1013904223) >>> 0;
-    return this.seed / 4294967296;
-  }
-
-  setMode(mode) {
-    this.mode = mode === 'online' ? 'online' : 'solo';
-    this.reset();
-    this.drawIdle();
-    const msg = document.getElementById('gameMsg');
-    if (msg) {
-      msg.textContent = this.mode === 'online'
-        ? 'Выбран режим Онлайн. Нажми «Найти соперника»'
-        : 'Нажми или тапни чтобы начать';
-    }
-  }
-
-  resize() {
-    const w = this.canvas.parentElement ? this.canvas.parentElement.clientWidth - 36 : 340;
-    this.W = Math.min(w, 360);
-    this.H = Math.round(this.W * 1.18);
-    this.canvas.width  = this.W;
-    this.canvas.height = this.H;
-    this.canvas.style.width  = this.W + 'px';
-    this.canvas.style.height = this.H + 'px';
-  }
-
-  reset() {
-    this.state       = 'idle';
-    this.score       = 0;
-    this.coinsEarned = 0;
-    this.bird        = { x: this.W * 0.24, y: this.H * 0.44, vy: 0, r: Math.round(this.W * 0.046) };
-    this.opponent    = { x: this.W * 0.36, y: this.H * 0.44, vy: 0, alive: false, score: 0 };
-    this.pipes       = [];
-    this.frame       = 0;
-    this.speed       = this.W * 0.0065;
-    this.gap         = Math.round(this.H * 0.32);
-    this.pipeW       = Math.round(this.W * 0.14);
-    this.pipeInt     = 95;
-    this._loopRun    = false;
-    this._startAt    = 0;
-    this._onlineResult = null;
-  }
-
-  prepareOnline(match) {
-    this.mode = 'online';
-    this.reset();
-    this.seed = Number(match.seed || 1) || 1;
-    this.state = 'countdown';
-    this._startAt = Number(match.startAt || (Date.now() + 2000));
-    this.opponent.alive = true;
-    this.opponent.name = match.opponent?.name || 'Соперник';
-    this._ensureLoop();
-  }
-
-  bindEvents() {
-    this._onTap = () => this.tap();
-    this.canvas.addEventListener('pointerdown', this._onTap);
-    this._onKey = (e) => {
-      if (['Space','ArrowUp'].includes(e.code) || e.key === ' ') { e.preventDefault(); this.tap(); }
-    };
-    document.addEventListener('keydown', this._onKey);
-  }
-
-  _ensureLoop() {
-    if (this._loopRun) return;
-    this._loopRun = true;
-    requestAnimationFrame(() => this.loop());
-  }
-
-  tap() {
-    if (this.mode === 'online') {
-      if (this.state === 'countdown') return;
-      if (this.state === 'dead') {
-        this.drawDead();
-        return;
-      }
-      if (this.state === 'playing') {
-        this.bird.vy = -(this.H * 0.018);
-        if (_duelWs && _duelWs.readyState === WebSocket.OPEN) {
-          _duelWs.send(JSON.stringify({ type: 'jump' }));
-        }
-      }
-      return;
-    }
-
-    if (this.state === 'idle')    { this.start(); return; }
-    if (this.state === 'dead')    { this.reset(); this.drawIdle(); return; }
-    if (this.state === 'playing') { this.bird.vy = -(this.H * 0.018); }
-  }
-
-  start() {
-    this.state = 'playing';
-    this.bird.vy = -(this.H * 0.018);
-    this._ensureLoop();
-  }
-
-  onOpponentJump() {
-    if (this.mode !== 'online' || this.state === 'dead') return;
-    this.opponent.vy = -(this.H * 0.018);
-  }
-
-  onOpponentDead(score) {
-    this.opponent.alive = false;
-    this.opponent.score = Number(score || this.opponent.score || 0);
-  }
-
-  onOnlineResult(result) {
-    this._onlineResult = result;
-    if (this.state !== 'dead') {
-      this.state = 'dead';
-      this.drawDead();
-    }
-  }
-
-  loop() {
-    if (this.state === 'destroyed') {
-      this._loopRun = false;
-      return;
-    }
-
-    if (this.state === 'countdown') {
-      if (Date.now() >= this._startAt) {
-        this.state = 'playing';
-        this.bird.vy = -(this.H * 0.018);
-        this.opponent.vy = -(this.H * 0.018);
-        _duelState = 'playing';
-        duelStatus('Матч начался!');
-      }
-      this.drawCountdown();
-      requestAnimationFrame(() => this.loop());
-      return;
-    }
-
-    if (this.state !== 'playing') {
-      this._loopRun = false;
-      return;
-    }
-
-    this.update();
-    this.draw();
-    requestAnimationFrame(() => this.loop());
-  }
-
-  update() {
-    this.frame++;
-    this.bird.vy += this.H * 0.00095;
-    this.bird.y  += this.bird.vy;
-
-    if (this.mode === 'online' && this.opponent.alive) {
-      this.opponent.vy += this.H * 0.00095;
-      this.opponent.y  += this.opponent.vy;
-    }
-
-    if (this.frame % 280 === 0) this.speed = Math.min(this.speed + this.W * 0.0012, this.W * 0.016);
-    if (this.frame % this.pipeInt === 0) {
-      const minH = Math.round(this.H * 0.14);
-      const maxH = Math.round(this.H - this.gap - this.H * 0.14);
-      const rnd = this.mode === 'online' ? this.rand() : Math.random();
-      const topH = minH + rnd * (maxH - minH);
-      this.pipes.push({ x: this.W + 10, topH, passed: false });
-    }
-
-    this.pipes.forEach(p => p.x -= this.speed);
-    this.pipes = this.pipes.filter(p => p.x + this.pipeW > -10);
-
-    this.pipes.forEach(p => {
-      if (!p.passed && p.x + this.pipeW < this.bird.x - this.bird.r) {
-        p.passed = true;
-        this.score++;
-        this.onPipe();
-        if (this.mode === 'online' && _duelWs && _duelWs.readyState === WebSocket.OPEN) {
-          _duelWs.send(JSON.stringify({ type: 'score', score: this.score }));
-        }
-      }
-    });
-
-    if (this.bird.y - this.bird.r < 0 || this.bird.y + this.bird.r > this.H) { this.die(); return; }
-    for (const p of this.pipes) {
-      if (this.bird.x + this.bird.r > p.x && this.bird.x - this.bird.r < p.x + this.pipeW) {
-        if (this.bird.y - this.bird.r < p.topH || this.bird.y + this.bird.r > p.topH + this.gap) {
-          this.die(); return;
-        }
-      }
-    }
-  }
-
-  onPipe() {
-    if (this.mode === 'online') return;
-    if (getGameDailyCoins() < GAME_DAILY_LIMIT) {
-      const added = addGameDailyCoins(COINS_PER_PIPE);
-      this.coinsEarned += added;
-    }
-  }
-
-  die() {
-    this.state = 'dead';
-    setGameHighScore(this.score);
-    if (this.mode === 'online' && _duelWs && _duelWs.readyState === WebSocket.OPEN) {
-      _duelWs.send(JSON.stringify({ type: 'dead', score: this.score }));
-      duelStatus('Ожидание результата...');
-    }
-    this.drawDead();
-    const msg = document.getElementById('gameMsg');
-    if (msg) msg.textContent = this.mode === 'online' ? 'Матч завершен' : 'Тап или Space — сыграть снова';
-  }
-
-  drawBg() {
-    const g = this.ctx.createLinearGradient(0, 0, 0, this.H);
-    g.addColorStop(0, '#07071a');
-    g.addColorStop(1, '#0c1625');
-    this.ctx.fillStyle = g;
-    this.ctx.fillRect(0, 0, this.W, this.H);
-    this.ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    for (let i = 0; i < 28; i++) {
-      const sx = ((i * 137 + 11) % this.W);
-      const sy = ((i * 97  + 31) % (this.H * 0.6));
-      this.ctx.fillRect(sx, sy, 1.5, 1.5);
-    }
-  }
-
-  drawPipe(p) {
-    const ctx = this.ctx;
-    ctx.fillStyle = '#1b4d1b';
-    ctx.fillRect(p.x, 0, this.pipeW, p.topH);
-    ctx.fillStyle = '#2a7a2a';
-    ctx.fillRect(p.x - 4, p.topH - 18, this.pipeW + 8, 18);
-    const botY = p.topH + this.gap;
-    ctx.fillStyle = '#1b4d1b';
-    ctx.fillRect(p.x, botY, this.pipeW, this.H - botY);
-    ctx.fillStyle = '#2a7a2a';
-    ctx.fillRect(p.x - 4, botY, this.pipeW + 8, 18);
-  }
-
-  drawBirdAt(x, y, vy, color = '#e8c84a', wing = '#f5d96e') {
-    const ctx = this.ctx;
-    const r = this.bird.r;
-    ctx.save();
-    ctx.translate(x, y);
-    const angle = Math.min(Math.max(vy * 0.053, -0.48), 1.1);
-    ctx.rotate(angle);
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
-    ctx.beginPath(); ctx.ellipse(-r * 0.25, r * 0.25, r * 0.62, r * 0.38, -0.3, 0, Math.PI * 2); ctx.fillStyle = wing; ctx.fill();
-    ctx.beginPath(); ctx.arc(r * 0.38, -r * 0.25, r * 0.26, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.beginPath(); ctx.arc(r * 0.44, -r * 0.25, r * 0.13, 0, Math.PI * 2); ctx.fillStyle = '#111'; ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(r * 0.85, -r * 0.07);
-    ctx.lineTo(r * 1.28, r * 0.13);
-    ctx.lineTo(r * 0.85, r * 0.32);
-    ctx.fillStyle = '#ff8c42'; ctx.fill();
-    ctx.restore();
-  }
-
-  drawHUD() {
-    const ctx = this.ctx;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `bold ${Math.round(this.W * 0.09)}px 'JetBrains Mono', monospace`;
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 6;
-    ctx.fillText(this.score, this.W / 2, Math.round(this.H * 0.12));
-    ctx.shadowBlur = 0;
-    if (this.mode === 'online') {
-      ctx.font = `bold ${Math.round(this.W * 0.032)}px Manrope, sans-serif`;
-      ctx.fillStyle = '#40e0f0';
-      ctx.fillText(`Соперник: ${this.opponent.score || 0}`, this.W / 2, Math.round(this.H * 0.19));
-    } else if (this.coinsEarned > 0) {
-      ctx.font = `bold ${Math.round(this.W * 0.038)}px Manrope, sans-serif`;
-      ctx.fillStyle = '#e8c84a';
-      ctx.fillText('+' + this.coinsEarned + ' 🪙', this.W / 2, Math.round(this.H * 0.19));
-    }
-  }
-
-  draw() {
-    this.drawBg();
-    this.pipes.forEach(p => this.drawPipe(p));
-    this.drawBirdAt(this.bird.x, this.bird.y, this.bird.vy, '#e8c84a', '#f5d96e');
-    if (this.mode === 'online' && this.opponent.alive) {
-      this.drawBirdAt(this.opponent.x, this.opponent.y, this.opponent.vy, '#40e0f0', '#9ff1ff');
-    }
-    this.drawHUD();
-  }
-
-  drawIdle() {
-    this.drawBg();
-    this.drawBirdAt(this.bird.x, this.bird.y, 0, '#e8c84a', '#f5d96e');
-    const ctx = this.ctx;
-    ctx.fillStyle = 'rgba(232,200,74,0.92)';
-    ctx.font = `bold ${Math.round(this.W * 0.052)}px Manrope, sans-serif`;
-    ctx.textAlign = 'center';
-    const txt = this.mode === 'online' ? 'Найди соперника для матча' : 'Тап / Space — начать';
-    ctx.fillText(txt, this.W / 2, this.H * 0.56);
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
-    ctx.fillText('Лети сквозь трубы и зарабатывай монеты', this.W / 2, this.H * 0.63);
-  }
-
-  drawCountdown() {
-    this.drawBg();
-    this.pipes.forEach(p => this.drawPipe(p));
-    this.drawBirdAt(this.bird.x, this.bird.y, this.bird.vy, '#e8c84a', '#f5d96e');
-    this.drawBirdAt(this.opponent.x, this.opponent.y, this.opponent.vy, '#40e0f0', '#9ff1ff');
-    const ctx = this.ctx;
-    const left = Math.max(0, Math.ceil((this._startAt - Date.now()) / 1000));
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.fillRect(0, 0, this.W, this.H);
-    ctx.fillStyle = '#fff';
-    ctx.font = `bold ${Math.round(this.W * 0.07)}px Manrope, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText('Дуэль начинается', this.W / 2, this.H * 0.42);
-    ctx.fillStyle = '#e8c84a';
-    ctx.font = `bold ${Math.round(this.W * 0.16)}px 'JetBrains Mono', monospace`;
-    ctx.fillText(String(left), this.W / 2, this.H * 0.56);
-  }
-
-  drawDead() {
-    this.draw();
-    const ctx = this.ctx;
-    const cx = this.W / 2, cy = this.H / 2;
-    const pw = Math.round(this.W * 0.78), ph = Math.round(this.H * 0.45);
-    ctx.fillStyle = 'rgba(0,0,0,0.52)';
-    ctx.fillRect(0, 0, this.W, this.H);
-    ctx.fillStyle = 'rgba(13,13,20,0.97)';
-    _roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16); ctx.fill();
-    ctx.strokeStyle = 'rgba(232,200,74,0.38)'; ctx.lineWidth = 1;
-    _roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16); ctx.stroke();
-
-    ctx.fillStyle = '#fff';
-    ctx.font = `bold ${Math.round(this.W * 0.052)}px Manrope, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(this.mode === 'online' ? 'Матч завершен' : 'Игра окончена', cx, cy - ph/2 + Math.round(ph * 0.16));
-
-    ctx.fillStyle = '#e8c84a';
-    ctx.font = `bold ${Math.round(this.W * 0.11)}px 'JetBrains Mono', monospace`;
-    ctx.fillText(String(this.score), cx, cy - ph/2 + Math.round(ph * 0.43));
-
-    if (this.mode === 'online') {
-      const res = this._onlineResult;
-      ctx.fillStyle = '#40e0f0';
-      ctx.font = `${Math.round(this.W * 0.04)}px Manrope, sans-serif`;
-      ctx.fillText(`Соперник: ${res ? res.oppScore : this.opponent.score}`, cx, cy - ph/2 + Math.round(ph * 0.58));
-
-      if (res) {
-        const myUid = String(TG_USER?.id || '');
-        const win = !res.draw && String(res.winnerUid || '') === myUid;
-        ctx.fillStyle = res.draw ? '#ffb74d' : (win ? '#66bb6a' : '#ff6b6b');
-        ctx.font = `bold ${Math.round(this.W * 0.042)}px Manrope, sans-serif`;
-        ctx.fillText(res.draw ? 'Ничья' : (win ? 'Победа' : 'Поражение'), cx, cy - ph/2 + Math.round(ph * 0.74));
-        ctx.fillStyle = '#e8c84a';
-        ctx.fillText(`+${Number(res.reward || 0)} 🪙`, cx, cy - ph/2 + Math.round(ph * 0.86));
-      } else {
-        ctx.fillStyle = '#9898b8';
-        ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
-        ctx.fillText('Ожидание результата...', cx, cy - ph/2 + Math.round(ph * 0.78));
-      }
-    } else {
-      ctx.fillStyle = '#9898b8';
-      ctx.font = `${Math.round(this.W * 0.036)}px Manrope, sans-serif`;
-      ctx.fillText('Рекорд: ' + getGameHighScore(), cx, cy - ph/2 + Math.round(ph * 0.60));
-      if (this.coinsEarned > 0) {
-        ctx.fillStyle = '#00e080';
-        ctx.font = `bold ${Math.round(this.W * 0.04)}px Manrope, sans-serif`;
-        ctx.fillText('+' + this.coinsEarned + ' монет 🪙', cx, cy - ph/2 + Math.round(ph * 0.76));
-      } else {
-        ctx.fillStyle = '#ff6b6b';
-        ctx.font = `${Math.round(this.W * 0.034)}px Manrope, sans-serif`;
-        ctx.fillText('Лимит монет исчерпан', cx, cy - ph/2 + Math.round(ph * 0.76));
-      }
-      ctx.fillStyle = 'rgba(232,200,74,0.8)';
-      ctx.font = `bold ${Math.round(this.W * 0.037)}px Manrope, sans-serif`;
-      ctx.fillText('Тап / Space — снова', cx, cy - ph/2 + Math.round(ph * 0.91));
-    }
-  }
 }
 </script>
 </body>
