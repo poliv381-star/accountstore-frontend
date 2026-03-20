@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -2632,7 +2632,6 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
     font-size: 10px !important;
   }
 }
-
 </style>
 </head>
 <body>
@@ -2723,11 +2722,8 @@ button:not(.img-lb-close):not(.img-lb-nav):not(.carousel-nav):not(.ld-nav):not(.
 
 <!-- DEALS -->
 <div class="pg" id="pg-deals">
-  <div class="pg-head">u{26A1} u{0410}u{043A}u{0442}u{0438}u{0432}u{043D}u{044B}u{0435} u{0441}u{0434}u{0435}u{043B}u{043A}u{0438}</div>
-  <div id="dealsPageContent" style="padding:0 18px;display:flex;flex-direction:column;gap:12px;margin-top:4px">
-    <div class="spin-wrap"><div class="spin"></div></div>
-  </div>
-  <div class="gap"></div>
+  <div class="pg-head">Сделки</div>
+  <div id="dealsPageContent"><div class="spin-wrap"><div class="spin"></div></div></div>
 </div>
 
 <!-- PROFILE -->
@@ -3474,7 +3470,6 @@ applyTheme(getInitialTheme(), false);
 
 const TG_USER   = tg?.initDataUnsafe?.user || null;
 const INIT_DATA = tg?.initData || '';
-window.tgUser = TG_USER || null;
 
 if (TG_USER) {
   const name = [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || 'Покупатель';
@@ -3677,21 +3672,11 @@ async function loadListings() {
 
   if (params.length) url += '?' + params.join('&');
 
-  try {
-    console.log('📦 Загружаем объявления:', url);
-    const result = await api(url);
-    console.log('📦 Ответ API:', result);
-    const { listings } = result;
-    allProducts = (listings || []).map(mapListingToProduct);
-    console.log('📦 Загружено товаров:', allProducts.length);
-    if (allProducts.length > 0) lastListingId = allProducts[0].listing_id;
-    buildCats();
-    renderGrid();
-  } catch (e) {
-    console.error('❌ Ошибка loadListings:', e);
-    allProducts = [];
-    renderGrid();
-  }
+  const { listings } = await api(url).catch(() => ({ listings: [] }));
+  allProducts = (listings || []).map(mapListingToProduct);
+  if (allProducts.length > 0) lastListingId = allProducts[0].listing_id;
+  buildCats();
+  renderGrid();
 }
 
 function applyPriceFilter() {
@@ -4590,38 +4575,33 @@ async function loadOrders() {
 // ══════════════════════════════════════════════════════════
 async function loadProfile() {
   try {
-    console.log('� Загружаем профиль...');
+    console.log('📊 Загружаем профиль...');
     const res = await api('/api/profile');
-    console.log('👤 Ответ профиля:', res);
+    console.log('📊 Ответ профиля:', res);
     const { stats, privacy } = res;
-    console.log('👤 Stats:', stats);
+    console.log('📊 Stats:', stats);
     
     if (!stats) {
-      console.warn('👤 Stats не получены, используем значения по умолчанию');
-      const repCombinedEl = document.getElementById('repCombined');
-      if (repCombinedEl) repCombinedEl.textContent = '0% полож. • 0 отзывов';
-      const dealsCountEl = document.getElementById('dealsCount');
-      if (dealsCountEl) dealsCountEl.textContent = 0;
-      const dealsAmountEl = document.getElementById('dealsAmount');
-      if (dealsAmountEl) dealsAmountEl.textContent = '0.00';
-    } else {
-      // Общая репутация
-      const total = Number(stats.total_reviews ?? stats.total_deals ?? 0);
-      const pos   = Number(stats.total_positive || 0);
-      const pct = total > 0 ? Math.round(100 * pos / total) : 0;
-      const repLine = `${pct}% полож. • ${total} отзывов`;
-      
-      console.log(`👤 Репутация: total=${total}, pos=${pos}, pct=${pct}%`);
-      
-      const repCombinedEl = document.getElementById('repCombined');
-      if (repCombinedEl) repCombinedEl.textContent = repLine;
-
-      // Сделки
-      const dealsCountEl = document.getElementById('dealsCount');
-      if (dealsCountEl) dealsCountEl.textContent = stats.total_deals || 0;
-      const dealsAmountEl = document.getElementById('dealsAmount');
-      if (dealsAmountEl) dealsAmountEl.textContent = Number(stats.total_deals_amount || 0).toFixed(2);
+      console.error('Stats не получены!');
+      return;
     }
+
+    // Общая репутация
+    const total = Number(stats.total_reviews ?? stats.total_deals ?? 0);
+    const pos   = Number(stats.total_positive || 0);
+    const pct = total > 0 ? Math.round(100 * pos / total) : 0;
+    const repLine = `${pct}% полож. • ${total} отзывов`;
+    
+    console.log(`📊 Репутация: total=${total}, pos=${pos}, pct=${pct}%`);
+    
+    const repCombinedEl = document.getElementById('repCombined');
+    if (repCombinedEl) repCombinedEl.textContent = repLine;
+
+    // Сделки
+    const dealsCountEl = document.getElementById('dealsCount');
+    if (dealsCountEl) dealsCountEl.textContent = stats.total_deals || 0;
+    const dealsAmountEl = document.getElementById('dealsAmount');
+    if (dealsAmountEl) dealsAmountEl.textContent = Number(stats.total_deals_amount || 0).toFixed(2);
 
     privacySettings = {
       is_seller_anonymous: privacy?.is_seller_anonymous ?? true,
@@ -4629,36 +4609,21 @@ async function loadProfile() {
     };
     renderPrivacySettings();
   } catch (e) {
-    console.error('❌ Ошибка loadProfile:', e);
-    // Зафиксируем дефолтные значения чтобы не падал UI
-    const repCombinedEl = document.getElementById('repCombined');
-    if (repCombinedEl) repCombinedEl.textContent = '0% полож. • 0 отзывов';
-    const dealsCountEl = document.getElementById('dealsCount');
-    if (dealsCountEl) dealsCountEl.textContent = 0;
-    const dealsAmountEl = document.getElementById('dealsAmount');
-    if (dealsAmountEl) dealsAmountEl.textContent = '0.00';
+    console.error('Ошибка loadProfile:', e);
   }
   loadBalance();
 }
 
 async function loadBalance() {
   try {
-    const res = await api('/api/balance');
-    console.log('💰 Balance:', res);
-    const { balance, frozen_balance } = res;
+    const { balance, frozen_balance } = await api('/api/balance');
     const balEl = document.getElementById('balanceAmt');
-    if (balEl) balEl.textContent = Number(balance || 0).toFixed(2);
+    if (balEl) balEl.textContent = Number(balance).toFixed(2);
     const frozen = document.getElementById('frozenAmt');
     if (frozen) frozen.textContent = Number(frozen_balance || 0).toFixed(2);
     const cba = document.getElementById('cartBalanceAmt');
-    if (cba) cba.textContent = Number(balance || 0).toFixed(2);
-  } catch (e) {
-    console.warn('⚠️ Не удалось загрузить баланс:', e.message);
-    const balEl = document.getElementById('balanceAmt');
-    if (balEl) balEl.textContent = '0.00';
-    const frozen = document.getElementById('frozenAmt');
-    if (frozen) frozen.textContent = '0.00';
-  }
+    if (cba) cba.textContent = Number(balance).toFixed(2);
+  } catch {}
 }
 
 function loadCartBalance() { loadBalance(); }
@@ -5577,7 +5542,64 @@ async function loadDealsPage() {
 
 async function openMyDeals() {
   switchPage('deals', document.getElementById('nt-deals'));
-  await loadDealsPage();
+  return;
+  // legacy overlay (unused)
+  openOverlay('myDealsOverlay');
+  const el = document.getElementById('myDealsList');
+  el.innerHTML = '<div class="spin-wrap"><div class="spin"></div></div>';
+  try {
+    const { deals } = await api('/api/deals/my');
+    if (!deals.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ico"></div><div class="empty-ttl">Сделок нет</div></div>'; 
+      return;
+    }
+    const sMap = {
+      frozen: 'Ожидание подтверждения',
+      accepted: 'Принято, готовка',
+      waiting_confirmation: 'Товар отправлен',
+      dispute: 'Спор',
+      completed: 'Завершено',
+      auto_completed: 'Авто-завершено',
+      cancelled: 'Отменено',
+      refunded: 'Возврат'
+    };
+    el.innerHTML = activeDeal.map(d => {
+      const isBuyer = d.my_role === 'buyer';
+      const isSeller = !isBuyer;
+      const canAccept   = isSeller && d.status === 'frozen';              // Продавец подтверждает
+      const canSendItem = isSeller && d.status === 'accepted';            // Продавец отправляет
+      const canReceive  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель получил
+      const canDispute  = isBuyer && d.status === 'waiting_confirmation'; // Покупатель спор
+      const canCancel   = (d.status === 'frozen' || d.status === 'accepted') && (isBuyer || isSeller);
+      const canLeaveReview = (d.status === 'completed' || d.status === 'auto_completed') && 
+                            ((isBuyer && !d.buyer_review_score) || (isSeller && !d.seller_review_score)); // Можно оставить отзыв
+
+      let timerHtml = '';
+
+      return `<div class="deal-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="deal-status ${d.status}">${sMap[d.status] || d.status}</div>
+          <div style="font-size:11px;color:var(--dim)">#${d.id}</div>
+        </div>
+        <div style="font-size:14px;font-weight:800;margin-bottom:4px">${d.title}</div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${isBuyer ? 'Покупка' : 'Продажа'} · <b style="color:var(--gold)">$${Number(d.amount).toFixed(2)}</b></div>
+        ${(d.status === 'frozen' || d.status === 'accepted' || d.status === 'waiting_confirmation' || d.status === 'dispute') ? `
+          <div style="background:rgba(0,207,232,.08);border:1px solid rgba(0,207,232,.2);border-radius:10px;padding:10px;font-size:12px;margin-bottom:8px">
+            ${isBuyer
+              ? `👤 Продавец: <b>@${d.other_username || d.other_name || '—'}</b>`
+              : `👤 Покупатель: <b>@${d.other_username || d.other_name || '—'}</b>`}
+          </div>` : ''}
+        ${canAccept ? `<button class="deal-btn confirm" onclick="acceptDeal(${d.id})">✅ Подтвердить сделку</button>` : ''}
+        ${canSendItem ? `<button class="deal-btn confirm" onclick="sendItem(${d.id})">📤 Отправил товар</button>` : ''}
+        ${canReceive ? `<button class="deal-btn confirm" onclick="openReview(${d.id})">✅ Получил товар</button>` : ''}
+        ${canLeaveReview ? `<button class="deal-btn confirm" onclick="${isBuyer ? 'openReview' : 'openSellerReview'}(${d.id})">⭐ Оставить отзыв</button>` : ''}
+        ${canDispute ? `<button class="deal-btn dispute" onclick="openDisputeDeal(${d.id})">⚠️ Открыть спор</button>` : ''}
+        ${canCancel ? `<button class="deal-btn cancel" onclick="cancelDeal(${d.id})">Отменить</button>` : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--sub)">${e.message}</div>`;
+  }
 }
 
 async function openMyListings() {
@@ -6862,23 +6884,6 @@ function haptic(type) {
     alert('Ошибка: ' + e.message);
   }
 })();
-
-// ══════════════════════════════════════════════════════════
-async function updateActiveDealsCount() {
-  try {
-    const { deals } = await api('/api/deals/my');
-    const active = (deals || []).filter(d =>
-      ['frozen', 'accepted', 'waiting_confirmation', 'dispute'].includes(d.status)).length;
-    const badge = document.getElementById('activeDealsMenuBadge');
-    if (!badge) return;
-    if (active > 0) {
-      badge.textContent = active;
-      badge.classList.add('on');
-    } else {
-      badge.classList.remove('on');
-    }
-  } catch (_) {}
-}
 </script>
 </body>
 </html>
